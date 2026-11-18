@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Chiusure">
+<meta name="theme-color" content="#0d141d">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<title>Chiusure cassa</title>
+<style>
+:root{color-scheme:dark;--blu:#2a74c9;--acc:#7db7f5;--ink:#e8eef6;--mute:#93a3b6;--line:#263446;--bg:#0d141d;--card:#162130;--ok:#4cc38a;--ko:#ff7b72}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.4 ui-sans-serif,-apple-system,"SF Pro Text",system-ui,sans-serif;padding:env(safe-area-inset-top) 0 calc(76px + env(safe-area-inset-bottom))}
+main{max-width:560px;margin:0 auto;padding:0 16px 24px}
+h1{font-size:28px;margin:22px 0 14px;color:var(--acc)}
+h2{font-size:15px;margin:20px 0 8px;color:var(--mute);font-weight:600}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:2px 14px}
+.pad{padding:12px 14px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line);margin:0;width:100%}
+.card>.row:last-child,.card>div:last-child .row:last-child{border-bottom:0}
+.row input{width:46%;text-align:right;font:inherit;font-variant-numeric:tabular-nums;border:0;background:transparent;color:var(--ink);padding:3px 4px;border-radius:6px;outline:0}
+.row input:focus{background:#22344a}
+.row input.l{text-align:left;width:62%}
+.sub span{color:var(--mute);padding-left:14px}
+.tg{flex:1;display:flex;align-items:center;gap:8px;font:inherit;color:var(--ink);background:none;border:0;padding:0;text-align:left}
+.tg::after{content:"›";font-size:22px;line-height:1;color:var(--mute);transition:transform .15s}
+.tg[aria-expanded=true]::after{transform:rotate(90deg)}
+.ok,.ok b{color:var(--ok)}.ko,.ko b{color:var(--ko)}
+.btn{display:inline-block;font:inherit;font-weight:600;border:0;border-radius:10px;padding:11px 16px;background:var(--blu);color:#fff;margin:6px 6px 0 0}
+.ghost{background:transparent;color:var(--acc);border:1px solid var(--acc)}
+.x{font:inherit;border:0;background:none;color:var(--ko);padding:4px}
+.mute{color:var(--mute);font-size:15px;margin:8px 0}
+.seg{display:flex;gap:6px;margin-bottom:10px}
+.seg button{flex:1;font:inherit;padding:8px;border:1px solid var(--line);background:var(--card);border-radius:10px;color:var(--ink)}
+.seg button.on{background:var(--blu);color:#fff;border-color:var(--blu)}
+.nav2{display:flex;justify-content:space-between;align-items:center;margin:4px 0 12px}
+.nav2 button{font:inherit;font-size:24px;border:0;background:none;color:var(--acc);padding:4px 14px}
+.nav2 b{text-transform:capitalize}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th{color:var(--mute);font-weight:600;text-align:right;padding:10px 0}th:first-child{text-align:left}
+td{padding:8px 0;border-top:1px solid var(--line)}td+td{text-align:right;font-variant-numeric:tabular-nums}
+tr.s td{font-weight:700}
+.ln{background:none;border:0;border-bottom:1px solid var(--line);font:inherit;color:var(--ink);text-align:left}
+nav{position:fixed;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(3,1fr);background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+nav button{font:inherit;font-size:14px;border:0;background:none;padding:14px 4px;color:var(--mute)}
+nav button.on{color:var(--acc);font-weight:700;box-shadow:inset 0 3px 0 var(--acc)}
+#t{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#2b3a4e;color:var(--ink);padding:10px 16px;border-radius:10px;opacity:0;transition:opacity .2s;pointer-events:none}
+#t.on{opacity:1}
+.ch{padding:12px 10px 6px}
+.ch svg{display:block;width:100%;height:auto;overflow:visible}
+.ch text{fill:var(--mute);font-size:10px;font-variant-numeric:tabular-nums}
+.ch .gl{stroke:var(--line);stroke-width:1}
+.ch .b0{fill:#4f6178}.ch .b1{fill:var(--acc)}
+.ch .hit{fill:transparent}.ch .hit.sel{fill:rgba(125,183,245,.14)}
+.lg{display:flex;gap:16px;font-size:13px;color:var(--mute);margin:2px 4px 6px}
+.lg i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.lg .s0{background:#4f6178}.lg .s1{background:var(--acc)}
+#ci{margin:6px 4px 4px;font-size:14px;min-height:2.8em}
+#ci b{color:var(--ink);font-weight:600}
+.ph{display:none}
+@media print{:root{color-scheme:light;--ink:#000;--mute:#444;--line:#bbb;--bg:#fff;--card:#fff;--acc:#000}nav,.noprint,#t{display:none!important}.ph{display:block;font-weight:700;font-size:20px;margin:0 0 10px}body{background:#fff;padding:0;font-size:12pt}.card{border:0;padding:0}h1{display:none}.ch .b0,.lg .s0{fill:#bbb;background:#bbb}.ch .hit.sel{fill:transparent}.lg i{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<nav><button data-v="chiusura">Chiusura</button><button data-v="riepilogo">Riepilogo</button><button data-v="impostazioni">Reparti e backup</button></nav>
+<div id="t"></div>
+<script>
+const K='tabacchi.v1',$=s=>document.querySelector(s);
+const eur=n=>(n||0).toLocaleString('it-IT',{style:'currency',currency:'EUR'});
+const num=s=>{const n=parseFloat(String(s).replace(/\./g,'').replace(',','.'));return isNaN(n)?0:Math.round(n*100)/100};
+const fi=n=>n==null||n===''?'':n.toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
+const clean=v=>{v=v.replace(/[^0-9.,-]/g,'');const neg=v[0]==='-',i=v.indexOf(','),a=(i<0?v:v.slice(0,i)).replace(/-/g,'');return(neg?'-':'')+a+(i<0?'':','+v.slice(i+1).replace(/[.,-]/g,'').slice(0,2))};
+const iso=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const init=()=>({reparti:['Tabacchi','Gratta e vinci','Lotto','Valori bollati','Ricariche','Altro'],fondo:0,days:{}});
+let db;try{db=JSON.parse(localStorage.getItem(K))||init()}catch(e){db=init()}
+const save=()=>{try{localStorage.setItem(K,JSON.stringify(db))}catch(e){alert('Salvataggio non riuscito: archiviazione piena o bloccata.')}};
+if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();
+if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js');
+let cfOpen=true,view='chiusura',cur=iso(new Date()),mode='mese',anchor=new Date(),chart=null,selB=-1;
+function toast(m){const t=$('#t');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),1800)}
+
+function vChiusura(){
+ const r=db.days[cur]||{},rp=r.rep||{};
+ const rep=db.reparti.map(n=>`<label class="row"><span>${esc(n)}</span><input data-r="${esc(n)}" inputmode="decimal" placeholder="0,00" value="${fi(rp[n])}"></label>`).join('');
+ return `<h1>Chiusura</h1>
+ <div class="card"><label class="row"><span>Data</span><input id="d" type="date" value="${cur}"></label></div>
+ <h2>Cassa</h2><div class="card">
+  <div class="row"><button class="tg" id="tg" aria-expanded="${cfOpen}">Contanti</button><input id="c" aria-label="Contanti" inputmode="decimal" placeholder="0,00" value="${fi(r.c)}"></div>
+  <div id="cf"${cfOpen?'':' hidden'}><label class="row sub"><span>Fondo cassa</span><input id="f" inputmode="decimal" placeholder="0,00" value="${fi(r.f!=null?r.f:db.fondo)}"></label></div>
+  <label class="row"><span>POS</span><input id="pos" inputmode="decimal" placeholder="0,00" value="${fi(r.pos)}"></label>
+  <label class="row"><span>Satispay</span><input id="sat" inputmode="decimal" placeholder="0,00" value="${fi(r.sat)}"></label></div>
+ <h2>Incassi per reparto</h2><div class="card">${rep}</div>
+ <h2>Quadratura</h2><div class="card" id="q"></div>
+ <button class="btn" id="save">Salva chiusura</button>${db.days[cur]?'<button class="btn ghost" id="del">Elimina</button>':''}`}
+
+function read(){const g=s=>num(($(s)||{}).value),rep={};
+ document.querySelectorAll('[data-r]').forEach(i=>{if(i.value.trim()!=='')rep[i.dataset.r]=num(i.value)});
+ return{c:g('#c'),f:g('#f'),pos:g('#pos'),sat:g('#sat'),rep}}
+function calc(){const q=$('#q');if(!q)return;
+ const r=read(),tr=Object.values(r.rep).reduce((a,b)=>a+b,0),el=r.pos+r.sat,inc=r.c+el,d=Math.round((inc-tr)*100)/100;
+ q.innerHTML=`<div class="row"><span>Totale reparti</span><b>${eur(tr)}</b></div>
+ <div class="row sub"><span>Elettronici (POS + Satispay)</span><b>${eur(el)}</b></div>
+ <div class="row"><span>Contanti + elettronici</span><b>${eur(inc)}</b></div>
+ <div class="row ${d===0?'ok':'ko'}"><span>${d===0?'Quadra':'Differenza'}</span><b>${d===0?'✓':eur(d)}</b></div>`}
+
+function rng(m,a){const s=new Date(a.getFullYear(),a.getMonth(),a.getDate()),e=new Date(s);
+ if(m==='settimana'){s.setDate(s.getDate()-(s.getDay()+6)%7);e.setTime(s.getTime());e.setDate(s.getDate()+6)}
+ else if(m==='mese'){s.setDate(1);e.setTime(new Date(s.getFullYear(),s.getMonth()+1,0).getTime())}
+ else{s.setMonth(0,1);e.setTime(new Date(s.getFullYear(),11,31).getTime())}
+ return[s,e]}
+const lab=(m,s,e)=>m==='mese'?s.toLocaleDateString('it-IT',{month:'long',year:'numeric'}):m==='anno'?String(s.getFullYear()):`${s.toLocaleDateString('it-IT',{day:'numeric',month:'short'})} – ${e.toLocaleDateString('it-IT',{day:'numeric',month:'short',year:'numeric'})}`;
+function tot(s,e){const a=iso(s),b=iso(e),t={n:0,c:0,pos:0,sat:0,rep:{}};
+ for(const d in db.days){if(d<a||d>b)continue;const r=db.days[d];t.n++;t.c+=r.c||0;t.pos+=r.pos||0;t.sat+=r.sat||0;
+  for(const k in r.rep||{})t.rep[k]=(t.rep[k]||0)+(r.rep[k]||0)}return t}
+const sumRep=t=>Object.values(t.rep).reduce((a,b)=>a+b,0);
+
+// ---- Grafico: totale incassato per giorno (settimana/mese) o per mese (anno), periodo contro anno prima ----
+function serie(m,s,e,n){const a=iso(s),b=iso(e),v=Array(n).fill(0);
+ for(const d in db.days){if(d<a||d>b)continue;const r=db.days[d],y=+d.slice(0,4),mo=+d.slice(5,7)-1,g=+d.slice(8,10);
+  const i=m==='anno'?mo:m==='mese'?g-1:Math.round((new Date(y,mo,g)-s)/864e5);
+  if(i>=0&&i<n)v[i]=Math.round((v[i]+(r.c||0)+(r.pos||0)+(r.sat||0))*100)/100}
+ return v}
+function bLab(m,s,e,i){if(m==='anno')return new Date(s.getFullYear(),i,1).toLocaleDateString('it-IT',{month:'long',year:'numeric'});
+ const d=new Date(s.getFullYear(),s.getMonth(),s.getDate()+i);
+ return d>e?null:d.toLocaleDateString('it-IT',{weekday:'short',day:'numeric',month:'short',year:'numeric'})}
+const kfmt=v=>v>=1000?(v/1000).toLocaleString('it-IT',{maximumFractionDigits:1})+'k':v.toLocaleString('it-IT',{maximumFractionDigits:0});
+function grafico(m,s,e,ps,pe){
+ const n=m==='anno'?12:m==='mese'?Math.max(e.getDate(),pe.getDate()):7;
+ const a=serie(m,s,e,n),p=serie(m,ps,pe,n);
+ chart={a,p,la:a.map((_,i)=>bLab(m,s,e,i)),lp:p.map((_,i)=>bLab(m,ps,pe,i)),ta:a.reduce((x,y)=>x+y,0),tp:p.reduce((x,y)=>x+y,0)};
+ const max=Math.max(0,...a,...p),W=340,H=170,L=34,R=4,T=8,B=20,pw=W-L-R,ph=H-T-B,gw=pw/n;
+ let step=1,top=1;
+ if(max>0){const raw=max/3,pow=Math.pow(10,Math.floor(Math.log10(raw)));step=[1,2,2.5,5,10].find(k=>k*pow>=raw)*pow;top=Math.ceil(max/step-1e-9)*step}
+ const y=v=>T+ph-Math.max(0,v)/top*ph,f=x=>x.toFixed(1);
+ let g='';
+ if(max>0)for(let v=0;v<=top+1e-9;v+=step)g+=`<line class="gl" x1="${L}" x2="${W-R}" y1="${f(y(v))}" y2="${f(y(v))}"/><text x="${L-5}" y="${f(y(v)+3)}" text-anchor="end">${kfmt(v)}</text>`;
+ else g+=`<line class="gl" x1="${L}" x2="${W-R}" y1="${T+ph}" y2="${T+ph}"/>`;
+ const bw=Math.max(1,gw*0.36),xl=m==='settimana'?['L','M','M','G','V','S','D']:m==='anno'?['G','F','M','A','M','G','L','A','S','O','N','D']:null;
+ for(let i=0;i<n;i++){const x0=L+i*gw;
+  g+=`<rect class="hit${i===selB?' sel':''}" data-b="${i}" x="${f(x0)}" y="${T}" width="${f(gw)}" height="${ph+B}" rx="3"/>`;
+  if(p[i]>0)g+=`<rect class="b0" x="${f(x0+gw*.12)}" y="${f(y(p[i]))}" width="${f(bw)}" height="${f(T+ph-y(p[i]))}" pointer-events="none"/>`;
+  if(a[i]>0)g+=`<rect class="b1" x="${f(x0+gw*.52)}" y="${f(y(a[i]))}" width="${f(bw)}" height="${f(T+ph-y(a[i]))}" pointer-events="none"/>`;
+  const t=xl?xl[i]:([0,4,9,14,19,24,29].includes(i)?String(i+1):'');
+  if(t)g+=`<text x="${f(x0+gw/2)}" y="${H-5}" text-anchor="middle" pointer-events="none">${t}</text>`}
+ const yr=m==='settimana'?'':` (${s.getFullYear()} / ${ps.getFullYear()})`;
+ return `<div class="card ch"><div class="lg"><span><i class="s1"></i>Periodo</span><span><i class="s0"></i>Anno prima</span></div>
+ <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Grafico del totale incassato: periodo e anno prima${yr}">${g}</svg>
+ <p id="ci" class="mute">${chInfo()}</p></div>`}
+function chInfo(){const c=chart;if(!c)return'';
+ if(selB<0||selB>=c.a.length){
+  if(!c.ta&&!c.tp)return 'Nessun incasso registrato in questi periodi.';
+  return `Totale incassato: <b>${eur(c.ta)}</b> · anno prima <b>${eur(c.tp)}</b><br><span class="noprint">Tocca una barra per vedere il dettaglio.</span>`}
+ const i=selB,A=c.la[i],P=c.lp[i];
+ return `${A?`<span style="text-transform:capitalize">${A}</span>: <b>${eur(c.a[i])}</b>`:'Giorno non presente nel periodo'}<br>Anno prima${P?` (${P})`:''}: <b>${P?eur(c.p[i]):'—'}</b>`}
+
+function vRiepilogo(){
+ const[s,e]=rng(mode,anchor),t=tot(s,e),L=lab(mode,s,e);
+ const pa=mode==='settimana'?new Date(anchor.getFullYear(),anchor.getMonth(),anchor.getDate()-364):new Date(anchor.getFullYear()-1,anchor.getMonth(),1);
+ const[ps,pe]=rng(mode,pa),p=tot(ps,pe),dd=(x,y)=>Math.round((y-x)/864e5)+1;
+ selB=-1;const G=grafico(mode,s,e,ps,pe);
+ let note='';
+ if(mode==='mese'&&s.getMonth()===1)note=`Febbraio ${s.getFullYear()} (${dd(s,e)} giorni) confrontato con febbraio ${ps.getFullYear()} (${dd(ps,pe)} giorni): periodi interi.`;
+ else if(mode==='settimana')note=`Confronto con la settimana ${lab(mode,ps,pe)} (da lunedì a domenica).`;
+ const names=[...new Set([...db.reparti,...Object.keys(t.rep),...Object.keys(p.rep)])];
+ const tr=(l,a,b,st)=>`<tr${st?' class="s"':''}><td>${l}</td><td>${eur(a)}</td><td>${eur(b)}</td></tr>`;
+ const rows=names.map(n=>tr(esc(n),t.rep[n],p.rep[n])).join('')
+  +tr('Totale reparti',sumRep(t),sumRep(p),1)+tr('Contanti',t.c,p.c)+tr('POS',t.pos,p.pos)+tr('Satispay',t.sat,p.sat)
+  +tr('Totale incassato',t.c+t.pos+t.sat,p.c+p.pos+p.sat,1);
+ const a=iso(s),b=iso(e),days=Object.keys(db.days).filter(d=>d>=a&&d<=b).sort().reverse();
+ const list=days.map(d=>{const r=db.days[d];return `<button class="row ln" data-edit="${d}"><span>${new Date(d+'T12:00').toLocaleDateString('it-IT',{weekday:'short',day:'numeric',month:'short'})}</span><b>${eur((r.c||0)+(r.pos||0)+(r.sat||0))}</b></button>`}).join('')||'<p class="mute">Nessuna chiusura in questo periodo.</p>';
+ return `<h1>Riepilogo</h1>
+ <div class="seg noprint">${['settimana','mese','anno'].map(m=>`<button data-m="${m}" class="${m===mode?'on':''}">${m[0].toUpperCase()+m.slice(1)}</button>`).join('')}</div>
+ <div class="nav2 noprint"><button data-s="-1" aria-label="Periodo precedente">‹</button><b>${L}</b><button data-s="1" aria-label="Periodo successivo">›</button></div>
+ <div class="ph">Tabaccheria – riepilogo ${L}</div>
+ ${G}
+ <h2>Dettaglio</h2>
+ <div class="card"><table><tr><th>Voce</th><th>Periodo</th><th>Anno prima</th></tr>${rows}</table></div>
+ ${note?`<p class="mute">${note}</p>`:''}
+ <p class="mute">${t.n} chiusure registrate (anno prima: ${p.n})</p>
+ <div class="noprint"><button class="btn" id="print">Stampa / PDF</button><button class="btn ghost" id="csv">Esporta CSV</button>
+ <h2>Chiusure del periodo</h2><div class="card">${list}</div></div>`}
+
+function vImp(){return `<h1>Reparti e backup</h1><h2>Reparti</h2>
+ <div class="card">${db.reparti.map(n=>`<div class="row"><input class="l" data-n="${esc(n)}" value="${esc(n)}"><button class="x" data-x="${esc(n)}">Elimina</button></div>`).join('')}
+ <div class="row"><input class="l" id="nn" placeholder="Nuovo reparto"><button class="x" id="add" style="color:var(--acc)">Aggiungi</button></div></div>
+ <h2>Backup</h2><div class="card pad"><p class="mute" style="margin-top:0">I dati sono solo su questo iPhone. A fine mese salva un backup in File (iCloud Drive).</p>
+ <button class="btn" id="bk">Salva backup</button><label class="btn ghost">Ripristina backup<input type="file" id="imp" accept=".json,application/json" hidden></label></div>`}
+
+function render(){$('#app').innerHTML={chiusura:vChiusura,riepilogo:vRiepilogo,impostazioni:vImp}[view]();
+ document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===view));calc();scrollTo(0,0)}
+
+async function saveFile(name,type,text){
+ const f=new File([type.includes('csv')?'\ufeff'+text:text],name,{type});
+ if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],title:name});return}catch(e){if(e.name==='AbortError')return}}
+ const u=URL.createObjectURL(f),a=document.createElement('a');a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),4000)}
+
+function csv(){const[s,e]=rng(mode,anchor),a=iso(s),b=iso(e),n=db.reparti,m=x=>String(x==null?'':x).replace('.',',');
+ const out=[['Data','Fondo cassa','Contanti','POS','Satispay',...n].join(';')];
+ Object.keys(db.days).filter(d=>d>=a&&d<=b).sort().forEach(d=>{const r=db.days[d];out.push([d,m(r.f),m(r.c),m(r.pos),m(r.sat),...n.map(k=>m((r.rep||{})[k]))].join(';'))});
+ saveFile(`chiusure-${a}_${b}.csv`,'text/csv',out.join('\n'))}
+
+$('nav').addEventListener('click',e=>{const b=e.target.closest('button');if(b){view=b.dataset.v;render()}});
+const A=$('#app');
+A.addEventListener('input',e=>{const t=e.target;if(t.inputMode==='decimal'){const c=clean(t.value);if(c!==t.value)t.value=c}if(view==='chiusura'&&t.id!=='d')calc()});
+A.addEventListener('change',e=>{const t=e.target;
+ if(t.id==='d'){cur=t.value||cur;render()}
+ else if(t.inputMode==='decimal'){t.value=/\d/.test(t.value)?fi(num(t.value)):'';calc()}
+ else if(t.dataset.n!==undefined){const o=t.dataset.n,n=t.value.trim();
+  if(!n||(n!==o&&db.reparti.includes(n))){t.value=o;return}
+  db.reparti[db.reparti.indexOf(o)]=n;
+  for(const d in db.days){const r=db.days[d].rep;if(r&&o in r){r[n]=r[o];delete r[o]}}
+  save();render()}
+ else if(t.id==='imp'&&t.files[0]){const fr=new FileReader();
+  fr.onload=()=>{try{const x=JSON.parse(fr.result);if(!x.days||!x.reparti)throw 0;
+   if(confirm('Sostituire i dati attuali con quelli del backup?')){db=x;save();render();toast('Backup ripristinato')}}catch(_){alert('File di backup non valido.')}};
+  fr.readAsText(t.files[0])}});
+A.addEventListener('click',e=>{const h=e.target.closest('[data-b]');
+ if(h){const i=+h.dataset.b;selB=selB===i?-1:i;document.querySelectorAll('.hit').forEach(r=>r.classList.toggle('sel',+r.dataset.b===selB));$('#ci').innerHTML=chInfo();return}
+ const b=e.target.closest('button');if(!b)return;const d=b.dataset,id=b.id;
+ if(id==='save'){const r=read();
+  if(!r.c&&!r.pos&&!r.sat&&!Object.keys(r.rep).length){toast('Inserisci almeno un importo');return}
+  db.days[cur]=r;db.fondo=r.f;save();toast('Chiusura salvata');render()}
+ else if(id==='tg'){cfOpen=!cfOpen;b.setAttribute('aria-expanded',cfOpen);$('#cf').hidden=!cfOpen}
+ else if(id==='del'){if(confirm('Eliminare la chiusura del '+cur+'?')){delete db.days[cur];save();render()}}
+ else if(d.m){mode=d.m;render()}
+ else if(d.s){const k=+d.s,a=new Date(anchor);
+  if(mode==='settimana')a.setDate(a.getDate()+7*k);else if(mode==='mese'){a.setDate(1);a.setMonth(a.getMonth()+k)}else a.setFullYear(a.getFullYear()+k);
+  anchor=a;render()}
+ else if(d.edit){cur=d.edit;view='chiusura';render()}
+ else if(id==='print')print();
+ else if(id==='csv')csv();
+ else if(id==='add'){const n=$('#nn').value.trim();if(n&&!db.reparti.includes(n)){db.reparti.push(n);save();render()}}
+ else if(d.x!==undefined){if(confirm('Eliminare il reparto "'+d.x+'"? I dati già registrati restano nei totali.')){db.reparti=db.reparti.filter(n=>n!==d.x);save();render()}}
+ else if(id==='bk')saveFile(`backup-chiusure-${iso(new Date())}.json`,'application/json',JSON.stringify(db))});
+render();
+</script>
+</body>
+</html>
