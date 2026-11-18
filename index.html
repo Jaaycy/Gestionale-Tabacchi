@@ -32,6 +32,7 @@ h2{font-size:12.5px;margin:24px 6px 8px;color:var(--mute);font-weight:700;text-t
 .row input:focus{background:rgba(125,183,245,.1);box-shadow:inset 0 0 0 1.5px rgba(125,183,245,.55)}
 .row input.l{text-align:left;width:62%;font-weight:400}
 .sub span{color:var(--mute);padding-left:14px}
+.old span,.old input{color:var(--mute)}.old em{font-style:normal;font-size:12px;margin-left:6px;padding:1px 7px;border:1px solid var(--line);border-radius:9px}
 .tg{flex:1;display:flex;align-items:center;gap:8px;font:inherit;color:var(--ink);background:none;border:0;padding:0;text-align:left}
 .tg::after{content:"›";font-size:22px;line-height:1;color:var(--mute);transition:transform .28s var(--ease)}
 .tg[aria-expanded=true]::after{transform:rotate(90deg)}
@@ -132,6 +133,8 @@ const fi=n=>n==null||n===''?'':grp(n,'-');
 const clean=v=>{v=v.replace(/[^0-9.,-]/g,'');const neg=v[0]==='-',i=v.indexOf(','),a=(i<0?v:v.slice(0,i)).replace(/-/g,'');return(neg?'-':'')+a+(i<0?'':','+v.slice(i+1).replace(/[.,-]/g,'').slice(0,2))};
 const iso=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+// true se il nome appartiene a un reparto eliminato che ha ancora importi registrati
+const hasData=n=>!db.reparti.includes(n)&&Object.values(db.days).some(r=>r.rep&&n in r.rep);
 const init=()=>({reparti:['Tabacchi','Gratta e vinci','Lotto','Valori bollati','Ricariche','Altro'],fondo:0,days:{}});
 let db;try{db=JSON.parse(localStorage.getItem(K))||init()}catch(e){db=init()}
 const save=()=>{try{localStorage.setItem(K,JSON.stringify(db))}catch(e){alert('Salvataggio non riuscito: archiviazione piena o bloccata.')}};
@@ -146,7 +149,9 @@ let hapL;function hap(){try{if(navigator.vibrate){navigator.vibrate(15);return}
 
 function vChiusura(){
  const r=db.days[cur]||{},rp=r.rep||{};
- const rep=db.reparti.map(n=>`<label class="row"><span>${esc(n)}</span><input data-r="${esc(n)}" inputmode="decimal" placeholder="0,00" value="${fi(rp[n])}"></label>`).join('');
+ const rep=db.reparti.map(n=>`<label class="row"><span>${esc(n)}</span><input data-r="${esc(n)}" inputmode="decimal" placeholder="0,00" value="${fi(rp[n])}"></label>`).join('')
+  // reparti eliminati che hanno un importo in questa chiusura: compaiono in grigio, restano nella quadratura e nel salvataggio
+  +Object.keys(rp).filter(n=>!db.reparti.includes(n)).map(n=>`<label class="row old"><span>${esc(n)}<em>eliminato</em></span><input data-r="${esc(n)}" inputmode="decimal" placeholder="0,00" value="${fi(rp[n])}"></label>`).join('');
  return `<div class="hd"><h1>Chiusura</h1><span class="pill" id="qp"></span></div>
  <div class="card"><label class="row"><span>Data</span><input id="d" type="date" value="${cur}"></label></div>
  <h2>Cassa</h2><div class="card">
@@ -185,7 +190,7 @@ function tot(s,e){const a=iso(s),b=iso(e),t={n:0,c:0,pos:0,sat:0,rep:{}};
   for(const k in r.rep||{})t.rep[k]=(t.rep[k]||0)+(r.rep[k]||0)}return t}
 const sumRep=t=>Object.values(t.rep).reduce((a,b)=>a+b,0);
 // Media per chiusura: importo diviso per le chiusure registrate; senza chiusure non c'è media (null)
-const media=(x,n)=>n>0?c2(c2(x)/n):null;
+const media=(x,n)=>{if(!(n>0))return null;const k=Math.round((x||0)*100),m=Math.round(Math.abs(k)/n)/100;return k<0?-m:m};
 // Variazione % rispetto all'anno prima; se l'anno prima è zero non si può calcolare (null)
 const varp=(a,b)=>{a=c2(a);b=c2(b);if(b===0)return null;const v=Math.round((a-b)/Math.abs(b)*1000)/10;return v===0?0:v};
 const pct=v=>v==null?'—':(v>0?'+':v<0?'−':'')+Math.abs(v).toLocaleString('it-IT',Math.abs(v)<100?{minimumFractionDigits:1,maximumFractionDigits:1}:{maximumFractionDigits:0})+'%';
@@ -312,9 +317,12 @@ async function saveFile(name,type,text){
  if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],title:name});return}catch(e){if(e.name==='AbortError')return}}
  const u=URL.createObjectURL(f),a=document.createElement('a');a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),4000)}
 
-function csv(){const[s,e]=rng(mode,anchor),a=iso(s),b=iso(e),n=db.reparti,m=x=>String(x==null?'':x).replace('.',',');
- const out=[['Data','Fondo cassa','Contanti','POS','Satispay',...n].join(';')];
- Object.keys(db.days).filter(d=>d>=a&&d<=b).sort().forEach(d=>{const r=db.days[d];out.push([d,m(r.f),m(r.c),m(r.pos),m(r.sat),...n.map(k=>m((r.rep||{})[k]))].join(';'))});
+function csv(){const[s,e]=rng(mode,anchor),a=iso(s),b=iso(e),m=x=>String(x==null?'':x).replace('.',','),q=s=>/[;"\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;
+ const ds=Object.keys(db.days).filter(d=>d>=a&&d<=b).sort();
+ // reparti attuali + reparti eliminati che hanno importi nel periodo
+ const n=[...new Set([...db.reparti,...ds.flatMap(d=>Object.keys(db.days[d].rep||{}))])];
+ const out=[['Data','Fondo cassa','Contanti','POS','Satispay',...n.map(q)].join(';')];
+ ds.forEach(d=>{const r=db.days[d];out.push([d,m(r.f),m(r.c),m(r.pos),m(r.sat),...n.map(k=>m((r.rep||{})[k]))].join(';'))});
  saveFile(`chiusure-${a}_${b}.csv`,'text/csv',out.join('\n'))}
 
 $('nav').addEventListener('click',e=>{const b=e.target.closest('button');if(b){view=b.dataset.v;render()}});
@@ -326,8 +334,10 @@ A.addEventListener('change',e=>{const t=e.target;
  else if(t.inputMode==='decimal'){t.value=/\d/.test(t.value)?fi(num(t.value)):'';calc()}
  else if(t.dataset.n!==undefined){const o=t.dataset.n,n=t.value.trim();
   if(!n||(n!==o&&db.reparti.includes(n))){t.value=o;return}
+  if(n!==o&&hasData(n)&&!confirm(`«${n}» è un reparto eliminato con importi già registrati.\n\nOK = riattivalo con il suo storico: gli importi di «${o}» vengono aggiunti ai suoi.\nAnnulla = scegli un altro nome.`)){t.value=o;return}
   db.reparti[db.reparti.indexOf(o)]=n;
-  for(const d in db.days){const r=db.days[d].rep;if(r&&o in r){r[n]=r[o];delete r[o]}}
+  // sposta gli importi; se nello stesso giorno c'è già il nome nuovo, li somma (nessun importo viene perso)
+  for(const d in db.days){const r=db.days[d].rep;if(r&&o in r&&n!==o){r[n]=n in r?c2((r[n]||0)+(r[o]||0)):r[o];delete r[o]}}
   save();render()}
  else if(t.id==='imp'&&t.files[0]){const fr=new FileReader();
   fr.onload=()=>{try{const x=JSON.parse(fr.result);if(!x.days||!x.reparti)throw 0;
@@ -343,7 +353,7 @@ A.addEventListener('click',e=>{const h=e.target.closest('[data-b]');
  else if(id==='del'){if(confirm('Eliminare la chiusura del '+cur+'?')){delete db.days[cur];save();hap();render();toast('Chiusura eliminata')}}
  else if(d.m){mode=d.m;render()}
  else if(d.s){const k=+d.s,a=new Date(anchor);
-  if(mode==='settimana')a.setDate(a.getDate()+7*k);else if(mode==='mese'){a.setDate(1);a.setMonth(a.getMonth()+k)}else a.setFullYear(a.getFullYear()+k);
+  if(mode==='settimana')a.setDate(a.getDate()+7*k);else if(mode==='mese'){a.setDate(1);a.setMonth(a.getMonth()+k)}else{const g=a.getDate();a.setDate(1);a.setFullYear(a.getFullYear()+k);a.setDate(Math.min(g,new Date(a.getFullYear(),a.getMonth()+1,0).getDate()))}
   anchor=a;render()}
  else if(d.edit){cur=d.edit;view='chiusura';render()}
  else if(id==='print')print();
@@ -352,7 +362,9 @@ A.addEventListener('click',e=>{const h=e.target.closest('[data-b]');
  else if(d.y){repY+=+d.y;render()}
  else if(id==='rcsv')rcsv();
  else if(id==='csv')csv();
- else if(id==='add'){const n=$('#nn').value.trim();if(n&&!db.reparti.includes(n)){db.reparti.push(n);save();render()}}
+ else if(id==='add'){const n=$('#nn').value.trim();if(n&&!db.reparti.includes(n)){
+  if(hasData(n)&&!confirm(`«${n}» è un reparto eliminato con importi già registrati.\n\nOK = riattivalo con il suo storico.\nAnnulla = scegli un altro nome.`))return;
+  db.reparti.push(n);save();render()}}
  else if(d.x!==undefined){if(confirm('Eliminare il reparto "'+d.x+'"? I dati già registrati restano nei totali.')){db.reparti=db.reparti.filter(n=>n!==d.x);save();render()}}
  else if(id==='bk')saveFile(`backup-chiusure-${iso(new Date())}.json`,'application/json',JSON.stringify(db))});
 render();
