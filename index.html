@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Chiusure">
+<meta name="apple-mobile-web-app-title" content="Tabby">
 <meta name="theme-color" content="#0d141d">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-180.png">
-<title>Chiusure cassa</title>
+<title>Tabby</title>
 <style>
 :root{color-scheme:dark;--blu:#2a74c9;--acc:#7db7f5;--ink:#e8eef6;--mute:#93a3b6;--line:#243245;--bg:#0d141d;--card:#152031;--ok:#4cc38a;--ko:#ff7b72;--r:18px;--ease:cubic-bezier(.2,.8,.2,1)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -380,7 +380,7 @@ A.addEventListener('click',e=>{const h=e.target.closest('[data-b]');
   if(hasData(n)&&!confirm(`«${n}» è un reparto eliminato con importi già registrati.\n\nOK = riattivalo con il suo storico.\nAnnulla = scegli un altro nome.`))return;
   db.reparti.push(n);save();render()}}
  else if(d.x!==undefined){if(confirm('Eliminare il reparto "'+d.x+'"? I dati già registrati restano nei totali.')){db.reparti=db.reparti.filter(n=>n!==d.x);save();render()}}
- else if(id==='bk')saveFile(`backup-chiusure-${iso(new Date())}.json`,'application/json',JSON.stringify(db))});
+ else if(id==='bk')saveFile(`backup-tabby-${iso(new Date())}.json`,'application/json',JSON.stringify(db))});
 render();
 </script>
 </body>
