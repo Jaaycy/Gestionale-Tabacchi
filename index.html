@@ -45,6 +45,8 @@ table{width:100%;border-collapse:collapse;font-size:15px}
 th{color:var(--mute);font-weight:600;text-align:right;padding:10px 0}th:first-child{text-align:left}
 td{padding:8px 0;border-top:1px solid var(--line)}td+td{text-align:right;font-variant-numeric:tabular-nums}
 tr.s td{font-weight:700}
+td small,th small{display:block;font-size:12px;font-weight:400;color:var(--mute)}
+td+td{white-space:nowrap;padding-left:8px}td.v{font-size:14px}td.up{color:var(--ok)}td.dn{color:var(--ko)}
 .ln{background:none;border:0;border-bottom:1px solid var(--line);font:inherit;color:var(--ink);text-align:left}
 nav{position:fixed;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(3,1fr);background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
 nav button{font:inherit;font-size:14px;border:0;background:none;padding:14px 4px;color:var(--mute)}
@@ -120,6 +122,12 @@ function tot(s,e){const a=iso(s),b=iso(e),t={n:0,c:0,pos:0,sat:0,rep:{}};
  for(const d in db.days){if(d<a||d>b)continue;const r=db.days[d];t.n++;t.c+=r.c||0;t.pos+=r.pos||0;t.sat+=r.sat||0;
   for(const k in r.rep||{})t.rep[k]=(t.rep[k]||0)+(r.rep[k]||0)}return t}
 const sumRep=t=>Object.values(t.rep).reduce((a,b)=>a+b,0);
+const c2=x=>Math.round((x||0)*100)/100;
+// Media per chiusura: importo diviso per le chiusure registrate; senza chiusure non c'è media (null)
+const media=(x,n)=>n>0?c2(c2(x)/n):null;
+// Variazione % rispetto all'anno prima; se l'anno prima è zero non si può calcolare (null)
+const varp=(a,b)=>{a=c2(a);b=c2(b);if(b===0)return null;const v=Math.round((a-b)/Math.abs(b)*1000)/10;return v===0?0:v};
+const pct=v=>v==null?'—':(v>0?'+':v<0?'−':'')+Math.abs(v).toLocaleString('it-IT',Math.abs(v)<100?{minimumFractionDigits:1,maximumFractionDigits:1}:{maximumFractionDigits:0})+'%';
 
 // ---- Grafico: totale incassato per giorno (settimana/mese) o per mese (anno), periodo contro anno prima ----
 function serie(m,s,e,n){const a=iso(s),b=iso(e),v=Array(n).fill(0);
@@ -169,7 +177,8 @@ function vRiepilogo(){
  if(mode==='mese'&&s.getMonth()===1)note=`Febbraio ${s.getFullYear()} (${dd(s,e)} giorni) confrontato con febbraio ${ps.getFullYear()} (${dd(ps,pe)} giorni): periodi interi.`;
  else if(mode==='settimana')note=`Confronto con la settimana ${lab(mode,ps,pe)} (da lunedì a domenica).`;
  const names=[...new Set([...db.reparti,...Object.keys(t.rep),...Object.keys(p.rep)])];
- const tr=(l,a,b,st)=>`<tr${st?' class="s"':''}><td>${l}</td><td>${eur(a)}</td><td>${eur(b)}</td></tr>`;
+ const md=(x,n)=>{const m=media(x,n);return `<small>${m==null?'—':eur(m)}</small>`};
+ const tr=(l,a,b,st)=>{const v=varp(a,b);return `<tr${st?' class="s"':''}><td>${l}</td><td>${eur(a)}${md(a,t.n)}</td><td>${eur(b)}${md(b,p.n)}</td><td class="v${v>0?' up':v<0?' dn':''}">${pct(v)}</td></tr>`};
  const rows=names.map(n=>tr(esc(n),t.rep[n],p.rep[n])).join('')
   +tr('Totale reparti',sumRep(t),sumRep(p),1)+tr('Contanti',t.c,p.c)+tr('POS',t.pos,p.pos)+tr('Satispay',t.sat,p.sat)
   +tr('Totale incassato',t.c+t.pos+t.sat,p.c+p.pos+p.sat,1);
@@ -181,9 +190,9 @@ function vRiepilogo(){
  <div class="ph">Tabaccheria – riepilogo ${L}</div>
  ${G}
  <h2>Dettaglio</h2>
- <div class="card"><table><tr><th>Voce</th><th>Periodo</th><th>Anno prima</th></tr>${rows}</table></div>
+ <div class="card"><table><tr><th>Voce</th><th>Periodo<small>media</small></th><th>Anno prima<small>media</small></th><th>Var.</th></tr>${rows}</table></div>
  ${note?`<p class="mute">${note}</p>`:''}
- <p class="mute">${t.n} chiusure registrate (anno prima: ${p.n})</p>
+ <p class="mute">${t.n} chiusure registrate (anno prima: ${p.n}). Sotto ogni importo, in grigio, la media per chiusura (importo diviso per le chiusure registrate). «Var.» = variazione rispetto all'anno prima; «—» quando non si può calcolare (nessuna chiusura o anno prima a zero).</p>
  <div class="noprint"><button class="btn" id="print">Stampa / PDF</button><button class="btn ghost" id="csv">Esporta CSV</button>
  <h2>Chiusure del periodo</h2><div class="card">${list}</div></div>`}
 
