@@ -128,7 +128,10 @@ const grp=(x,ng='−')=>{x=c2(x);const[i,d]=Math.abs(x).toFixed(2).split('.');re
 const eur=n=>grp(n)+' €';
 // Importo grande: centesimi e simbolo € più piccoli
 const bigEur=n=>{const s=grp(n),k=s.length-3;return `${s.slice(0,k)}<small>${s.slice(k)} €</small>`};
-const num=s=>{const n=parseFloat(String(s).replace(/\./g,'').replace(',','.'));return isNaN(n)?0:Math.round(n*100)/100};
+// Il punto è separatore delle migliaia; ma se c'è un solo punto seguito da 1 o 2 cifre (es. 12.50, tastiera col punto) è il decimale
+const num=s=>{s=String(s).trim();const n=parseFloat(/^-?\d*\.\d{1,2}$/.test(s)?s:s.replace(/\./g,'').replace(',','.'));return isNaN(n)?0:Math.round(n*100)/100};
+// Testo incollato con punto e virgola insieme: l'ultimo dei due è il decimale (1,234.56 e 1.234,56 = 1234,56)
+const pasted=v=>{const p=v.lastIndexOf('.'),c=v.lastIndexOf(',');return p>=0&&c>=0&&p>c?v.replace(/,/g,'').replace(/\.(?=[^.]*$)/,',').replace(/\./g,''):v};
 const fi=n=>n==null||n===''?'':grp(n,'-');
 const clean=v=>{v=v.replace(/[^0-9.,-]/g,'');const neg=v[0]==='-',i=v.indexOf(','),a=(i<0?v:v.slice(0,i)).replace(/-/g,'');return(neg?'-':'')+a+(i<0?'':','+v.slice(i+1).replace(/[.,-]/g,'').slice(0,2))};
 const iso=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
@@ -137,10 +140,15 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 const hasData=n=>!db.reparti.includes(n)&&Object.values(db.days).some(r=>r.rep&&n in r.rep);
 const init=()=>({reparti:['Tabacchi','Gratta e vinci','Lotto','Valori bollati','Ricariche','Altro'],fondo:0,days:{}});
 let db;try{db=JSON.parse(localStorage.getItem(K))||init()}catch(e){db=init()}
-const save=()=>{try{localStorage.setItem(K,JSON.stringify(db))}catch(e){alert('Salvataggio non riuscito: archiviazione piena o bloccata.')}};
+// Salva in memoria; se non riesce mostra solo l'errore, torna ai dati davvero salvati e restituisce false
+const save=()=>{try{localStorage.setItem(K,JSON.stringify(db));return true}catch(e){
+ alert('Salvataggio NON riuscito: la memoria del telefono è piena o bloccata. Le ultime modifiche non sono state salvate.\n\nFai subito un backup da «Reparti e backup» e libera spazio sul telefono.');
+ try{db=JSON.parse(localStorage.getItem(K))||init()}catch(_){}return false}};
 if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();
 if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js');
-let cfOpen=true,view='chiusura',cur=iso(new Date()),mode='mese',anchor=new Date(),chart=null,selB=-1,repY=new Date().getFullYear(),lastView=null,lastQ=null,tT;
+// Giorno della chiusura proposto: oggi; fino alle 3 di notte il giorno prima (chiusure dopo mezzanotte)
+const oggi=()=>{const d=new Date();d.setHours(d.getHours()-3);return iso(d)};
+let todayK=oggi(),cfOpen=true,view='chiusura',cur=todayK,mode='mese',anchor=new Date(),chart=null,selB=-1,repY=new Date().getFullYear(),lastView=null,lastQ=null,tT;
 function toast(m){const t=$('#t');t.textContent=m;t.classList.add('on');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('on'),1800)}
 // Vibrazione leggera: Android usa navigator.vibrate; su iPhone (iOS 18 o successivo) si usa il trucco dell'interruttore nascosto
 let hapL;function hap(){try{if(navigator.vibrate){navigator.vibrate(15);return}
@@ -325,10 +333,14 @@ function csv(){const[s,e]=rng(mode,anchor),a=iso(s),b=iso(e),m=x=>String(x==null
  ds.forEach(d=>{const r=db.days[d];out.push([d,m(r.f),m(r.c),m(r.pos),m(r.sat),...n.map(k=>m((r.rep||{})[k]))].join(';'))});
  saveFile(`chiusure-${a}_${b}.csv`,'text/csv',out.join('\n'))}
 
+// Riaprendo l'app (anche rimasta aperta in sottofondo) nel giorno dopo, la data torna a oggi
+const nuovoGiorno=()=>{const t=oggi();if(t===todayK)return;todayK=t;cur=t;anchor=new Date();if(view!=='impostazioni')render()};
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')nuovoGiorno()});
+addEventListener('pageshow',nuovoGiorno);addEventListener('focus',nuovoGiorno);
 $('nav').addEventListener('click',e=>{const b=e.target.closest('button');if(b){view=b.dataset.v;render()}});
 $('#app').addEventListener('animationend',e=>{if(e.target.id==='app')e.target.classList.remove('enter')});
 const A=$('#app');
-A.addEventListener('input',e=>{const t=e.target;if(t.inputMode==='decimal'){const c=clean(t.value);if(c!==t.value)t.value=c}if(view==='chiusura'&&t.id!=='d')calc()});
+A.addEventListener('input',e=>{const t=e.target;if(t.inputMode==='decimal'){const c=clean(/paste|Replacement|Drop/i.test(e.inputType||'')?pasted(t.value):t.value);if(c!==t.value)t.value=c}if(view==='chiusura'&&t.id!=='d')calc()});
 A.addEventListener('change',e=>{const t=e.target;
  if(t.id==='d'){cur=t.value||cur;render()}
  else if(t.inputMode==='decimal'){t.value=/\d/.test(t.value)?fi(num(t.value)):'';calc()}
@@ -341,16 +353,18 @@ A.addEventListener('change',e=>{const t=e.target;
   save();render()}
  else if(t.id==='imp'&&t.files[0]){const fr=new FileReader();
   fr.onload=()=>{try{const x=JSON.parse(fr.result);if(!x.days||!x.reparti)throw 0;
-   if(confirm('Sostituire i dati attuali con quelli del backup?')){db=x;save();render();toast('Backup ripristinato')}}catch(_){alert('File di backup non valido.')}};
+   if(confirm('Sostituire i dati attuali con quelli del backup?')){db=x;const ok=save();render();if(ok)toast('Backup ripristinato')}}catch(_){alert('File di backup non valido.')}};
   fr.readAsText(t.files[0])}});
 A.addEventListener('click',e=>{const h=e.target.closest('[data-b]');
  if(h){const i=+h.dataset.b;selB=selB===i?-1:i;document.querySelectorAll('.hit').forEach(r=>r.classList.toggle('sel',+r.dataset.b===selB));$('#ci').innerHTML=chInfo();return}
  const b=e.target.closest('button');if(!b)return;const d=b.dataset,id=b.id;
  if(id==='save'){const r=read();
   if(!r.c&&!r.pos&&!r.sat&&!Object.keys(r.rep).length){toast('Inserisci almeno un importo');return}
-  db.days[cur]=r;db.fondo=r.f;save();hap();toast('Chiusura salvata ✓');render()}
+  const old=db.days[cur];
+  if(old&&JSON.stringify(old)!==JSON.stringify(r)&&!confirm(`Esiste già una chiusura salvata per ${new Date(cur+'T12:00').toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}.\n\nSostituirla con questi importi?`))return;
+  db.days[cur]=r;db.fondo=r.f;if(!save()){render();return}hap();toast('Chiusura salvata ✓');render()}
  else if(id==='tg'){cfOpen=!cfOpen;b.setAttribute('aria-expanded',cfOpen);const c=$('#cf');c.classList.toggle('open',cfOpen);c.inert=!cfOpen}
- else if(id==='del'){if(confirm('Eliminare la chiusura del '+cur+'?')){delete db.days[cur];save();hap();render();toast('Chiusura eliminata')}}
+ else if(id==='del'){if(confirm('Eliminare la chiusura del '+cur+'?')){delete db.days[cur];if(!save()){render();return}hap();render();toast('Chiusura eliminata')}}
  else if(d.m){mode=d.m;render()}
  else if(d.s){const k=+d.s,a=new Date(anchor);
   if(mode==='settimana')a.setDate(a.getDate()+7*k);else if(mode==='mese'){a.setDate(1);a.setMonth(a.getMonth()+k)}else{const g=a.getDate();a.setDate(1);a.setFullYear(a.getFullYear()+k);a.setDate(Math.min(g,new Date(a.getFullYear(),a.getMonth()+1,0).getDate()))}
