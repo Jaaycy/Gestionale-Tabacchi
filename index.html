@@ -65,7 +65,14 @@ nav button.on{color:var(--acc);font-weight:700;box-shadow:inset 0 3px 0 var(--ac
 #ci{margin:6px 4px 4px;font-size:14px;min-height:2.8em}
 #ci b{color:var(--ink);font-weight:600}
 .ph{display:none}
-@media print{:root{color-scheme:light;--ink:#000;--mute:#444;--line:#bbb;--bg:#fff;--card:#fff;--acc:#000}nav,.noprint,#t{display:none!important}.ph{display:block;font-weight:700;font-size:20px;margin:0 0 10px}body{background:#fff;padding:0;font-size:12pt}.card{border:0;padding:0}h1{display:none}.ch .b0,.lg .s0{fill:#bbb;background:#bbb}.ch .hit.sel{fill:transparent}.lg i{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch;padding:2px 14px}
+.tw table{font-size:14px;min-width:100%}
+.tw th,.tw td{white-space:nowrap;padding-left:10px}.tw th:first-child,.tw td:first-child{padding-left:0}
+.tw td:first-child{position:sticky;left:0;background:var(--card);padding-right:8px}
+.tw th{vertical-align:bottom;white-space:normal;min-width:64px;font-size:13px}
+.tw td.z{color:var(--mute)}
+.ph small{display:block;font-size:11pt;font-weight:400}
+@media print{:root{color-scheme:light;--ink:#000;--mute:#444;--line:#bbb;--bg:#fff;--card:#fff;--acc:#000}nav,.noprint,#t{display:none!important}.ph{display:block;font-weight:700;font-size:20px;margin:0 0 10px}body{background:#fff;padding:0;font-size:12pt}.card{border:0;padding:0}h1{display:none}.ch .b0,.lg .s0{fill:#bbb;background:#bbb}.ch .hit.sel{fill:transparent}.lg i{-webkit-print-color-adjust:exact;print-color-adjust:exact}.tw{overflow:visible;padding:0}.tw table{font-size:8.5pt}.tw th{font-size:8pt;min-width:0}.tw th,.tw td{padding:3px 0 3px 6px}.tw td:first-child{position:static}h2{color:#000;margin:14pt 0 4pt;break-after:avoid}table{break-inside:avoid}}
 </style>
 </head>
 <body>
@@ -85,7 +92,7 @@ let db;try{db=JSON.parse(localStorage.getItem(K))||init()}catch(e){db=init()}
 const save=()=>{try{localStorage.setItem(K,JSON.stringify(db))}catch(e){alert('Salvataggio non riuscito: archiviazione piena o bloccata.')}};
 if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();
 if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js');
-let cfOpen=true,view='chiusura',cur=iso(new Date()),mode='mese',anchor=new Date(),chart=null,selB=-1;
+let cfOpen=true,view='chiusura',cur=iso(new Date()),mode='mese',anchor=new Date(),chart=null,selB=-1,repY=new Date().getFullYear();
 function toast(m){const t=$('#t');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),1800)}
 
 function vChiusura(){
@@ -193,8 +200,44 @@ function vRiepilogo(){
  <div class="card"><table><tr><th>Voce</th><th>Periodo<small>media</small></th><th>Anno prima<small>media</small></th><th>Var.</th></tr>${rows}</table></div>
  ${note?`<p class="mute">${note}</p>`:''}
  <p class="mute">${t.n} chiusure registrate (anno prima: ${p.n}). Sotto ogni importo, in grigio, la media per chiusura (importo diviso per le chiusure registrate). «Var.» = variazione rispetto all'anno prima; «—» quando non si può calcolare (nessuna chiusura o anno prima a zero).</p>
- <div class="noprint"><button class="btn" id="print">Stampa / PDF</button><button class="btn ghost" id="csv">Esporta CSV</button>
+ <div class="noprint"><button class="btn" id="print">Stampa / PDF</button><button class="btn ghost" id="csv">Esporta CSV</button><button class="btn ghost" id="rep">Report annuale per il commercialista</button>
  <h2>Chiusure del periodo</h2><div class="card">${list}</div></div>`}
+
+// ---- Report annuale per il commercialista: totali mensili per reparto e per metodo di incasso ----
+const MESI=['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
+function annuale(y){
+ const m=MESI.map((_,i)=>tot(new Date(y,i,1),new Date(y,i+1,0))),t=tot(new Date(y,0,1),new Date(y,11,31));
+ // reparti attuali + eventuali reparti eliminati che hanno importi nell'anno (restano nei totali)
+ const names=[...new Set([...db.reparti,...Object.keys(t.rep)])];
+ return{m,t,names}}
+function vReport(){
+ const y=repY,{m,t,names}=annuale(y),z=x=>{const[i,d]=Math.abs(c2(x)).toFixed(2).split('.');return(c2(x)<0?'−':'')+i.replace(/\B(?=(\d{3})+$)/g,'.')+','+d};
+ const cell=(x,n)=>n?`<td>${z(x)}</td>`:'<td class="z">—</td>';
+ const inc=r=>(r.c||0)+(r.pos||0)+(r.sat||0);
+ const r1=m.map((r,i)=>`<tr><td>${MESI[i]}</td>${names.map(k=>cell(r.rep[k],r.n)).join('')}${cell(sumRep(r),r.n)}</tr>`).join('')
+  +`<tr class="s"><td>Totale ${y}</td>${names.map(k=>`<td>${z(t.rep[k])}</td>`).join('')}<td>${z(sumRep(t))}</td></tr>`;
+ const r2=m.map((r,i)=>`<tr><td>${MESI[i]}</td>${cell(r.c,r.n)}${cell(r.pos,r.n)}${cell(r.sat,r.n)}${cell(inc(r),r.n)}<td>${r.n}</td></tr>`).join('')
+  +`<tr class="s"><td>Totale ${y}</td><td>${z(t.c)}</td><td>${z(t.pos)}</td><td>${z(t.sat)}</td><td>${z(inc(t))}</td><td>${t.n}</td></tr>`;
+ const d=c2(c2(inc(t))-c2(sumRep(t)));
+ const oggi=new Date().toLocaleDateString('it-IT',{day:'numeric',month:'long',year:'numeric'});
+ return `<h1>Report annuale</h1>
+ <div class="noprint"><button class="btn ghost" id="back" style="margin:0 0 10px">‹ Torna al riepilogo</button></div>
+ <div class="nav2 noprint"><button data-y="-1" aria-label="Anno precedente">‹</button><b>${y}</b><button data-y="1" aria-label="Anno successivo">›</button></div>
+ <div class="ph">Tabaccheria – report annuale ${y}<small>Totali mensili degli incassi. Importi in euro. Generato il ${oggi}.</small></div>
+ ${t.n?'':`<p class="mute">Nessuna chiusura registrata nel ${y}.</p>`}
+ <h2>Incassi per reparto (€)</h2>
+ <div class="card tw"><table><tr><th>Mese</th>${names.map(k=>`<th>${esc(k)}</th>`).join('')}<th>Totale reparti</th></tr>${r1}</table></div>
+ <h2>Incassi per metodo di pagamento (€)</h2>
+ <div class="card tw"><table><tr><th>Mese</th><th>Contanti</th><th>POS</th><th>Satispay</th><th>Totale incassato</th><th>Chiusure</th></tr>${r2}</table></div>
+ <p class="mute">Contanti al netto del fondo cassa. «—» = nessuna chiusura registrata nel mese. Differenza tra totale incassato e totale reparti nel ${y}: <b class="${d===0?'ok':'ko'}">${d===0?'nessuna ✓':eur(d)}</b>.</p>
+ <div class="noprint"><button class="btn" id="print">Stampa / PDF</button><button class="btn ghost" id="rcsv">Esporta CSV</button>
+ <p class="mute">Per il PDF: <i>Stampa / PDF</i> → nella stampa tocca Condividi (o allarga l'anteprima) → <i>Salva in File</i>.</p></div>`}
+
+function rcsv(){const y=repY,{m,t,names}=annuale(y),v=x=>c2(x).toFixed(2).replace('.',','),q=s=>/[;"\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;
+ const inc=r=>(r.c||0)+(r.pos||0)+(r.sat||0);
+ const row=(l,r)=>[l,...names.map(k=>v(r.rep[k])),v(sumRep(r)),v(r.c),v(r.pos),v(r.sat),v(inc(r)),r.n].join(';');
+ const out=[['Mese',...names.map(q),'Totale reparti','Contanti','POS','Satispay','Totale incassato','Chiusure'].join(';'),...m.map((r,i)=>row(MESI[i],r)),row('Totale '+y,t)];
+ saveFile(`report-annuale-${y}.csv`,'text/csv',out.join('\n'))}
 
 function vImp(){return `<h1>Reparti e backup</h1><h2>Reparti</h2>
  <div class="card">${db.reparti.map(n=>`<div class="row"><input class="l" data-n="${esc(n)}" value="${esc(n)}"><button class="x" data-x="${esc(n)}">Elimina</button></div>`).join('')}
@@ -202,8 +245,8 @@ function vImp(){return `<h1>Reparti e backup</h1><h2>Reparti</h2>
  <h2>Backup</h2><div class="card pad"><p class="mute" style="margin-top:0">I dati sono solo su questo iPhone. A fine mese salva un backup in File (iCloud Drive).</p>
  <button class="btn" id="bk">Salva backup</button><label class="btn ghost">Ripristina backup<input type="file" id="imp" accept=".json,application/json" hidden></label></div>`}
 
-function render(){$('#app').innerHTML={chiusura:vChiusura,riepilogo:vRiepilogo,impostazioni:vImp}[view]();
- document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===view));calc();scrollTo(0,0)}
+function render(){$('#app').innerHTML={chiusura:vChiusura,riepilogo:vRiepilogo,report:vReport,impostazioni:vImp}[view]();
+ document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===(view==='report'?'riepilogo':view)));calc();scrollTo(0,0)}
 
 async function saveFile(name,type,text){
  const f=new File([type.includes('csv')?'\ufeff'+text:text],name,{type});
@@ -244,6 +287,10 @@ A.addEventListener('click',e=>{const h=e.target.closest('[data-b]');
   anchor=a;render()}
  else if(d.edit){cur=d.edit;view='chiusura';render()}
  else if(id==='print')print();
+ else if(id==='rep'){repY=anchor.getFullYear();view='report';render()}
+ else if(id==='back'){view='riepilogo';render()}
+ else if(d.y){repY+=+d.y;render()}
+ else if(id==='rcsv')rcsv();
  else if(id==='csv')csv();
  else if(id==='add'){const n=$('#nn').value.trim();if(n&&!db.reparti.includes(n)){db.reparti.push(n);save();render()}}
  else if(d.x!==undefined){if(confirm('Eliminare il reparto "'+d.x+'"? I dati già registrati restano nei totali.')){db.reparti=db.reparti.filter(n=>n!==d.x);save();render()}}
