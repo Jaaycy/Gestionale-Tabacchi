@@ -74,7 +74,7 @@ td+td{white-space:nowrap;padding-left:8px}td.v{font-size:14px;font-weight:600}td
 .qb{display:flex;align-items:center;gap:14px;margin:12px 0 4px;padding:14px;border-radius:14px;background:rgba(147,163,182,.1);border:1px solid rgba(147,163,182,.18)}
 .qb i{flex:none;display:grid;place-items:center;width:46px;height:46px;border-radius:50%;font-style:normal;font-size:24px;font-weight:800;background:rgba(147,163,182,.2);color:var(--mute)}
 .qb b{display:block;font-size:26px;line-height:1.15;letter-spacing:-.01em;color:var(--ink)}
-.qb span{font-size:14px;color:var(--mute)}
+.qb span{font-size:14px;line-height:1.35;color:var(--mute)}.qb .qt{display:block;margin-top:4px}
 .qb.ok{background:rgba(76,195,138,.12);border-color:rgba(76,195,138,.35)}.qb.ok i{background:var(--ok);color:#0d141d}.qb.ok b{color:var(--ok)}
 .qb.ko{background:rgba(255,123,114,.12);border-color:rgba(255,123,114,.35)}.qb.ko i{background:var(--ko);color:#0d141d}.qb.ko b{color:var(--ko)}
 .row.tot b{font-size:20px}
@@ -189,9 +189,9 @@ function calc(){const q=$('#q');if(!q)return;
  // stato: e = nessun importo inserito, ok = quadra, ko = differenza
  const st=!r.c&&!r.pos&&!r.sat&&!Object.keys(r.rep).length?'e':d===0?'ok':'ko';
  const pop=lastQ!==null&&lastQ!==st?' pop':'';lastQ=st;
- const badge=st==='e'?`<div class="qb e"><i>€</i><div><b>Quadratura</b><span>Inserisci gli importi</span></div></div>`
-  :st==='ok'?`<div class="qb ok${pop}"><i>✓</i><div><b>Quadra ✓</b><span>Incassato e reparti coincidono</span></div></div>`
-  :`<div class="qb ko${pop}"><i>!</i><div><span>Differenza</span><b>${eur(d)}</b><span>${d>0?'Incassato più dei reparti':'Incassato meno dei reparti'}</span></div></div>`;
+ const badge=st==='e'?`<div class="qb e"><i>€</i><div><b>Quadratura</b><span>Inserisci gli importi per vedere la quadratura.</span></div></div>`
+  :st==='ok'?`<div class="qb ok${pop}"><i>✓</i><div><b>Quadra ✓</b><span>I conti tornano: l'incassato corrisponde ai reparti.</span></div></div>`
+  :`<div class="qb ko${pop}"><i>!</i><div><span>Differenza</span><b>${eur(d)}</b><span class="qt">${d>0?`Avanzano ${eur(d)}: hai incassato più di quanto battuto. Forse un reparto non inserito o il fondo cassa contato nei contanti.`:`Mancano ${eur(-d)}: hai incassato meno di quanto battuto. Controlla resti dati, contanti contati o un pagamento non segnato.`}</span></div></div>`;
  q.innerHTML=`${badge}<div class="row"><span>Totale reparti</span><b>${eur(tr)}</b></div>
  <div class="row sub"><span>Elettronici (POS + Satispay)</span><b>${eur(el)}</b></div>
  <div class="row tot"><span>Contanti + elettronici</span><b>${eur(inc)}</b></div>`;
