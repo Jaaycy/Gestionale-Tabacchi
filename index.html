@@ -49,7 +49,7 @@ h2{font-size:12.5px;margin:24px 6px 8px;color:var(--mute);font-weight:700;text-t
 .x{font:inherit;border:0;background:none;color:var(--ko);padding:4px}
 .mute{color:var(--mute);font-size:15px;margin:8px 0}
 .seg{display:flex;gap:4px;margin-bottom:12px;padding:4px;background:var(--card);border:1px solid var(--line);border-radius:16px}
-.seg button{flex:1;font:inherit;font-size:16px;font-weight:600;padding:8px;border:0;background:none;border-radius:12px;color:var(--mute);transition:background .25s,color .25s,transform .14s}
+.seg button{flex:1;min-width:0;font:inherit;font-size:15px;font-weight:600;padding:8px 4px;border:0;background:none;border-radius:12px;color:var(--mute);transition:background .25s,color .25s,transform .14s}
 .seg button.on{background:linear-gradient(180deg,#4a95e8,#2a6fc4);color:#fff;box-shadow:0 4px 12px -4px rgba(42,116,201,.8)}
 .nav2{display:flex;justify-content:space-between;align-items:center;margin:4px 0 12px}
 .nav2 button{font:inherit;font-size:22px;line-height:1;border:0;background:rgba(125,183,245,.08);color:var(--acc);width:42px;height:42px;border-radius:50%;transition:transform .14s}
@@ -101,6 +101,15 @@ nav button.on svg{transform:translateY(-1px) scale(1.08)}
 #ci{margin:6px 4px 4px;font-size:14px;min-height:2.8em}
 #ci b{color:var(--ink);font-weight:600}
 .ph{display:none}
+.rt th,.rt td+td{text-align:center}.rt th:first-child{text-align:left}.rt th{padding:10px 4px}
+.hbr{padding:14px 16px 10px}
+.hr{margin:10px 0 12px}.hr:last-child{margin-bottom:4px}
+.hn{display:flex;justify-content:space-between;gap:10px;font-size:14px;margin-bottom:5px}.hn b{font-weight:600;white-space:nowrap}
+.hb{display:flex;align-items:center;gap:8px;height:12px;margin:3px 0}.hb small{font-size:12px;color:var(--mute);white-space:nowrap}
+.hb i{display:block;height:100%;min-width:0;border-radius:4px;transform-origin:0 50%;animation:growx .7s var(--ease) both}
+.hb .b1{background:linear-gradient(90deg,#4f97e6,#a9d2ff)}.hb .b0{background:#4f6178}
+@keyframes growx{from{transform:scaleX(0)}}
+.hq{margin-top:8px;font-size:14px;font-weight:700}.hq.ok{color:var(--ok)}.hq.ko{color:var(--ko)}
 .tw{overflow-x:auto;-webkit-overflow-scrolling:touch;padding:2px 16px}
 .tw table{font-size:14px;min-width:100%}
 .tw th,.tw td{white-space:nowrap;padding-left:10px}.tw th:first-child,.tw td:first-child{padding-left:0}
@@ -109,7 +118,7 @@ nav button.on svg{transform:translateY(-1px) scale(1.08)}
 .tw td.z{color:var(--mute)}
 .ph small{display:block;font-size:11pt;font-weight:400}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
-@media print{:root{color-scheme:light;--ink:#000;--mute:#444;--line:#bbb;--bg:#fff;--card:#fff;--acc:#000}*{animation:none!important;box-shadow:none!important}body::before{display:none}nav,.noprint,#t{display:none!important}.ph{display:block;font-weight:700;font-size:20px;margin:0 0 10px}body{background:#fff;padding:0;font-size:12pt}.card{border:0;padding:0;background:#fff}h1{display:none}.hero{margin:0 0 10px}.big{font-size:22pt}.chip{background:none!important;padding:0}.ch .b1{fill:#000}.ch .b0,.lg .s0{fill:#bbb;background:#bbb}.ch .hit.sel{fill:transparent}.lg i{-webkit-print-color-adjust:exact;print-color-adjust:exact}.tw{overflow:visible;padding:0}.tw table{font-size:8.5pt}.tw th{font-size:8pt;min-width:0}.tw th,.tw td{padding:3px 0 3px 6px}.tw td:first-child{position:static}h2{color:#000;margin:14pt 0 4pt;break-after:avoid;text-transform:none;letter-spacing:0;font-size:12pt}table{break-inside:avoid}}
+@media print{:root{color-scheme:light;--ink:#000;--mute:#444;--line:#bbb;--bg:#fff;--card:#fff;--acc:#000}*{animation:none!important;box-shadow:none!important}body::before{display:none}nav,.noprint,#t{display:none!important}.ph{display:block;font-weight:700;font-size:20px;margin:0 0 10px}body{background:#fff;padding:0;font-size:12pt}.card{border:0;padding:0;background:#fff}h1{display:none}.hero{margin:0 0 10px}.big{font-size:22pt}.chip{background:none!important;padding:0}.ch .b1{fill:#000}.ch .b0,.lg .s0{fill:#bbb;background:#bbb}.ch .hit.sel{fill:transparent}.lg i,.hb i{-webkit-print-color-adjust:exact;print-color-adjust:exact}.hb .b1{background:#000}.hb .b0{background:#bbb}.tw{overflow:visible;padding:0}.tw table{font-size:8.5pt}.tw th{font-size:8pt;min-width:0}.tw th,.tw td{padding:3px 0 3px 6px}.tw td:first-child{position:static}h2{color:#000;margin:14pt 0 4pt;break-after:avoid;text-transform:none;letter-spacing:0;font-size:12pt}table{break-inside:avoid}}
 </style>
 </head>
 <body>
@@ -148,7 +157,8 @@ if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();
 if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js');
 // Giorno della chiusura proposto: oggi; fino alle 3 di notte il giorno prima (chiusure dopo mezzanotte)
 const oggi=()=>{const d=new Date();d.setHours(d.getHours()-3);return iso(d)};
-let todayK=oggi(),cfOpen=true,view='chiusura',cur=todayK,mode='mese',anchor=new Date(),chart=null,selB=-1,repY=new Date().getFullYear(),lastView=null,lastQ=null,tT;
+const oggiD=()=>new Date(oggi()+'T12:00');
+let todayK=oggi(),cfOpen=true,view='chiusura',cur=todayK,mode='giorno',anchor=oggiD(),chart=null,selB=-1,repY=new Date().getFullYear(),lastView=null,lastQ=null,tT;
 function toast(m){const t=$('#t');t.textContent=m;t.classList.add('on');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('on'),1800)}
 // Vibrazione leggera: Android usa navigator.vibrate; su iPhone (iOS 18 o successivo) si usa il trucco dell'interruttore nascosto
 let hapL;function hap(){try{if(navigator.vibrate){navigator.vibrate(15);return}
@@ -188,11 +198,12 @@ function calc(){const q=$('#q');if(!q)return;
  const p=$('#qp');if(p){p.className='pill '+st+pop;p.textContent=st==='e'?'Da compilare':st==='ok'?'Quadra ✓':eur(d)}}
 
 function rng(m,a){const s=new Date(a.getFullYear(),a.getMonth(),a.getDate()),e=new Date(s);
- if(m==='settimana'){s.setDate(s.getDate()-(s.getDay()+6)%7);e.setTime(s.getTime());e.setDate(s.getDate()+6)}
+ if(m==='giorno'){}
+ else if(m==='settimana'){s.setDate(s.getDate()-(s.getDay()+6)%7);e.setTime(s.getTime());e.setDate(s.getDate()+6)}
  else if(m==='mese'){s.setDate(1);e.setTime(new Date(s.getFullYear(),s.getMonth()+1,0).getTime())}
  else{s.setMonth(0,1);e.setTime(new Date(s.getFullYear(),11,31).getTime())}
  return[s,e]}
-const lab=(m,s,e)=>m==='mese'?s.toLocaleDateString('it-IT',{month:'long',year:'numeric'}):m==='anno'?String(s.getFullYear()):`${s.toLocaleDateString('it-IT',{day:'numeric',month:'short'})} – ${e.toLocaleDateString('it-IT',{day:'numeric',month:'short',year:'numeric'})}`;
+const lab=(m,s,e)=>m==='giorno'?s.toLocaleDateString('it-IT',{weekday:'short',day:'numeric',month:'short',year:'numeric'}):m==='mese'?s.toLocaleDateString('it-IT',{month:'long',year:'numeric'}):m==='anno'?String(s.getFullYear()):`${s.toLocaleDateString('it-IT',{day:'numeric',month:'short'})} – ${e.toLocaleDateString('it-IT',{day:'numeric',month:'short',year:'numeric'})}`;
 function tot(s,e){const a=iso(s),b=iso(e),t={n:0,c:0,pos:0,sat:0,rep:{}};
  for(const d in db.days){if(d<a||d>b)continue;const r=db.days[d];t.n++;t.c+=r.c||0;t.pos+=r.pos||0;t.sat+=r.sat||0;
   for(const k in r.rep||{})t.rep[k]=(t.rep[k]||0)+(r.rep[k]||0)}return t}
@@ -242,37 +253,67 @@ function chInfo(){const c=chart;if(!c)return'';
  const i=selB,A=c.la[i],P=c.lp[i];
  return `${A?`<span style="text-transform:capitalize">${A}</span>: <b>${eur(c.a[i])}</b>`:'Giorno non presente nel periodo'}<br>Anno prima${P?` (${P})`:''}: <b>${P?eur(c.p[i]):'—'}</b>`}
 
+// ---- Vista Giorno: barre orizzontali per reparto, giorno contro stesso giorno della settimana dell'anno prima ----
+function barreRep(t,p,names,lp){
+ const v=names.map(n=>[n,c2(t.rep[n]),c2(p.rep[n])]).filter(x=>x[1]||x[2]);
+ if(!v.length)return `<div class="card hbr"><p class="mute" style="margin:0">Nessun incasso per reparto registrato in questi giorni.</p></div>`;
+ // valori negativi: nessuna barra, l'importo resta scritto
+ const max=Math.max(0,...v.flatMap(x=>[x[1],x[2]])),w=x=>max>0&&x>0?`calc((100% - 92px) * ${(x/max).toFixed(4)})`:'0px';
+ return `<div class="card hbr"><div class="lg" style="margin:0 0 4px;flex-wrap:wrap"><span><i class="s1"></i>Giorno</span><span><i class="s0"></i>Anno prima (${lp})</span></div>
+ ${v.map(([n,a,b],i)=>`<div class="hr"><div class="hn"><span>${esc(n)}</span><b>${eur(a)}</b></div>
+ <div class="hb"><i class="b1" style="width:${w(a)};animation-delay:${i*40+60}ms"></i></div>
+ <div class="hb"><i class="b0" style="width:${w(b)};animation-delay:${i*40}ms"></i><small>${eur(b)}</small></div></div>`).join('')}</div>`}
+
 function vRiepilogo(){
+ const G1=mode==='giorno';
  const[s,e]=rng(mode,anchor),t=tot(s,e),L=lab(mode,s,e);
- const pa=mode==='settimana'?new Date(anchor.getFullYear(),anchor.getMonth(),anchor.getDate()-364):new Date(anchor.getFullYear()-1,anchor.getMonth(),1);
+ // giorno e settimana: confronto con 364 giorni prima (stesso giorno della settimana); mese e anno: stesso periodo dell'anno prima
+ const pa=mode==='settimana'||G1?new Date(anchor.getFullYear(),anchor.getMonth(),anchor.getDate()-364):new Date(anchor.getFullYear()-1,anchor.getMonth(),1);
  const[ps,pe]=rng(mode,pa),p=tot(ps,pe),dd=(x,y)=>Math.round((y-x)/864e5)+1;
- selB=-1;const G=grafico(mode,s,e,ps,pe);
- const ti=t.c+t.pos+t.sat,pi=p.c+p.pos+p.sat,hv=varp(ti,pi),hm=media(ti,t.n);
- const H=`<div class="card hero"><span class="hl">Totale incassato</span><div class="big">${bigEur(ti)}</div>
- <div class="hs"><span class="chip${hv>0?' up':hv<0?' dn':''}">${pct(hv)}</span> sull'anno prima (${eur(pi)})</div>
- <div class="hs">${t.n} ${t.n===1?'chiusura':'chiusure'} · media ${hm==null?'—':eur(hm)}</div></div>`;
+ const names=[...new Set([...db.reparti,...Object.keys(t.rep),...Object.keys(p.rep)])];
+ const ti=t.c+t.pos+t.sat,pi=p.c+p.pos+p.sat,hm=media(ti,t.n);
+ const chip=v=>`<span class="chip${v>0?' up':v<0?' dn':''}">${pct(v)}</span>`;
+ const dl=(d,y)=>d.toLocaleDateString('it-IT',{weekday:'short',day:'numeric',month:'short',...(y?{year:'numeric'}:{})});
+ const k=iso(s),r=G1?db.days[k]:null;
+ selB=-1;let G,H;
+ if(G1){chart=null;G=barreRep(t,p,names,dl(ps,1));
+  const ws=new Date(s.getFullYear(),s.getMonth(),s.getDate()-7),w=tot(ws,ws),wi=w.c+w.pos+w.sat,dq=c2(ti-sumRep(t));
+  // senza chiusura nel giorno la percentuale non ha senso: «—», ma gli importi di confronto restano
+  const cv=x=>r?varp(ti,x):null;
+  H=`<div class="card hero"><span class="hl">${k===todayK?'Incassato oggi':'Totale incassato'}</span><div class="big">${bigEur(ti)}</div>
+ ${r?`<div class="hq ${dq===0?'ok':'ko'}">${dq===0?'Quadra ✓':`Differenza ${eur(dq)} (incassato ${dq>0?'più':'meno'} dei reparti)`}</div>`:'<div class="hs">Nessuna chiusura per questo giorno.</div>'}
+ <div class="hs">${chip(cv(wi))} sulla settimana scorsa (${dl(ws)}: ${eur(wi)})</div>
+ <div class="hs">${chip(cv(pi))} sull'anno prima (${dl(ps,1)}: ${eur(pi)})</div></div>`}
+ else{G=grafico(mode,s,e,ps,pe);const hv=varp(ti,pi);
+  H=`<div class="card hero"><span class="hl">Totale incassato</span><div class="big">${bigEur(ti)}</div>
+ <div class="hs">${chip(hv)} sull'anno prima (${eur(pi)})</div>
+ <div class="hs">${t.n} ${t.n===1?'chiusura':'chiusure'} · media ${hm==null?'—':eur(hm)}</div></div>`}
  let note='';
  if(mode==='mese'&&s.getMonth()===1)note=`Febbraio ${s.getFullYear()} (${dd(s,e)} giorni) confrontato con febbraio ${ps.getFullYear()} (${dd(ps,pe)} giorni): periodi interi.`;
  else if(mode==='settimana')note=`Confronto con la settimana ${lab(mode,ps,pe)} (da lunedì a domenica).`;
- const names=[...new Set([...db.reparti,...Object.keys(t.rep),...Object.keys(p.rep)])];
- const md=(x,n)=>{const m=media(x,n);return `<small>${m==null?'—':eur(m)}</small>`};
+ else if(G1)note=`Confronto con ${dl(ps,1)}: stesso giorno della settimana, 52 settimane prima.`;
+ const md=(x,n)=>{if(G1)return '';const m=media(x,n);return `<small>${m==null?'—':eur(m)}</small>`};
  const tr=(l,a,b,st)=>{const v=varp(a,b);return `<tr${st?' class="s"':''}><td>${l}</td><td>${eur(a)}${md(a,t.n)}</td><td>${eur(b)}${md(b,p.n)}</td><td class="v${v>0?' up':v<0?' dn':''}">${pct(v)}</td></tr>`};
  const rows=names.map(n=>tr(esc(n),t.rep[n],p.rep[n])).join('')
   +tr('Totale reparti',sumRep(t),sumRep(p),1)+tr('Contanti',t.c,p.c)+tr('POS',t.pos,p.pos)+tr('Satispay',t.sat,p.sat)
   +tr('Totale incassato',t.c+t.pos+t.sat,p.c+p.pos+p.sat,1);
  const a=iso(s),b=iso(e),days=Object.keys(db.days).filter(d=>d>=a&&d<=b).sort().reverse();
- const list=days.map(d=>{const r=db.days[d];return `<button class="row ln" data-edit="${d}"><span>${new Date(d+'T12:00').toLocaleDateString('it-IT',{weekday:'short',day:'numeric',month:'short'})}</span><b>${eur((r.c||0)+(r.pos||0)+(r.sat||0))}</b></button>`}).join('')||'<p class="mute">Nessuna chiusura in questo periodo.</p>';
+ const list=G1?`<h2>Chiusura del giorno</h2><button class="btn${r?' ghost':''}" data-edit="${k}">${r?'Apri chiusura':'Inserisci chiusura'}</button>`
+  :`<h2>Chiusure del periodo</h2><div class="card">${days.map(d=>{const r=db.days[d];return `<button class="row ln" data-edit="${d}"><span>${new Date(d+'T12:00').toLocaleDateString('it-IT',{weekday:'short',day:'numeric',month:'short'})}</span><b>${eur((r.c||0)+(r.pos||0)+(r.sat||0))}</b></button>`}).join('')||'<p class="mute">Nessuna chiusura in questo periodo.</p>'}</div>`;
+ const th=G1?'<th>Giorno</th><th>Anno prima</th>':'<th>Periodo<small>media</small></th><th>Anno prima<small>media</small></th>';
+ const spiega=G1?'«Differenza in %» = di quanto il giorno è cambiato rispetto all\'anno prima; «—» quando non si può calcolare (anno prima a zero).'
+  :`${t.n} chiusure registrate (anno prima: ${p.n}). Sotto ogni importo, in grigio, la media per chiusura (importo diviso per le chiusure registrate). «Differenza in %» = di quanto il periodo è cambiato rispetto all'anno prima; «—» quando non si può calcolare (nessuna chiusura o anno prima a zero).`;
  return `<h1>Riepilogo</h1>
- <div class="seg noprint">${['settimana','mese','anno'].map(m=>`<button data-m="${m}" class="${m===mode?'on':''}">${m[0].toUpperCase()+m.slice(1)}</button>`).join('')}</div>
+ <div class="seg noprint">${['giorno','settimana','mese','anno'].map(m=>`<button data-m="${m}" class="${m===mode?'on':''}">${m[0].toUpperCase()+m.slice(1)}</button>`).join('')}</div>
  <div class="nav2 noprint"><button data-s="-1" aria-label="Periodo precedente">‹</button><b>${L}</b><button data-s="1" aria-label="Periodo successivo">›</button></div>
  <div class="ph">Tabaccheria – riepilogo ${L}</div>
  ${H}${G}
  <h2>Dettaglio</h2>
- <div class="card"><table><tr><th>Voce</th><th>Periodo<small>media</small></th><th>Anno prima<small>media</small></th><th>Var.</th></tr>${rows}</table></div>
+ <div class="card"><table class="rt"><tr><th>Voce</th>${th}<th>Differenza<small>in %</small></th></tr>${rows}</table></div>
  ${note?`<p class="mute">${note}</p>`:''}
- <p class="mute">${t.n} chiusure registrate (anno prima: ${p.n}). Sotto ogni importo, in grigio, la media per chiusura (importo diviso per le chiusure registrate). «Var.» = variazione rispetto all'anno prima; «—» quando non si può calcolare (nessuna chiusura o anno prima a zero).</p>
+ <p class="mute">${spiega}</p>
  <div class="noprint"><button class="btn" id="print">Stampa / PDF</button><button class="btn ghost" id="csv">Esporta CSV</button><button class="btn ghost" id="rep">Report annuale per il commercialista</button>
- <h2>Chiusure del periodo</h2><div class="card">${list}</div></div>`}
+ ${list}</div>`}
 
 // ---- Report annuale per il commercialista: totali mensili per reparto e per metodo di incasso ----
 const MESI=['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
@@ -334,7 +375,7 @@ function csv(){const[s,e]=rng(mode,anchor),a=iso(s),b=iso(e),m=x=>String(x==null
  saveFile(`chiusure-${a}_${b}.csv`,'text/csv',out.join('\n'))}
 
 // Riaprendo l'app (anche rimasta aperta in sottofondo) nel giorno dopo, la data torna a oggi
-const nuovoGiorno=()=>{const t=oggi();if(t===todayK)return;todayK=t;cur=t;anchor=new Date();if(view!=='impostazioni')render()};
+const nuovoGiorno=()=>{const t=oggi();if(t===todayK)return;todayK=t;cur=t;anchor=oggiD();if(view!=='impostazioni')render()};
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')nuovoGiorno()});
 addEventListener('pageshow',nuovoGiorno);addEventListener('focus',nuovoGiorno);
 $('nav').addEventListener('click',e=>{const b=e.target.closest('button');if(b){view=b.dataset.v;render()}});
@@ -367,7 +408,7 @@ A.addEventListener('click',e=>{const h=e.target.closest('[data-b]');
  else if(id==='del'){if(confirm('Eliminare la chiusura del '+cur+'?')){delete db.days[cur];if(!save()){render();return}hap();render();toast('Chiusura eliminata')}}
  else if(d.m){mode=d.m;render()}
  else if(d.s){const k=+d.s,a=new Date(anchor);
-  if(mode==='settimana')a.setDate(a.getDate()+7*k);else if(mode==='mese'){a.setDate(1);a.setMonth(a.getMonth()+k)}else{const g=a.getDate();a.setDate(1);a.setFullYear(a.getFullYear()+k);a.setDate(Math.min(g,new Date(a.getFullYear(),a.getMonth()+1,0).getDate()))}
+  if(mode==='giorno')a.setDate(a.getDate()+k);else if(mode==='settimana')a.setDate(a.getDate()+7*k);else if(mode==='mese'){a.setDate(1);a.setMonth(a.getMonth()+k)}else{const g=a.getDate();a.setDate(1);a.setFullYear(a.getFullYear()+k);a.setDate(Math.min(g,new Date(a.getFullYear(),a.getMonth()+1,0).getDate()))}
   anchor=a;render()}
  else if(d.edit){cur=d.edit;view='chiusura';render()}
  else if(id==='print')print();
