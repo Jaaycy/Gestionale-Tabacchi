@@ -80,7 +80,9 @@ td+td{white-space:nowrap;padding-left:8px}td.v{font-size:14px;font-weight:600}td
 .row.tot b{font-size:20px}
 .qb.al{background:rgba(125,183,245,.1);border-color:rgba(125,183,245,.32)}.qb.al i{background:var(--acc);color:#0d141d}.qb.al b{color:var(--acc)}
 .pill.al{background:rgba(125,183,245,.15);color:var(--acc)}.hq.al{color:var(--acc)}
-.hint{font-size:13.5px;margin:6px 8px 0}.card .hint{margin:-4px 0 12px}
+.hint{font-size:13.5px;margin:6px 8px 0}
+/* suggerimento sotto un campo: la riga sopra non ha linea, la linea di separazione va sotto il suggerimento */
+.card .row:has(+ .hint){border-bottom:0;padding-bottom:2px}.card .row:has(+ .hint) input{padding-top:0;padding-bottom:0}.card .hint{margin:0;padding:0 0 14px;border-bottom:1px solid var(--line);line-height:1.35}.card .hint:last-child{border-bottom:0;padding-bottom:12px}.card .hint+.row{padding-top:15px}
 .row.gu b{color:var(--ok);font-size:20px}
 .pop{animation:pop .45s var(--ease)}
 @keyframes pop{0%{transform:scale(.94)}55%{transform:scale(1.04)}100%{transform:scale(1)}}
