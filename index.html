@@ -81,8 +81,8 @@ td+td{white-space:nowrap;padding-left:8px}td.v{font-size:14px;font-weight:600}td
 .qb.al{background:rgba(125,183,245,.1);border-color:rgba(125,183,245,.32)}.qb.al i{background:var(--acc);color:#0d141d}.qb.al b{color:var(--acc)}
 .pill.al{background:rgba(125,183,245,.15);color:var(--acc)}.hq.al{color:var(--acc)}
 .hint{font-size:13.5px;margin:6px 8px 0}
-/* suggerimento sotto un campo: la riga sopra non ha linea, la linea di separazione va sotto il suggerimento */
-.card .row:has(+ .hint){border-bottom:0;padding-bottom:2px}.card .row:has(+ .hint) input{padding-top:0;padding-bottom:0}.card .hint{margin:0;padding:0 0 14px;border-bottom:1px solid var(--line);line-height:1.35}.card .hint:last-child{border-bottom:0;padding-bottom:12px}.card .hint+.row{padding-top:15px}
+/* suggerimento sotto un campo (riga con classe nb, senza :has per i telefoni meno recenti): la riga sopra non ha linea, la linea di separazione va sotto il suggerimento */
+.card .row.nb{border-bottom:0;padding-bottom:2px}.card .row.nb input{padding-top:0;padding-bottom:0}.card .hint{margin:0;padding:0 0 14px;border-bottom:1px solid var(--line);line-height:1.35}.card .hint:last-child{border-bottom:0;padding-bottom:12px}.card .hint+.row{padding-top:15px}
 .row.gu b{color:var(--ok);font-size:20px}
 .pop{animation:pop .45s var(--ease)}
 @keyframes pop{0%{transform:scale(.94)}55%{transform:scale(1.04)}100%{transform:scale(1)}}
@@ -210,9 +210,9 @@ function vChiusura(){
   <label class="row"><span>Satispay</span><input id="sat" inputmode="decimal" placeholder="0,00" value="${fi(r.sat)}"></label></div>
  <h2>Incassi per reparto</h2><div class="card">${rep}</div>
  <p class="mute hint">Copia i totali dallo scontrino di chiusura del registratore.</p>
- <h2>Ordini e acquisti</h2><div class="card"><label class="row"><span>Ordine tabacco lavorato</span><input id="ot" inputmode="decimal" placeholder="0,00" value="${fi(r.ot)}"></label>
+ <h2>Ordini e acquisti</h2><div class="card"><label class="row nb"><span>Ordine tabacco lavorato</span><input id="ot" inputmode="decimal" placeholder="0,00" value="${fi(r.ot)}"></label>
   <p class="mute hint">Solo il giorno in cui mandi l'ordine. Inserisci l'importo già senza aggio.</p>
-  <label class="row"><span>Acquisto accessori</span><input id="aa" inputmode="decimal" placeholder="0,00" value="${fi(r.aa)}"></label>
+  <label class="row nb"><span>Acquisto accessori</span><input id="aa" inputmode="decimal" placeholder="0,00" value="${fi(r.aa)}"></label>
   <p class="mute hint">Solo il giorno in cui compri. Inserisci il totale della fattura, IVA compresa.</p></div>
  <h2>Totale serata</h2><div class="card" id="q"></div>
  <div class="acts"><button class="btn" id="save">Salva chiusura</button>${db.days[cur]?'<button class="btn ghost" id="del">Elimina</button>':''}</div>`}
