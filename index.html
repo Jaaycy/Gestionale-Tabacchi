@@ -82,7 +82,14 @@ td+td{white-space:nowrap;padding-left:8px}td.v{font-size:14px;font-weight:600}td
 .pill.al{background:rgba(125,183,245,.15);color:var(--acc)}.hq.al{color:var(--acc)}
 .hint{font-size:13.5px;margin:6px 8px 0}
 /* suggerimento sotto un campo (riga con classe nb, senza :has per i telefoni meno recenti): la riga sopra non ha linea, la linea di separazione va sotto il suggerimento */
-.card .row.nb{border-bottom:0;padding-bottom:2px}.card .row.nb input{padding-top:0;padding-bottom:0}.card .hint{margin:0;padding:0 0 14px;border-bottom:1px solid var(--line);line-height:1.35}.card .hint:last-child{border-bottom:0;padding-bottom:12px}.card .hint+.row{padding-top:15px}
+/* pallino «i»: tocca per mostrare o nascondere il suggerimento */
+.ib{position:relative;display:inline-grid;place-items:center;width:20px;height:20px;margin-left:8px;padding:0;border-radius:50%;border:1.5px solid var(--mute);background:none;color:var(--mute);font:italic 700 12px/1 Georgia,"Times New Roman",serif;vertical-align:2px;text-transform:none;letter-spacing:0;transition:background .2s,color .2s,border-color .2s}
+.ib::after{content:"";position:absolute;inset:-11px}
+.ib[aria-expanded=true]{border-color:var(--acc);color:var(--acc);background:rgba(125,183,245,.14)}
+h2 .ib{width:18px;height:18px;font-size:11px;vertical-align:0}
+.tip{display:none}.tip.on{display:block;animation:in .25s var(--ease)}
+.card .row.last{border-bottom:0}.lb{white-space:nowrap}
+.card .row.nb{border-bottom:0;padding-bottom:2px}.card .hint{margin:0;padding:0 0 14px;border-bottom:1px solid var(--line);line-height:1.35}.card .hint:last-child{border-bottom:0;padding-bottom:12px}.card .hint+.row{padding-top:15px}
 .row.gu b{color:var(--ok);font-size:20px}
 .pop{animation:pop .45s var(--ease)}
 @keyframes pop{0%{transform:scale(.94)}55%{transform:scale(1.04)}100%{transform:scale(1)}}
@@ -124,7 +131,7 @@ nav button.on svg{transform:translateY(-1px) scale(1.08)}
 .tw td.z{color:var(--mute)}
 .ph small{display:block;font-size:11pt;font-weight:400}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
-@media print{:root{color-scheme:light;--ink:#000;--mute:#444;--line:#bbb;--bg:#fff;--card:#fff;--acc:#000}*{animation:none!important;box-shadow:none!important}body::before{display:none}nav,.noprint,#t{display:none!important}.ph{display:block;font-weight:700;font-size:20px;margin:0 0 10px}body{background:#fff;padding:0;font-size:12pt}.card{border:0;padding:0;background:#fff}h1{display:none}.hero{margin:0 0 10px}.big{font-size:22pt}.chip{background:none!important;padding:0}.ch .b1{fill:#000}.ch .b0,.lg .s0{fill:#bbb;background:#bbb}.ch .hit.sel{fill:transparent}.lg i,.hb i{-webkit-print-color-adjust:exact;print-color-adjust:exact}.hb .b1{background:#000}.hb .b0{background:#bbb}.tw{overflow:visible;padding:0}.tw table{font-size:8.5pt}.tw th{font-size:8pt;min-width:0}.tw th,.tw td{padding:3px 0 3px 6px}.tw td:first-child{position:static}h2{color:#000;margin:14pt 0 4pt;break-after:avoid;text-transform:none;letter-spacing:0;font-size:12pt}table{break-inside:avoid}}
+@media print{.tip{display:block!important}.ib{display:none!important}:root{color-scheme:light;--ink:#000;--mute:#444;--line:#bbb;--bg:#fff;--card:#fff;--acc:#000}*{animation:none!important;box-shadow:none!important}body::before{display:none}nav,.noprint,#t{display:none!important}.ph{display:block;font-weight:700;font-size:20px;margin:0 0 10px}body{background:#fff;padding:0;font-size:12pt}.card{border:0;padding:0;background:#fff}h1{display:none}.hero{margin:0 0 10px}.big{font-size:22pt}.chip{background:none!important;padding:0}.ch .b1{fill:#000}.ch .b0,.lg .s0{fill:#bbb;background:#bbb}.ch .hit.sel{fill:transparent}.lg i,.hb i{-webkit-print-color-adjust:exact;print-color-adjust:exact}.hb .b1{background:#000}.hb .b0{background:#bbb}.tw{overflow:visible;padding:0}.tw table{font-size:8.5pt}.tw th{font-size:8pt;min-width:0}.tw th,.tw td{padding:3px 0 3px 6px}.tw td:first-child{position:static}h2{color:#000;margin:14pt 0 4pt;break-after:avoid;text-transform:none;letter-spacing:0;font-size:12pt}table{break-inside:avoid}}
 </style>
 </head>
 <body>
@@ -195,6 +202,8 @@ let hapL;function hap(){try{if(navigator.vibrate){navigator.vibrate(15);return}
  if(!hapL){hapL=document.createElement('label');hapL.style.display='none';hapL.setAttribute('aria-hidden','true');hapL.innerHTML='<input type="checkbox" switch>';document.body.appendChild(hapL)}
  hapL.click()}catch(e){}}
 
+// Pallino «i» che mostra/nasconde il suggerimento con quell'id
+const ib=id=>`<button type="button" class="ib" data-tip="${id}" aria-expanded="false" aria-controls="${id}" aria-label="Mostra suggerimento">i</button>`;
 function vChiusura(){
  const r=db.days[cur]||{},rp=r.rep||{};
  const rep=db.reparti.map(n=>`<label class="row"><span>${esc(n)}</span><input data-r="${esc(n)}" inputmode="decimal" placeholder="0,00" value="${fi(rp[n])}"></label>`).join('')
@@ -208,12 +217,12 @@ function vChiusura(){
   <div class="row sub" id="cn"></div>
   <label class="row"><span>POS</span><input id="pos" inputmode="decimal" placeholder="0,00" value="${fi(r.pos)}"></label>
   <label class="row"><span>Satispay</span><input id="sat" inputmode="decimal" placeholder="0,00" value="${fi(r.sat)}"></label></div>
- <h2>Incassi per reparto</h2><div class="card">${rep}</div>
- <p class="mute hint">Copia i totali dallo scontrino di chiusura del registratore.</p>
- <h2>Ordini e acquisti</h2><div class="card"><label class="row nb"><span>Ordine tabacco</span><input id="ot" inputmode="decimal" placeholder="0,00" value="${fi(r.ot)}"></label>
-  <p class="mute hint">Solo il giorno in cui mandi l'ordine. Inserisci l'importo già senza aggio.</p>
-  <label class="row nb"><span>Acquisto accessori</span><input id="aa" inputmode="decimal" placeholder="0,00" value="${fi(r.aa)}"></label>
-  <p class="mute hint">Solo il giorno in cui compri. Inserisci il totale della fattura, IVA compresa.</p></div>
+ <h2>Incassi per reparto${ib('t-rep')}</h2><div class="card">${rep}</div>
+ <p class="mute hint tip" id="t-rep">Copia i totali dallo scontrino di chiusura del registratore.</p>
+ <h2>Ordini e acquisti</h2><div class="card"><div class="row"><span class="lb"><label for="ot">Ordine tabacco</label>${ib('t-ot')}</span><input id="ot" inputmode="decimal" placeholder="0,00" value="${fi(r.ot)}"></div>
+  <p class="mute hint tip" id="t-ot">Solo il giorno in cui mandi l'ordine. Inserisci l'importo già senza aggio.</p>
+  <div class="row last"><span class="lb"><label for="aa">Acquisto accessori</label>${ib('t-aa')}</span><input id="aa" inputmode="decimal" placeholder="0,00" value="${fi(r.aa)}"></div>
+  <p class="mute hint tip" id="t-aa">Solo il giorno in cui compri. Inserisci il totale della fattura, IVA compresa.</p></div>
  <h2>Totale serata</h2><div class="card" id="q"></div>
  <div class="acts"><button class="btn" id="save">Salva chiusura</button>${db.days[cur]?'<button class="btn ghost" id="del">Elimina</button>':''}</div>`}
 
@@ -264,24 +273,24 @@ function tot(s,e){const a=iso(s),b=iso(e),t={n:0,c:0,pos:0,sat:0,rep:{},ot:0,ov:
   for(const k in rp)t.rep[k]=(t.rep[k]||0)+(rp[k]||0)}return t}
 // Riquadro «Tabacco e Monopolio» del Riepilogo: calcolato solo dagli ordini, separato dagli altri calcoli
 function cardTab(t){
- return `<h2>Tabacco e Monopolio</h2><div class="card">
+ return `<h2>Tabacco e Monopolio${ib('t-tab')}</h2><div class="card">
  <div class="row"><span>Ordini pagati</span><b>${eur(t.ot)}</b></div>
  <div class="row"><span>Valore di vendita</span><b>${eur(t.ov)}</b></div>
  <div class="row gu"><span>Guadagno</span><b>${eur(t.ag)}</b></div></div>
- <p class="mute hint">Dagli ordini del periodo: valore di vendita = ordine ÷ 0,9; guadagno = valore − ordine (il tuo 10%). L'ordine conta nel giorno in cui lo segni. Non cambia incassato, reparti e Altro.</p>
- <h2>${esc(accK())} (IVA 22%)</h2><div class="card">
+ <p class="mute hint tip" id="t-tab">Dagli ordini del periodo: valore di vendita = ordine ÷ 0,9; guadagno = valore − ordine (il tuo 10%). L'ordine conta nel giorno in cui lo segni. Non cambia incassato, reparti e Altro.</p>
+ <h2>${esc(accK())} (IVA 22%)${ib('t-acc')}</h2><div class="card">
  <div class="row"><span>Venduti (IVA compresa)</span><b>${eur(t.av)}</b></div>
  <div class="row sub"><span>Venduti senza IVA</span><b>${eur(t.avn)}</b></div>
  <div class="row"><span>Acquisti (IVA compresa)</span><b>${eur(t.aa)}</b></div>
  <div class="row sub"><span>Acquisti senza IVA</span><b>${eur(t.aan)}</b></div>
  <div class="row gu"><span>Guadagno</span><b>${eur(t.ga)}</b></div>
  <div class="row sub"><span>IVA da versare (vendite − acquisti)</span><b>${eur(c2(t.av-t.avn-(t.aa-t.aan)))}</b></div></div>
- <p class="mute hint">Senza IVA = importo ÷ 1,22 (l'IVA degli acquisti si recupera). Guadagno = venduti senza IVA − acquisti senza IVA. Gli acquisti contano nel giorno in cui li segni.</p>
- <h2>Guadagno totale</h2><div class="card">
+ <p class="mute hint tip" id="t-acc">Senza IVA = importo ÷ 1,22 (l'IVA degli acquisti si recupera). Guadagno = venduti senza IVA − acquisti senza IVA. Gli acquisti contano nel giorno in cui li segni.</p>
+ <h2>Guadagno totale${ib('t-gt')}</h2><div class="card">
  <div class="row"><span>Tabacco e Monopolio</span><b>${eur(t.ag)}</b></div>
  <div class="row"><span>${esc(accK())}</span><b>${eur(t.ga)}</b></div>
  <div class="row gu tot"><span>Totale</span><b>${eur(t.gt)}</b></div></div>
- <p class="mute hint">Non comprende ancora gratta e vinci, Lotto, ricariche e le spese del negozio, e non tiene conto della merce rimasta sugli scaffali.</p>`}
+ <p class="mute hint tip" id="t-gt">Non comprende ancora gratta e vinci, Lotto, ricariche e le spese del negozio, e non tiene conto della merce rimasta sugli scaffali.</p>`}
 const sumRep=t=>Object.values(t.rep).reduce((a,b)=>a+b,0);
 // Media per chiusura: importo diviso per le chiusure registrate; senza chiusure non c'è media (null)
 const media=(x,n)=>{if(!(n>0))return null;const k=Math.round((x||0)*100),m=Math.round(Math.abs(k)/n)/100;return k<0?-m:m};
@@ -485,6 +494,9 @@ A.addEventListener('change',e=>{const t=e.target;
 A.addEventListener('click',e=>{const h=e.target.closest('[data-b]');
  if(h){const i=+h.dataset.b;selB=selB===i?-1:i;document.querySelectorAll('.hit').forEach(r=>r.classList.toggle('sel',+r.dataset.b===selB));$('#ci').innerHTML=chInfo();return}
  const b=e.target.closest('button');if(!b)return;const d=b.dataset,id=b.id;
+ if(d.tip){const t=document.getElementById(d.tip);if(!t)return;const on=t.classList.toggle('on');b.setAttribute('aria-expanded',on);b.setAttribute('aria-label',on?'Nascondi suggerimento':'Mostra suggerimento');
+  // dentro una scheda: con il suggerimento aperto la linea di separazione passa sotto il suggerimento
+  const rw=t.previousElementSibling;if(rw&&rw.classList.contains('row'))rw.classList.toggle('nb',on);return}
  if(id==='save'){const r=read();
   if(!r.c&&!r.pos&&!r.sat&&!r.ot&&!r.aa&&!g0('#ct')&&!Object.keys(r.rep).length){toast('Inserisci almeno un importo');return}
   if(r.c<0&&!confirm(`Il fondo cassa è più grande dei contanti in cassa: i contanti incassati risultano ${eur(r.c)}.\n\nSalvare comunque?`))return;
