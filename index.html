@@ -151,13 +151,17 @@ const iso=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${Str
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 // true se il nome appartiene a un reparto eliminato che ha ancora importi registrati
 const hasData=n=>!db.reparti.includes(n)&&Object.values(db.days).some(r=>r.rep&&n in r.rep);
-const init=()=>({reparti:['Accessori'],v2:1,v3:1,fondo:0,days:{}});
+const init=()=>({reparti:['Accessori'],acc:'Accessori',v2:1,v3:1,v4:1,fondo:0,days:{}});
 // Aggiornamento dei dati salvati prima della versione con Tabacco e Accessori (una sola volta):
 // i reparti diventano Tabacco e Accessori; il vecchio «Tabacchi» diventa «Tabacco» (importi sommati);
 // gli altri reparti restano nei giorni già salvati (compaiono come «eliminato») e nei totali
 // Versione 3 (tabacco calcolato dagli ordini): il reparto Tabacco esce dalla Chiusura;
 // i suoi importi già salvati restano nei giorni (compaiono come «eliminato») e nei totali
-function migra(x){if(!x||x.v3)return x;
+// Versione 4: reparto degli accessori (IVA 22%) su cui si calcola il guadagno accessori
+function migra(x){if(!x||x.v4)return x;
+ if(!x.v3)x=migra3(x);
+ x.acc='Accessori';x.v4=1;return x}
+function migra3(x){
  if(!x.v2){const R=x.reparti||[];
   if(R.includes('Tabacchi')&&!R.includes('Tabacco'))for(const d in x.days||{}){const r=x.days[d].rep;if(r&&'Tabacchi' in r){r.Tabacco=c2((r.Tabacco||0)+(r.Tabacchi||0));delete r.Tabacchi}}
   x.reparti=['Tabacco','Accessori'];x.tab='Tabacco';x.v2=1}
@@ -167,8 +171,11 @@ function migra(x){if(!x||x.v3)return x;
 const cents=x=>Math.round((x||0)*100),sgn=(k,v)=>k<0?-v:v;
 const vendita=x=>{const k=cents(x);return sgn(k,Math.round(Math.abs(k)*10/9)/100)};
 const guadagno=x=>c2(vendita(x)-c2(x||0));
+// Accessori (IVA 22%, contabilità semplificata: l'IVA degli acquisti si recupera): importo senza IVA = importo ÷ 1,22
+const senzaIva=x=>{const k=cents(x);return sgn(k,Math.round(Math.abs(k)*100/122)/100)};
 let db,mig=false;try{db=JSON.parse(localStorage.getItem(K))||init()}catch(e){db=init()}
-if(!db.v3){db=migra(db);mig=true}
+if(!db.v4){db=migra(db);mig=true}
+const accK=()=>db.acc||'Accessori';
 // Salva in memoria; se non riesce mostra solo l'errore, torna ai dati davvero salvati e restituisce false
 const save=()=>{try{localStorage.setItem(K,JSON.stringify(db));return true}catch(e){
  alert('Salvataggio NON riuscito: la memoria del telefono è piena o bloccata. Le ultime modifiche non sono state salvate.\n\nFai subito un backup da «Reparti e backup» e libera spazio sul telefono.');
@@ -194,24 +201,29 @@ function vChiusura(){
  return `<div class="hd"><h1>Chiusura</h1><span class="pill" id="qp"></span></div>
  <div class="card"><label class="row"><span>Data</span><input id="d" type="date" value="${cur}"></label></div>
  <h2>Cassa</h2><div class="card">
-  <div class="row"><button class="tg" id="tg" aria-expanded="${cfOpen}">Contanti</button><input id="c" aria-label="Contanti" inputmode="decimal" placeholder="0,00" value="${fi(r.c)}"></div>
+  <div class="row"><button class="tg" id="tg" aria-expanded="${cfOpen}">Contanti in cassa</button><input id="ct" aria-label="Contanti in cassa, fondo compreso" inputmode="decimal" placeholder="0,00" value="${db.days[cur]?fi(c2((r.c||0)+(r.f||0))):''}"></div>
   <div id="cf" class="cl${cfOpen?' open':''}"${cfOpen?'':' inert'}><div><label class="row sub"><span>Fondo cassa</span><input id="f" inputmode="decimal" placeholder="0,00" value="${fi(r.f!=null?r.f:db.fondo)}"></label></div></div>
+  <div class="row sub" id="cn"></div>
   <label class="row"><span>POS</span><input id="pos" inputmode="decimal" placeholder="0,00" value="${fi(r.pos)}"></label>
   <label class="row"><span>Satispay</span><input id="sat" inputmode="decimal" placeholder="0,00" value="${fi(r.sat)}"></label></div>
  <h2>Incassi per reparto</h2><div class="card">${rep}</div>
  <p class="mute hint">Copia i totali dallo scontrino di chiusura del registratore.</p>
- <h2>Ordine tabacco</h2><div class="card"><label class="row"><span>Ordine tabacco lavorato</span><input id="ot" inputmode="decimal" placeholder="0,00" value="${fi(r.ot)}"></label>
-  <p class="mute hint">Solo il giorno in cui mandi l'ordine. Inserisci l'importo già senza aggio.</p></div>
+ <h2>Ordini e acquisti</h2><div class="card"><label class="row"><span>Ordine tabacco lavorato</span><input id="ot" inputmode="decimal" placeholder="0,00" value="${fi(r.ot)}"></label>
+  <p class="mute hint">Solo il giorno in cui mandi l'ordine. Inserisci l'importo già senza aggio.</p>
+  <label class="row"><span>Acquisto accessori</span><input id="aa" inputmode="decimal" placeholder="0,00" value="${fi(r.aa)}"></label>
+  <p class="mute hint">Solo il giorno in cui compri. Inserisci il totale della fattura, IVA compresa.</p></div>
  <h2>Totale serata</h2><div class="card" id="q"></div>
  <div class="acts"><button class="btn" id="save">Salva chiusura</button>${db.days[cur]?'<button class="btn ghost" id="del">Elimina</button>':''}</div>`}
 
+const g0=s=>num(($(s)||{}).value);
 function read(){const g=s=>num(($(s)||{}).value),rep={};
  document.querySelectorAll('[data-r]').forEach(i=>{if(i.value.trim()!=='')rep[i.dataset.r]=num(i.value)});
- const o={c:g('#c'),f:g('#f'),pos:g('#pos'),sat:g('#sat'),rep},ot=g('#ot');
- // l'ordine tabacco si salva solo se c'è (così le chiusure vecchie restano identiche)
- if(ot)o.ot=ot;return o}
+ // contanti incassati = contanti in cassa − fondo cassa (solo se i contanti in cassa sono stati inseriti)
+ const ct=g('#ct'),f=g('#f'),o={c:ct?c2(ct-f):0,f,pos:g('#pos'),sat:g('#sat'),rep},ot=g('#ot'),aa=g('#aa');
+ // ordine tabacco e acquisto accessori si salvano solo se ci sono (così le chiusure vecchie restano identiche)
+ if(ot)o.ot=ot;if(aa)o.aa=aa;return o}
 // true se due chiusure hanno gli stessi importi (l'ordine dei reparti non conta)
-const stesso=(a,b)=>{const k=o=>JSON.stringify([o.c,o.f,o.pos,o.sat,o.ot||0,Object.entries(o.rep||{}).sort()]);return k(a)===k(b)};
+const stesso=(a,b)=>{const k=o=>JSON.stringify([o.c,o.f,o.pos,o.sat,o.ot||0,o.aa||0,Object.entries(o.rep||{}).sort()]);return k(a)===k(b)};
 function calc(){const q=$('#q');if(!q)return;
  const r=read(),tr=Object.values(r.rep).reduce((a,b)=>a+b,0),el=r.pos+r.sat,inc=r.c+el,d=Math.round((inc-tr)*100)/100;
  // stato: e = nessun importo inserito, ok = quadra, al = «Altro» (incassato non battuto al registratore), ko = reparti oltre l'incassato
@@ -225,6 +237,7 @@ function calc(){const q=$('#q');if(!q)return;
  <div class="row sub"><span>Altro (incassato − reparti)</span><b>${eur(Math.max(0,d))}</b></div>
  <div class="row sub"><span>Elettronici (POS + Satispay)</span><b>${eur(el)}</b></div>
  <div class="row tot"><span>Contanti + elettronici</span><b>${eur(inc)}</b></div>`;
+ const cn=$('#cn');if(cn)cn.innerHTML=r.c<0?`<span class="ko">Contanti incassati (senza fondo)</span><b class="ko">${eur(r.c)}</b>`:`<span>Contanti incassati (senza fondo)</span><b>${eur(r.c)}</b>`;
  const p=$('#qp');if(p){p.className='pill '+st+pop;p.textContent=st==='e'?'Da compilare':st==='ok'?'Quadra ✓':st==='al'?'Altro '+eur(d):eur(d)}}
 
 function rng(m,a){const s=new Date(a.getFullYear(),a.getMonth(),a.getDate()),e=new Date(s);
@@ -237,11 +250,15 @@ const lab=(m,s,e)=>m==='giorno'?s.toLocaleDateString('it-IT',{weekday:'short',da
 // ot = ordini tabacco pagati, ov = loro valore di vendita, ag = guadagno (valore − ordine).
 // Valore e guadagno si calcolano ordine per ordine (al centesimo) e poi si sommano:
 // così giorni, settimane, mesi e anno tornano sempre tra loro.
-function tot(s,e){const a=iso(s),b=iso(e),t={n:0,c:0,pos:0,sat:0,rep:{},ot:0,ov:0,ag:0};
+// av = accessori venduti (IVA compresa), avn = senza IVA; aa = acquisti accessori (IVA compresa), aan = senza IVA;
+// ga = guadagno accessori (avn − aan); gt = guadagno totale (tabacco + accessori). Calcolati giorno per giorno al centesimo.
+function tot(s,e){const a=iso(s),b=iso(e),t={n:0,c:0,pos:0,sat:0,rep:{},ot:0,ov:0,ag:0,av:0,avn:0,aa:0,aan:0,ga:0,gt:0},ak=accK();
  for(const d in db.days){if(d<a||d>b)continue;const r=db.days[d],rp=r.rep||{};
-  // un giorno con solo l'ordine tabacco non conta come chiusura
-  if(!(r.ot&&!r.c&&!r.pos&&!r.sat&&!Object.keys(rp).length))t.n++;
+  // un giorno con solo ordine tabacco o acquisto accessori non conta come chiusura
+  if(!((r.ot||r.aa)&&!r.c&&!r.pos&&!r.sat&&!Object.keys(rp).length))t.n++;
   t.c+=r.c||0;t.pos+=r.pos||0;t.sat+=r.sat||0;t.ot=c2(t.ot+(r.ot||0));t.ov=c2(t.ov+vendita(r.ot));t.ag=c2(t.ag+guadagno(r.ot));
+  t.av=c2(t.av+(rp[ak]||0));t.avn=c2(t.avn+senzaIva(rp[ak]));t.aa=c2(t.aa+(r.aa||0));t.aan=c2(t.aan+senzaIva(r.aa));
+  t.ga=c2(t.avn-t.aan);t.gt=c2(t.ag+t.ga);
   for(const k in rp)t.rep[k]=(t.rep[k]||0)+(rp[k]||0)}return t}
 // Riquadro «Tabacco e Monopolio» del Riepilogo: calcolato solo dagli ordini, separato dagli altri calcoli
 function cardTab(t){
@@ -249,7 +266,20 @@ function cardTab(t){
  <div class="row"><span>Ordini pagati</span><b>${eur(t.ot)}</b></div>
  <div class="row"><span>Valore di vendita</span><b>${eur(t.ov)}</b></div>
  <div class="row gu"><span>Guadagno</span><b>${eur(t.ag)}</b></div></div>
- <p class="mute hint">Dagli ordini del periodo: valore di vendita = ordine ÷ 0,9; guadagno = valore − ordine (il tuo 10%). L'ordine conta nel giorno in cui lo segni. Non cambia incassato, reparti e Altro.</p>`}
+ <p class="mute hint">Dagli ordini del periodo: valore di vendita = ordine ÷ 0,9; guadagno = valore − ordine (il tuo 10%). L'ordine conta nel giorno in cui lo segni. Non cambia incassato, reparti e Altro.</p>
+ <h2>${esc(accK())} (IVA 22%)</h2><div class="card">
+ <div class="row"><span>Venduti (IVA compresa)</span><b>${eur(t.av)}</b></div>
+ <div class="row sub"><span>Venduti senza IVA</span><b>${eur(t.avn)}</b></div>
+ <div class="row"><span>Acquisti (IVA compresa)</span><b>${eur(t.aa)}</b></div>
+ <div class="row sub"><span>Acquisti senza IVA</span><b>${eur(t.aan)}</b></div>
+ <div class="row gu"><span>Guadagno</span><b>${eur(t.ga)}</b></div>
+ <div class="row sub"><span>IVA da versare (vendite − acquisti)</span><b>${eur(c2(t.av-t.avn-(t.aa-t.aan)))}</b></div></div>
+ <p class="mute hint">Senza IVA = importo ÷ 1,22 (l'IVA degli acquisti si recupera). Guadagno = venduti senza IVA − acquisti senza IVA. Gli acquisti contano nel giorno in cui li segni.</p>
+ <h2>Guadagno totale</h2><div class="card">
+ <div class="row"><span>Tabacco e Monopolio</span><b>${eur(t.ag)}</b></div>
+ <div class="row"><span>${esc(accK())}</span><b>${eur(t.ga)}</b></div>
+ <div class="row gu tot"><span>Totale</span><b>${eur(t.gt)}</b></div></div>
+ <p class="mute hint">Non comprende ancora gratta e vinci, Lotto, ricariche e le spese del negozio, e non tiene conto della merce rimasta sugli scaffali.</p>`}
 const sumRep=t=>Object.values(t.rep).reduce((a,b)=>a+b,0);
 // Media per chiusura: importo diviso per le chiusure registrate; senza chiusure non c'è media (null)
 const media=(x,n)=>{if(!(n>0))return null;const k=Math.round((x||0)*100),m=Math.round(Math.abs(k)/n)/100;return k<0?-m:m};
@@ -377,6 +407,9 @@ function vReport(){
  const c3=(x,r)=>r.n||r.ot?`<td>${z(x)}</td>`:'<td class="z">—</td>';
  const r3=m.map((r,i)=>`<tr><td>${MESI[i]}</td>${c3(r.ot,r)}${c3(r.ov,r)}${c3(r.ag,r)}</tr>`).join('')
   +`<tr class="s"><td>Totale ${y}</td><td>${z(t.ot)}</td><td>${z(t.ov)}</td><td>${z(t.ag)}</td></tr>`;
+ const c4=(x,r)=>r.n||r.ot||r.aa?`<td>${z(x)}</td>`:'<td class="z">—</td>';
+ const r4=m.map((r,i)=>`<tr><td>${MESI[i]}</td>${c4(r.avn,r)}${c4(r.aan,r)}${c4(r.ga,r)}${c4(r.gt,r)}</tr>`).join('')
+  +`<tr class="s"><td>Totale ${y}</td><td>${z(t.avn)}</td><td>${z(t.aan)}</td><td>${z(t.ga)}</td><td>${z(t.gt)}</td></tr>`;
  const d=c2(c2(inc(t))-c2(sumRep(t)));
  const oggi=new Date().toLocaleDateString('it-IT',{day:'numeric',month:'long',year:'numeric'});
  return `<h1>Report annuale</h1>
@@ -390,14 +423,16 @@ function vReport(){
  <div class="card tw"><table><tr><th>Mese</th><th>Contanti</th><th>POS</th><th>Satispay</th><th>Totale incassato</th><th>Chiusure</th></tr>${r2}</table></div>
  <h2>Tabacco e Monopolio (€)</h2>
  <div class="card tw"><table><tr><th>Mese</th><th>Ordini pagati</th><th>Valore di vendita</th><th>Guadagno</th></tr>${r3}</table></div>
- <p class="mute">Contanti al netto del fondo cassa. «—» = nessuna chiusura registrata nel mese. Tabacco e Monopolio: valore di vendita = ordini ÷ 0,9, guadagno = valore − ordini. Altro (totale incassato meno totale reparti: tabacco, gratta e vinci, ricariche e simili) nel ${y}: <b class="${d===0?'ok':'ko'}">${d===0?'nessuna ✓':eur(d)}</b>.</p>
+ <h2>${esc(accK())} e guadagno totale (€)</h2>
+ <div class="card tw"><table><tr><th>Mese</th><th>Venduti senza IVA</th><th>Acquisti senza IVA</th><th>Guadagno ${esc(accK())}</th><th>Guadagno totale</th></tr>${r4}</table></div>
+ <p class="mute">Contanti al netto del fondo cassa. «—» = nessuna chiusura registrata nel mese. Tabacco e Monopolio: valore di vendita = ordini ÷ 0,9, guadagno = valore − ordini. ${esc(accK())}: senza IVA = importo ÷ 1,22; guadagno totale = tabacco + ${esc(accK())}. Altro (totale incassato meno totale reparti: tabacco, gratta e vinci, ricariche e simili) nel ${y}: <b class="${d===0?'ok':'ko'}">${d===0?'nessuna ✓':eur(d)}</b>.</p>
  <div class="noprint"><button class="btn" id="print">Stampa / PDF</button><button class="btn ghost" id="rcsv">Esporta CSV</button>
  <p class="mute">Per il PDF: <i>Stampa / PDF</i> → nella stampa tocca Condividi (o allarga l'anteprima) → <i>Salva in File</i>.</p></div>`}
 
 function rcsv(){const y=repY,{m,t,names}=annuale(y),v=x=>c2(x).toFixed(2).replace('.',','),q=s=>/[;"\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;
  const inc=r=>(r.c||0)+(r.pos||0)+(r.sat||0);
- const row=(l,r)=>[l,...names.map(k=>v(r.rep[k])),v(sumRep(r)),v(r.c),v(r.pos),v(r.sat),v(inc(r)),r.n,v(r.ot),v(r.ov),v(r.ag)].join(';');
- const out=[['Mese',...names.map(q),'Totale reparti','Contanti','POS','Satispay','Totale incassato','Chiusure','Ordini tabacco','Valore di vendita tabacco','Guadagno tabacco'].join(';'),...m.map((r,i)=>row(MESI[i],r)),row('Totale '+y,t)];
+ const row=(l,r)=>[l,...names.map(k=>v(r.rep[k])),v(sumRep(r)),v(r.c),v(r.pos),v(r.sat),v(inc(r)),r.n,v(r.ot),v(r.ov),v(r.ag),v(r.avn),v(r.aan),v(r.ga),v(r.gt)].join(';');
+ const out=[['Mese',...names.map(q),'Totale reparti','Contanti','POS','Satispay','Totale incassato','Chiusure','Ordini tabacco','Valore di vendita tabacco','Guadagno tabacco','Accessori venduti senza IVA','Acquisti accessori senza IVA','Guadagno accessori','Guadagno totale'].join(';'),...m.map((r,i)=>row(MESI[i],r)),row('Totale '+y,t)];
  saveFile(`report-annuale-${y}.csv`,'text/csv',out.join('\n'))}
 
 function vImp(){return `<h1>Reparti e backup</h1><h2>Reparti</h2>
@@ -419,8 +454,8 @@ function csv(){const[s,e]=rng(mode,anchor),a=iso(s),b=iso(e),m=x=>String(x==null
  const ds=Object.keys(db.days).filter(d=>d>=a&&d<=b).sort();
  // reparti attuali + reparti eliminati che hanno importi nel periodo
  const n=[...new Set([...db.reparti,...ds.flatMap(d=>Object.keys(db.days[d].rep||{}))])];
- const out=[['Data','Fondo cassa','Contanti','POS','Satispay',...n.map(q),'Ordine tabacco'].join(';')];
- ds.forEach(d=>{const r=db.days[d];out.push([d,m(r.f),m(r.c),m(r.pos),m(r.sat),...n.map(k=>m((r.rep||{})[k])),m(r.ot)].join(';'))});
+ const out=[['Data','Fondo cassa','Contanti','POS','Satispay',...n.map(q),'Ordine tabacco','Acquisto accessori'].join(';')];
+ ds.forEach(d=>{const r=db.days[d];out.push([d,m(r.f),m(r.c),m(r.pos),m(r.sat),...n.map(k=>m((r.rep||{})[k])),m(r.ot),m(r.aa)].join(';'))});
  saveFile(`chiusure-${a}_${b}.csv`,'text/csv',out.join('\n'))}
 
 // Riaprendo l'app (anche rimasta aperta in sottofondo) nel giorno dopo, la data torna a oggi
@@ -437,7 +472,7 @@ A.addEventListener('change',e=>{const t=e.target;
  else if(t.dataset.n!==undefined){const o=t.dataset.n,n=t.value.trim();
   if(!n||(n!==o&&db.reparti.includes(n))){t.value=o;return}
   if(n!==o&&hasData(n)&&!confirm(`«${n}» è un reparto eliminato con importi già registrati.\n\nOK = riattivalo con il suo storico: gli importi di «${o}» vengono aggiunti ai suoi.\nAnnulla = scegli un altro nome.`)){t.value=o;return}
-  db.reparti[db.reparti.indexOf(o)]=n;
+  db.reparti[db.reparti.indexOf(o)]=n;if(o===accK())db.acc=n;
   // sposta gli importi; se nello stesso giorno c'è già il nome nuovo, li somma (nessun importo viene perso)
   for(const d in db.days){const r=db.days[d].rep;if(r&&o in r&&n!==o){r[n]=n in r?c2((r[n]||0)+(r[o]||0)):r[o];delete r[o]}}
   save();render()}
@@ -449,7 +484,8 @@ A.addEventListener('click',e=>{const h=e.target.closest('[data-b]');
  if(h){const i=+h.dataset.b;selB=selB===i?-1:i;document.querySelectorAll('.hit').forEach(r=>r.classList.toggle('sel',+r.dataset.b===selB));$('#ci').innerHTML=chInfo();return}
  const b=e.target.closest('button');if(!b)return;const d=b.dataset,id=b.id;
  if(id==='save'){const r=read();
-  if(!r.c&&!r.pos&&!r.sat&&!r.ot&&!Object.keys(r.rep).length){toast('Inserisci almeno un importo');return}
+  if(!r.c&&!r.pos&&!r.sat&&!r.ot&&!r.aa&&!g0('#ct')&&!Object.keys(r.rep).length){toast('Inserisci almeno un importo');return}
+  if(r.c<0&&!confirm(`Il fondo cassa è più grande dei contanti in cassa: i contanti incassati risultano ${eur(r.c)}.\n\nSalvare comunque?`))return;
   const old=db.days[cur];
   if(old&&!stesso(old,r)&&!confirm(`Esiste già una chiusura salvata per ${new Date(cur+'T12:00').toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}.\n\nSostituirla con questi importi?`))return;
   db.days[cur]=r;db.fondo=r.f;if(!save()){render();return}hap();toast('Chiusura salvata ✓');render()}
