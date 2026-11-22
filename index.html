@@ -102,6 +102,9 @@ h2 .ib{width:18px;height:18px;font-size:11px;vertical-align:0}
 .ts .tr{display:flex;justify-content:space-between;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.1);font-size:15px;color:var(--mute)}.ts .tr b{color:var(--ink)}
 h2.tsh{text-align:center;margin-top:28px}
 .ts{text-align:center}.ts .tb{text-align:center}.ts .tr{justify-content:center;gap:10px}
+.ts.hero{margin-bottom:14px}.ts.hero .hl{color:#a9c8ee;letter-spacing:.08em}
+.ts.hero .big{font-size:44px;letter-spacing:-.025em;margin:6px 0 10px;background:linear-gradient(95deg,#ffffff,#cfe5ff 50%,#a9b8ff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.ts.hero .big small{font-size:22px}.ts.hero .hs{color:#b3c3d6}.ts.hero .hq{margin:2px 0 8px}
 .ts.ko{border-color:rgba(255,123,114,.5);background:radial-gradient(120% 90% at 100% 0%,rgba(255,123,114,.25),transparent 60%),linear-gradient(160deg,#3a2230,#152031 70%)}
 .sg{flex:none;display:inline-flex;gap:2px;padding:3px;border-radius:12px;background:rgba(147,163,182,.1);border:1px solid var(--line)}
 .sg button{font:inherit;font-size:14px;font-weight:600;padding:6px 10px;border:0;border-radius:9px;background:none;color:var(--mute);white-space:nowrap;transition:background .2s,color .2s}
@@ -150,7 +153,7 @@ nav button.on svg{transform:translateY(-1px) scale(1.08)}
 .tw td.z{color:var(--mute)}
 .ph small{display:block;font-size:11pt;font-weight:400}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
-@media print{.tip{display:block!important}.ib{display:none!important}:root{color-scheme:light;--ink:#000;--mute:#444;--line:#bbb;--bg:#fff;--card:#fff;--acc:#000}*{animation:none!important;box-shadow:none!important}body::before{display:none}nav,.noprint,#t{display:none!important}.ph{display:block;font-weight:700;font-size:20px;margin:0 0 10px}body{background:#fff;padding:0;font-size:12pt}.card{border:0;padding:0;background:#fff}h1{display:none}.hero{margin:0 0 10px}.big{font-size:22pt}.chip{background:none!important;padding:0}.ch .b1{fill:#000}.ch .b0,.lg .s0{fill:#bbb;background:#bbb}.ch .hit.sel{fill:transparent}.lg i,.hb i{-webkit-print-color-adjust:exact;print-color-adjust:exact}.hb .b1{background:#000}.hb .b0{background:#bbb}.tw{overflow:visible;padding:0}.tw table{font-size:8.5pt}.tw th{font-size:8pt;min-width:0}.tw th,.tw td{padding:3px 0 3px 6px}.tw td:first-child{position:static}h2{color:#000;margin:14pt 0 4pt;break-after:avoid;text-transform:none;letter-spacing:0;font-size:12pt}table{break-inside:avoid}}
+@media print{.ts{background:#fff!important;border:0!important;padding:0!important;text-align:left}.ts .big,.ts .tv{background:none!important;-webkit-text-fill-color:#000!important;color:#000}.ts.hero .hl,.ts.hero .hs{color:#444}.tip{display:block!important}.ib{display:none!important}:root{color-scheme:light;--ink:#000;--mute:#444;--line:#bbb;--bg:#fff;--card:#fff;--acc:#000}*{animation:none!important;box-shadow:none!important}body::before{display:none}nav,.noprint,#t{display:none!important}.ph{display:block;font-weight:700;font-size:20px;margin:0 0 10px}body{background:#fff;padding:0;font-size:12pt}.card{border:0;padding:0;background:#fff}h1{display:none}.hero{margin:0 0 10px}.big{font-size:22pt}.chip{background:none!important;padding:0}.ch .b1{fill:#000}.ch .b0,.lg .s0{fill:#bbb;background:#bbb}.ch .hit.sel{fill:transparent}.lg i,.hb i{-webkit-print-color-adjust:exact;print-color-adjust:exact}.hb .b1{background:#000}.hb .b0{background:#bbb}.tw{overflow:visible;padding:0}.tw table{font-size:8.5pt}.tw th{font-size:8pt;min-width:0}.tw th,.tw td{padding:3px 0 3px 6px}.tw td:first-child{position:static}h2{color:#000;margin:14pt 0 4pt;break-after:avoid;text-transform:none;letter-spacing:0;font-size:12pt}table{break-inside:avoid}}
 </style>
 </head>
 <body>
@@ -158,7 +161,7 @@ nav button.on svg{transform:translateY(-1px) scale(1.08)}
 <nav>
 <button data-v="chiusura"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6M9 16h3"/></svg>Chiusura</button>
 <button data-v="riepilogo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h16"/><rect x="5" y="11" width="3" height="6" rx="1"/><rect x="10.5" y="6" width="3" height="11" rx="1"/><rect x="16" y="9" width="3" height="8" rx="1"/></svg>Riepilogo</button>
-<button data-v="impostazioni"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><path d="M16.5 13.5v6M13.5 16.5h6"/></svg>Reparti e backup</button>
+<button data-v="impostazioni"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><path d="M16.5 13.5v6M13.5 16.5h6"/></svg>Impostazioni</button>
 </nav>
 <div id="t"></div>
 <script>
@@ -211,7 +214,7 @@ if(!db.v4){db=migra(db);mig=true}
 const accK=()=>db.acc||'Accessori';
 // Salva in memoria; se non riesce mostra solo l'errore, torna ai dati davvero salvati e restituisce false
 const save=()=>{try{localStorage.setItem(K,JSON.stringify(db));return true}catch(e){
- alert('Salvataggio NON riuscito: la memoria del telefono è piena o bloccata. Le ultime modifiche non sono state salvate.\n\nFai subito un backup da «Reparti e backup» e libera spazio sul telefono.');
+ alert('Salvataggio NON riuscito: la memoria del telefono è piena o bloccata. Le ultime modifiche non sono state salvate.\n\nFai subito un backup da «Impostazioni» e libera spazio sul telefono.');
  try{db=JSON.parse(localStorage.getItem(K))||init()}catch(_){}return false}};
 if(mig)save();
 if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();
@@ -326,7 +329,7 @@ function cardTab(t){
  <div class="row"><span>Ordini pagati</span><b>${eur(t.ot)}</b></div>
  <div class="row"><span>Valore di vendita</span><b>${eur(t.ov)}</b></div>
  <div class="row gu"><span>Guadagno</span><b>${eur(t.ag)}</b></div></div>
- <p class="mute hint tip" id="t-tab">Dagli ordini del periodo: valore di vendita = ordine ÷ 0,9; guadagno = valore − ordine (il tuo 10%). L'ordine conta nel giorno in cui lo segni. Non cambia incassato, reparti e Altro.</p>
+ <p class="mute hint tip" id="t-tab">Dagli ordini del periodo: valore di vendita = ordine ÷ 0,9; guadagno = valore − ordine (il tuo 10%). L'ordine conta nel giorno in cui lo segni. Non cambia incassato e reparti.</p>
  <h2>${esc(accK())} (IVA 22%)${ib('t-acc')}</h2><div class="card">
  <div class="row"><span>Venduti (IVA compresa)</span><b>${eur(t.av)}</b></div>
  <div class="row sub"><span>Venduti senza IVA</span><b>${eur(t.avn)}</b></div>
@@ -430,12 +433,12 @@ function vRiepilogo(){
   const ws=new Date(s.getFullYear(),s.getMonth(),s.getDate()-7),w=tot(ws,ws),wi=w.c+w.pos+w.sat,dq=c2(ti-sumRep(t));
   // senza chiusura nel giorno la percentuale non ha senso: «—», ma gli importi di confronto restano
   const cv=x=>r?varp(ti,x):null;
-  H=`<div class="card hero"><span class="hl">${k===todayK?'Incassato oggi':'Totale incassato'}</span><div class="big">${bigEur(ti)}</div>
- ${r?`<div class="hq ${dq===0?'ok':dq>0?'al':'ko'}">${dq===0?'Quadra ✓':dq>0?`Altro ${eur(dq)} (tabacco, gratta e vinci, ricariche e simili)`:`Differenza ${eur(dq)} (reparti oltre l'incassato)`}</div>`:'<div class="hs">Nessuna chiusura per questo giorno.</div>'}
+  H=`<div class="ts hero"><span class="hl">${k===todayK?'Incassato oggi':'Totale incassato'}</span><div class="big">${bigEur(ti)}</div>
+ ${r?(dq<0?`<div class="hq ko">Differenza ${eur(dq)} (reparti oltre l'incassato)</div>`:''):'<div class="hs">Nessuna chiusura per questo giorno.</div>'}
  <div class="hs">${chip(cv(wi))} sulla settimana scorsa (${dl(ws)}: ${eur(wi)})</div>
  <div class="hs">${chip(cv(pi))} sull'anno prima (${dl(ps,1)}: ${eur(pi)})</div></div>`}
  else{G=grafico(mode,s,e,ps,pe);const hv=varp(ti,pi);
-  H=`<div class="card hero"><span class="hl">Totale incassato</span><div class="big">${bigEur(ti)}</div>
+  H=`<div class="ts hero"><span class="hl">Totale incassato</span><div class="big">${bigEur(ti)}</div>
  <div class="hs">${chip(hv)} sull'anno prima (${eur(pi)})</div>
  <div class="hs">${t.n} ${t.n===1?'chiusura':'chiusure'} · media ${hm==null?'—':eur(hm)}</div></div>`}
  let note='';
@@ -445,14 +448,14 @@ function vRiepilogo(){
  const md=(x,n)=>{if(G1)return '';const m=media(x,n);return `<small>${m==null?'—':eur(m)}</small>`};
  const tr=(l,a,b,st)=>{const v=varp(a,b);return `<tr${st?' class="s"':''}><td>${l}</td><td>${eur(a)}${md(a,t.n)}</td><td>${eur(b)}${md(b,p.n)}</td><td class="v${v>0?' up':v<0?' dn':''}">${pct(v)}</td></tr>`};
  const rows=names.map(n=>tr(esc(n),t.rep[n],p.rep[n])).join('')
-  +tr('Totale reparti',sumRep(t),sumRep(p),1)+tr('Altro',t.c+t.pos+t.sat-sumRep(t),p.c+p.pos+p.sat-sumRep(p))+tr('di cui saldo Brightstar',t.bs,p.bs)+tr('Contanti',t.c,p.c)+tr('POS',t.pos,p.pos)+tr('Satispay',t.sat,p.sat)
+  +tr('Totale reparti',sumRep(t),sumRep(p),1)+tr('di cui saldo Brightstar',t.bs,p.bs)+tr('Contanti',t.c,p.c)+tr('POS',t.pos,p.pos)+tr('Satispay',t.sat,p.sat)
   +tr('Totale incassato',t.c+t.pos+t.sat,p.c+p.pos+p.sat,1)+tr('Ordini tabacco',t.ot,p.ot);
  const a=iso(s),b=iso(e),days=Object.keys(db.days).filter(d=>d>=a&&d<=b).sort().reverse();
  const list=G1?`<h2>Chiusura del giorno</h2><button class="btn${r?' ghost':''}" data-edit="${k}">${r?'Apri chiusura':'Inserisci chiusura'}</button>`
   :`<h2>Chiusure del periodo</h2><div class="card">${days.map(d=>{const r=db.days[d];return `<button class="row ln" data-edit="${d}"><span>${new Date(d+'T12:00').toLocaleDateString('it-IT',{weekday:'short',day:'numeric',month:'short'})}</span><b>${eur((r.c||0)+(r.pos||0)+(r.sat||0))}</b></button>`}).join('')||'<p class="mute">Nessuna chiusura in questo periodo.</p>'}</div>`;
  const th=G1?'<th>Giorno</th><th>Anno prima</th>':'<th>Periodo<small>media</small></th><th>Anno prima<small>media</small></th>';
- const spiega=G1?'«Altro» = incassato meno reparti (tabacco, gratta e vinci, ricariche e simili). «Differenza in %» = di quanto il giorno è cambiato rispetto all\'anno prima; «—» quando non si può calcolare (anno prima a zero).'
-  :`${t.n} chiusure registrate (anno prima: ${p.n}). «Altro» = incassato meno reparti (tabacco, gratta e vinci, ricariche e simili). Sotto ogni importo, in grigio, la media per chiusura (importo diviso per le chiusure registrate). «Differenza in %» = di quanto il periodo è cambiato rispetto all'anno prima; «—» quando non si può calcolare (nessuna chiusura o anno prima a zero).`;
+ const spiega=G1?'«Differenza in %» = di quanto il giorno è cambiato rispetto all\'anno prima; «—» quando non si può calcolare (anno prima a zero).'
+  :`${t.n} chiusure registrate (anno prima: ${p.n}). Sotto ogni importo, in grigio, la media per chiusura (importo diviso per le chiusure registrate). «Differenza in %» = di quanto il periodo è cambiato rispetto all'anno prima; «—» quando non si può calcolare (nessuna chiusura o anno prima a zero).`;
  return `<h1>Riepilogo</h1>
  <div class="seg noprint">${['giorno','settimana','mese','anno'].map(m=>`<button data-m="${m}" class="${m===mode?'on':''}">${m[0].toUpperCase()+m.slice(1)}</button>`).join('')}</div>
  <div class="nav2 noprint"><button data-s="-1" aria-label="Periodo precedente">‹</button><b>${L}</b><button data-s="1" aria-label="Periodo successivo">›</button></div>
@@ -493,7 +496,6 @@ function vReport(){
  const c6=(x,r)=>r.n||r.lp||r.lh?`<td>${z(x)}</td>`:'<td class="z">—</td>';
  const r6=m.map((r,i)=>`<tr><td>${MESI[i]}</td>${c6(r.lp,r)}${c6(r.lh,r)}${c6(r.gp,r)}</tr>`).join('')
   +`<tr class="s"><td>Totale ${y}</td><td>${z(t.lp)}</td><td>${z(t.lh)}</td><td>${z(t.gp)}</td></tr>`;
- const d=c2(c2(inc(t))-c2(sumRep(t)));
  const oggi=new Date().toLocaleDateString('it-IT',{day:'numeric',month:'long',year:'numeric'});
  return `<h1>Report annuale</h1>
  <div class="noprint"><button class="btn ghost" id="back" style="margin:0 0 10px">‹ Torna al riepilogo</button></div>
@@ -512,7 +514,7 @@ function vReport(){
  <div class="card tw"><table><tr><th>Mese</th><th>Guadagno Lotto (Aggio Gioco)</th><th>Ordini Gratta e Vinci</th><th>Guadagno Gratta e Vinci</th><th>Guadagno Lotteria Italia</th><th>Guadagno Brightstar</th></tr>${r5}</table></div>
  <h2>LisPoint (€)</h2>
  <div class="card tw"><table><tr><th>Mese</th><th>Compensi LIS Pay</th><th>Compensi LIS Holding</th><th>Guadagno LisPoint</th></tr>${r6}</table></div>
- <p class="mute">Contanti al netto del fondo cassa. «—» = nessuna chiusura registrata nel mese. Tabacco e Monopolio: valore di vendita = ordini ÷ 0,9, guadagno = valore − ordini. ${esc(accK())}: senza IVA = importo ÷ 1,22; Brightstar: guadagno Lotto = Aggio Gioco degli estratti conto del Lotto; Gratta e Vinci: valore = ordini ÷ 0,92, guadagno = valore − ordini; Lotteria Italia (parte dell'ordine): ÷ 0,9, guadagno 10%. LisPoint: compensi dagli estratti conto. Guadagno totale = tabacco + ${esc(accK())} + Brightstar + LisPoint. Altro (totale incassato meno totale reparti: tabacco, gratta e vinci, ricariche e simili) nel ${y}: <b class="${d===0?'ok':'ko'}">${d===0?'nessuna ✓':eur(d)}</b>.</p>
+ <p class="mute">Contanti al netto del fondo cassa. «—» = nessuna chiusura registrata nel mese. Tabacco e Monopolio: valore di vendita = ordini ÷ 0,9, guadagno = valore − ordini. ${esc(accK())}: senza IVA = importo ÷ 1,22; Brightstar: guadagno Lotto = Aggio Gioco degli estratti conto del Lotto; Gratta e Vinci: valore = ordini ÷ 0,92, guadagno = valore − ordini; Lotteria Italia (parte dell'ordine): ÷ 0,9, guadagno 10%. LisPoint: compensi dagli estratti conto. Guadagno totale = tabacco + ${esc(accK())} + Brightstar + LisPoint.</p>
  <div class="noprint"><button class="btn" id="print">Stampa / PDF</button><button class="btn ghost" id="rcsv">Esporta CSV</button>
  <p class="mute">Per il PDF: <i>Stampa / PDF</i> → nella stampa tocca Condividi (o allarga l'anteprima) → <i>Salva in File</i>.</p></div>`}
 
@@ -522,7 +524,7 @@ function rcsv(){const y=repY,{m,t,names}=annuale(y),v=x=>c2(x).toFixed(2).replac
  const out=[['Mese',...names.map(q),'Totale reparti','Contanti','POS','Satispay','Totale incassato','Chiusure','Ordini tabacco','Valore di vendita tabacco','Guadagno tabacco','Accessori venduti senza IVA','Acquisti accessori senza IVA','Guadagno accessori','Aggio Gioco Lotto','Ordini Gratta e Vinci','Guadagno Gratta e Vinci','Guadagno Lotteria Italia','Guadagno Brightstar','Compensi LIS Pay','Compensi LIS Holding','Guadagno LisPoint','Guadagno totale'].join(';'),...m.map((r,i)=>row(MESI[i],r)),row('Totale '+y,t)];
  saveFile(`report-annuale-${y}.csv`,'text/csv',out.join('\n'))}
 
-function vImp(){return `<h1>Reparti e backup</h1><h2>Reparti</h2>
+function vImp(){return `<h1>Impostazioni</h1><h2>Reparti</h2>
  <div class="card">${db.reparti.map(n=>`<div class="row"><input class="l" data-n="${esc(n)}" value="${esc(n)}"><button class="x" data-x="${esc(n)}">Elimina</button></div>`).join('')}
  <div class="row"><input class="l" id="nn" placeholder="Nuovo reparto"><button class="x" id="add" style="color:var(--acc)">Aggiungi</button></div></div>
  <h2>Backup</h2><div class="card pad"><p class="mute" style="margin-top:0">I dati sono solo su questo iPhone. A fine mese salva un backup in File (iCloud Drive).</p>
