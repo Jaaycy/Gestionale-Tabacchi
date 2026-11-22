@@ -97,6 +97,7 @@ h2 .ib{width:18px;height:18px;font-size:11px;vertical-align:0}
 .row input.bs{width:40%}
 /* avviso settimanale dell'estratto conto Lotto: piccolo e grigio, sparisce quando la scheda Brightstar è compilata */
 .av{display:block;width:100%;font:inherit;font-size:13.5px;text-align:left;color:var(--mute);background:rgba(147,163,182,.07);border:1px dashed var(--line);border-radius:12px;padding:9px 12px;margin:0 0 12px}
+.av+.av{margin-top:-4px}
 .pop{animation:pop .45s var(--ease)}
 @keyframes pop{0%{transform:scale(.94)}55%{transform:scale(1.04)}100%{transform:scale(1)}}
 nav{position:fixed;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom));max-width:536px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:6px;border-radius:24px;background:rgba(24,36,53,.72);-webkit-backdrop-filter:saturate(170%) blur(20px);backdrop-filter:saturate(170%) blur(20px);border:1px solid rgba(255,255,255,.08);box-shadow:0 14px 34px -10px rgba(0,0,0,.65)}
@@ -221,7 +222,8 @@ function vChiusura(){
   // reparti eliminati che hanno un importo in questa chiusura: compaiono in grigio, restano nella quadratura e nel salvataggio
   +Object.keys(rp).filter(n=>!db.reparti.includes(n)).map(n=>`<label class="row old"><span>${esc(n)}<em>eliminato</em></span><input data-r="${esc(n)}" inputmode="decimal" placeholder="0,00" value="${fi(rp[n])}"></label>`).join('');
  return `<div class="hd"><h1>Chiusura</h1><span class="pill" id="qp"></span></div>
- ${daCopiare()?'<button type="button" class="av noprint" id="av">Estratto conto Lotto della settimana da copiare nella scheda Brightstar ›</button>':''}
+ ${daCopiare()?'<button type="button" class="av noprint" id="av" data-to="hb" data-in="eg">Estratto conto Lotto della settimana da copiare nella scheda Brightstar ›</button>':''}
+ ${daCopiareLp()?'<button type="button" class="av noprint" id="av2" data-to="hl" data-in="lp">Compensi LisPoint del mese da copiare nella scheda LisPoint ›</button>':''}
  <div class="card"><label class="row"><span>Data</span><input id="d" type="date" value="${cur}"></label></div>
  <h2>Cassa</h2><div class="card">
   <div class="row"><button class="tg" id="tg" aria-expanded="${cfOpen}">Contanti in cassa</button><input id="ct" aria-label="Contanti in cassa, fondo compreso" inputmode="decimal" placeholder="0,00" value="${db.days[cur]?fi(c2((r.c||0)+(r.f||0))):''}"></div>
@@ -237,6 +239,9 @@ function vChiusura(){
   <label class="row"><span>Ordine Gratta e Vinci</span><input id="og" inputmode="decimal" placeholder="0,00" value="${fi(r.og)}"></label>
   <label class="row sub last"><span>di cui Lotteria Italia</span><input id="ol" inputmode="decimal" placeholder="0,00" value="${fi(r.ol)}"></label></div>
  <p class="mute hint tip" id="t-bw">Saldo: ogni sera, copia il saldo di fine giornata del terminale e scegli «Devo io» o «Mi devono». Entrate Gioco e Ordine Gratta e Vinci: 1 volta a settimana, quando arriva la mail del lunedì (Entrate Gioco dall'estratto conto Lotto; ordine = quanto paghi, già senza aggio). «di cui Lotteria Italia»: solo se nell'ordine ci sono anche quei biglietti, quanto li hai pagati.</p>
+ <h2 id="hl">LisPoint${ib('t-lp')}</h2><div class="card"><label class="row"><span>Compensi LIS Pay</span><input id="lp" inputmode="decimal" placeholder="0,00" value="${fi(r.lp)}"></label>
+  <label class="row last"><span>Compensi LIS Holding</span><input id="lh" inputmode="decimal" placeholder="0,00" value="${fi(r.lh)}"></label></div>
+ <p class="mute hint tip" id="t-lp">Da compilare 1 volta al mese, quando arrivano gli estratti conto LisPoint: copia il totale «Compensi» di LIS Pay (bollette, PagoPA) e di LIS Holding (ricariche).</p>
  <h2>Ordini e acquisti</h2><div class="card"><div class="row"><span class="lb"><label for="ot">Ordine tabacco</label>${ib('t-ot')}</span><input id="ot" inputmode="decimal" placeholder="0,00" value="${fi(r.ot)}"></div>
   <p class="mute hint tip" id="t-ot">Solo il giorno in cui mandi l'ordine. Inserisci l'importo già senza aggio.</p>
   <div class="row last"><span class="lb"><label for="aa">Acquisto accessori</label>${ib('t-aa')}</span><input id="aa" inputmode="decimal" placeholder="0,00" value="${fi(r.aa)}"></div>
@@ -248,14 +253,18 @@ const g0=s=>num(($(s)||{}).value);
 function read(){const g=s=>num(($(s)||{}).value),rep={};
  document.querySelectorAll('[data-r]').forEach(i=>{if(i.value.trim()!=='')rep[i.dataset.r]=num(i.value)});
  // contanti incassati = contanti in cassa − fondo cassa (solo se i contanti in cassa sono stati inseriti)
- const ct=g('#ct'),f=g('#f'),o={c:ct?c2(ct-f):0,f,pos:g('#pos'),sat:g('#sat'),rep},ot=g('#ot'),aa=g('#aa'),bs=c2(Math.abs(g('#bs'))*bsS),og=g('#og'),ol=g('#ol'),eg=$('#eg');
+ const ct=g('#ct'),f=g('#f'),o={c:ct?c2(ct-f):0,f,pos:g('#pos'),sat:g('#sat'),rep},ot=g('#ot'),aa=g('#aa'),bs=c2(Math.abs(g('#bs'))*bsS),og=g('#og'),ol=g('#ol'),eg=$('#eg'),lpI=$('#lp'),lhI=$('#lh');
  // ordine tabacco, acquisto accessori, saldo e ordine Gratta e Vinci si salvano solo se ci sono (così le chiusure vecchie restano identiche);
  // Entrate Gioco si salvano anche se zero, purché scritte (settimana senza giocate: l'avviso sparisce)
- if(ot)o.ot=ot;if(aa)o.aa=aa;if(bs)o.bs=bs;if(eg&&eg.value.trim()!=='')o.eg=num(eg.value);if(og)o.og=og;if(ol)o.ol=ol;return o}
+ if(ot)o.ot=ot;if(aa)o.aa=aa;if(bs)o.bs=bs;if(eg&&eg.value.trim()!=='')o.eg=num(eg.value);if(og)o.og=og;if(ol)o.ol=ol;
+ // compensi LisPoint: si salvano se scritti (anche 0, così l'avviso del mese sparisce)
+ if(lpI&&lpI.value.trim()!=='')o.lp=num(lpI.value);if(lhI&&lhI.value.trim()!=='')o.lh=num(lhI.value);return o}
+// true se nel mese di oggi non sono ancora stati inseriti i compensi LisPoint
+function daCopiareLp(){const m=todayK.slice(0,7);for(const d in db.days)if(d.slice(0,7)===m&&(db.days[d].lp!=null||db.days[d].lh!=null))return false;return true}
 // true se nella settimana di oggi (da lunedì a domenica) non sono ancora state inserite le Entrate Gioco
 function daCopiare(){const[s,e]=rng('settimana',new Date(todayK+'T12:00')),a=iso(s),b=iso(e);for(const d in db.days)if(d>=a&&d<=b&&db.days[d].eg!=null)return false;return true}
 // true se due chiusure hanno gli stessi importi (l'ordine dei reparti non conta)
-const stesso=(a,b)=>{const k=o=>JSON.stringify([o.c,o.f,o.pos,o.sat,o.ot||0,o.aa||0,o.bs||0,o.eg==null?null:o.eg,o.og||0,o.ol||0,Object.entries(o.rep||{}).sort()]);return k(a)===k(b)};
+const stesso=(a,b)=>{const k=o=>JSON.stringify([o.c,o.f,o.pos,o.sat,o.ot||0,o.aa||0,o.bs||0,o.eg==null?null:o.eg,o.og||0,o.ol||0,o.lp==null?null:o.lp,o.lh==null?null:o.lh,Object.entries(o.rep||{}).sort()]);return k(a)===k(b)};
 function calc(){const q=$('#q');if(!q)return;
  const r=read(),tr=Object.values(r.rep).reduce((a,b)=>a+b,0),el=r.pos+r.sat,inc=r.c+el,d=Math.round((inc-tr)*100)/100,bs=r.bs||0,rs=c2(d-bs);
  // stato: e = nessun importo inserito, ok = quadra, al = «Altro» (incassato non battuto al registratore), ko = reparti (e saldo Brightstar) oltre l'incassato
@@ -288,17 +297,19 @@ const lab=(m,s,e)=>m==='giorno'?s.toLocaleDateString('it-IT',{weekday:'short',da
 // ga = guadagno accessori (avn − aan); bs = saldo Brightstar delle sere (+ devo io, − mi devono); eg = Entrate Gioco Lotto, al = aggio Lotto 8%;
 // og = ordini Gratta e Vinci (totale pagato), ol = di cui Lotteria Italia; gv = valore (Gratta e Vinci ÷ 0,92 + lotteria ÷ 0,9);
 // gg = guadagno Gratta e Vinci (8%), gl = guadagno Lotteria Italia (10%); gb = guadagno Brightstar (al + gg + gl);
-// gt = guadagno totale (tabacco + accessori + Brightstar). Calcolati giorno per giorno al centesimo.
-function tot(s,e){const a=iso(s),b=iso(e),t={n:0,c:0,pos:0,sat:0,rep:{},ot:0,ov:0,ag:0,av:0,avn:0,aa:0,aan:0,ga:0,bs:0,eg:0,al:0,og:0,ol:0,gv:0,gg:0,gl:0,gb:0,gt:0},ak=accK();
+// lp, lh = compensi LisPoint (LIS Pay, LIS Holding) dagli estratti conto mensili, gp = guadagno LisPoint (lp + lh);
+// gt = guadagno totale (tabacco + accessori + Brightstar + LisPoint). Calcolati giorno per giorno al centesimo.
+function tot(s,e){const a=iso(s),b=iso(e),t={n:0,c:0,pos:0,sat:0,rep:{},ot:0,ov:0,ag:0,av:0,avn:0,aa:0,aan:0,ga:0,bs:0,eg:0,al:0,og:0,ol:0,gv:0,gg:0,gl:0,gb:0,lp:0,lh:0,gp:0,gt:0},ak=accK();
  for(const d in db.days){if(d<a||d>b)continue;const r=db.days[d],rp=r.rep||{};
   // un giorno con solo ordini, acquisti o Entrate Gioco non conta come chiusura
-  if(!((r.ot||r.aa||r.og||r.ol||r.eg!=null)&&!r.c&&!r.pos&&!r.sat&&!r.bs&&!Object.keys(rp).length))t.n++;
+  if(!((r.ot||r.aa||r.og||r.ol||r.eg!=null||r.lp!=null||r.lh!=null)&&!r.c&&!r.pos&&!r.sat&&!r.bs&&!Object.keys(rp).length))t.n++;
   t.c+=r.c||0;t.pos+=r.pos||0;t.sat+=r.sat||0;t.ot=c2(t.ot+(r.ot||0));t.ov=c2(t.ov+vendita(r.ot));t.ag=c2(t.ag+guadagno(r.ot));
   t.av=c2(t.av+(rp[ak]||0));t.avn=c2(t.avn+senzaIva(rp[ak]));t.aa=c2(t.aa+(r.aa||0));t.aan=c2(t.aan+senzaIva(r.aa));
   t.ga=c2(t.avn-t.aan);t.bs=c2(t.bs+(r.bs||0));t.eg=c2(t.eg+(r.eg||0));t.al=c2(t.al+aggioLotto(r.eg));
   // Lotteria Italia: parte dell'ordine pagata per i suoi biglietti, aggio 10% come il tabacco (÷ 0,9); il resto dell'ordine è Gratta e Vinci (÷ 0,92)
   const gq=c2((r.og||0)-(r.ol||0));t.og=c2(t.og+(r.og||0));t.ol=c2(t.ol+(r.ol||0));t.gv=c2(t.gv+venditaGv(gq)+vendita(r.ol));
-  t.gg=c2(t.gg+guadagnoGv(gq));t.gl=c2(t.gl+guadagno(r.ol));t.gb=c2(t.al+t.gg+t.gl);t.gt=c2(t.ag+t.ga+t.gb);
+  t.gg=c2(t.gg+guadagnoGv(gq));t.gl=c2(t.gl+guadagno(r.ol));t.gb=c2(t.al+t.gg+t.gl);
+  t.lp=c2(t.lp+(r.lp||0));t.lh=c2(t.lh+(r.lh||0));t.gp=c2(t.lp+t.lh);t.gt=c2(t.ag+t.ga+t.gb+t.gp);
   for(const k in rp)t.rep[k]=(t.rep[k]||0)+(rp[k]||0)}return t}
 // Riquadro «Tabacco e Monopolio» del Riepilogo: calcolato solo dagli ordini, separato dagli altri calcoli
 function cardTab(t){
@@ -326,12 +337,18 @@ function cardTab(t){
  <div class="row gu"><span>Guadagno</span><b>${eur(t.gb)}</b></div>
  <div class="row sub"><span>Saldo delle sere (${t.bs<0?'mi devono':'devo io'})</span><b>${eur(Math.abs(t.bs))}</b></div></div>
  <p class="mute hint tip" id="t-bst">Guadagno Lotto = 8% delle Entrate Gioco dell'estratto conto. Gratta e Vinci: valore = ordine ÷ 0,92, guadagno = valore − ordine (il tuo 8%). Lotteria Italia: valore = importo ÷ 0,9, guadagno 10%. Contano nel giorno in cui li segni. Il saldo delle sere è la somma dei saldi del terminale: non è guadagno.</p>
+ <h2>LisPoint${ib('t-lps')}</h2><div class="card">
+ <div class="row"><span>Compensi LIS Pay (bollette, PagoPA)</span><b>${eur(t.lp)}</b></div>
+ <div class="row"><span>Compensi LIS Holding (ricariche)</span><b>${eur(t.lh)}</b></div>
+ <div class="row gu"><span>Guadagno</span><b>${eur(t.gp)}</b></div></div>
+ <p class="mute hint tip" id="t-lps">Dagli estratti conto mensili LisPoint: contano nel giorno in cui li scrivi, quindi sono precisi nel mese e nell'anno.</p>
  <h2>Guadagno totale${ib('t-gt')}</h2><div class="card">
  <div class="row"><span>Tabacco e Monopolio</span><b>${eur(t.ag)}</b></div>
  <div class="row"><span>${esc(accK())}</span><b>${eur(t.ga)}</b></div>
  <div class="row"><span>Brightstar</span><b>${eur(t.gb)}</b></div>
+ <div class="row"><span>LisPoint</span><b>${eur(t.gp)}</b></div>
  <div class="row gu tot"><span>Totale</span><b>${eur(t.gt)}</b></div></div>
- <p class="mute hint tip" id="t-gt">Non comprende ancora ricariche, bollette e le spese del negozio, e non tiene conto della merce rimasta sugli scaffali.</p>`}
+ <p class="mute hint tip" id="t-gt">Non comprende ancora le spese del negozio, e non tiene conto della merce rimasta sugli scaffali.</p>`}
 const sumRep=t=>Object.values(t.rep).reduce((a,b)=>a+b,0);
 // Media per chiusura: importo diviso per le chiusure registrate; senza chiusure non c'è media (null)
 const media=(x,n)=>{if(!(n>0))return null;const k=Math.round((x||0)*100),m=Math.round(Math.abs(k)/n)/100;return k<0?-m:m};
@@ -459,12 +476,15 @@ function vReport(){
  const c3=(x,r)=>r.n||r.ot?`<td>${z(x)}</td>`:'<td class="z">—</td>';
  const r3=m.map((r,i)=>`<tr><td>${MESI[i]}</td>${c3(r.ot,r)}${c3(r.ov,r)}${c3(r.ag,r)}</tr>`).join('')
   +`<tr class="s"><td>Totale ${y}</td><td>${z(t.ot)}</td><td>${z(t.ov)}</td><td>${z(t.ag)}</td></tr>`;
- const c4=(x,r)=>r.n||r.ot||r.aa||r.eg||r.og?`<td>${z(x)}</td>`:'<td class="z">—</td>';
+ const c4=(x,r)=>r.n||r.ot||r.aa||r.eg||r.og||r.lp||r.lh?`<td>${z(x)}</td>`:'<td class="z">—</td>';
  const r4=m.map((r,i)=>`<tr><td>${MESI[i]}</td>${c4(r.avn,r)}${c4(r.aan,r)}${c4(r.ga,r)}${c4(r.gt,r)}</tr>`).join('')
   +`<tr class="s"><td>Totale ${y}</td><td>${z(t.avn)}</td><td>${z(t.aan)}</td><td>${z(t.ga)}</td><td>${z(t.gt)}</td></tr>`;
  const c5=(x,r)=>r.n||r.eg||r.og?`<td>${z(x)}</td>`:'<td class="z">—</td>';
  const r5=m.map((r,i)=>`<tr><td>${MESI[i]}</td>${c5(r.eg,r)}${c5(r.al,r)}${c5(r.og,r)}${c5(r.gg,r)}${c5(r.gl,r)}${c5(r.gb,r)}</tr>`).join('')
   +`<tr class="s"><td>Totale ${y}</td><td>${z(t.eg)}</td><td>${z(t.al)}</td><td>${z(t.og)}</td><td>${z(t.gg)}</td><td>${z(t.gl)}</td><td>${z(t.gb)}</td></tr>`;
+ const c6=(x,r)=>r.n||r.lp||r.lh?`<td>${z(x)}</td>`:'<td class="z">—</td>';
+ const r6=m.map((r,i)=>`<tr><td>${MESI[i]}</td>${c6(r.lp,r)}${c6(r.lh,r)}${c6(r.gp,r)}</tr>`).join('')
+  +`<tr class="s"><td>Totale ${y}</td><td>${z(t.lp)}</td><td>${z(t.lh)}</td><td>${z(t.gp)}</td></tr>`;
  const d=c2(c2(inc(t))-c2(sumRep(t)));
  const oggi=new Date().toLocaleDateString('it-IT',{day:'numeric',month:'long',year:'numeric'});
  return `<h1>Report annuale</h1>
@@ -482,14 +502,16 @@ function vReport(){
  <div class="card tw"><table><tr><th>Mese</th><th>Venduti senza IVA</th><th>Acquisti senza IVA</th><th>Guadagno ${esc(accK())}</th><th>Guadagno totale</th></tr>${r4}</table></div>
  <h2>Brightstar (€)</h2>
  <div class="card tw"><table><tr><th>Mese</th><th>Entrate Gioco Lotto</th><th>Guadagno Lotto</th><th>Ordini Gratta e Vinci</th><th>Guadagno Gratta e Vinci</th><th>Guadagno Lotteria Italia</th><th>Guadagno Brightstar</th></tr>${r5}</table></div>
- <p class="mute">Contanti al netto del fondo cassa. «—» = nessuna chiusura registrata nel mese. Tabacco e Monopolio: valore di vendita = ordini ÷ 0,9, guadagno = valore − ordini. ${esc(accK())}: senza IVA = importo ÷ 1,22; Brightstar: guadagno Lotto = 8% delle Entrate Gioco; Gratta e Vinci: valore = ordini ÷ 0,92, guadagno = valore − ordini; Lotteria Italia (parte dell'ordine): ÷ 0,9, guadagno 10%. Guadagno totale = tabacco + ${esc(accK())} + Brightstar. Altro (totale incassato meno totale reparti: tabacco, gratta e vinci, ricariche e simili) nel ${y}: <b class="${d===0?'ok':'ko'}">${d===0?'nessuna ✓':eur(d)}</b>.</p>
+ <h2>LisPoint (€)</h2>
+ <div class="card tw"><table><tr><th>Mese</th><th>Compensi LIS Pay</th><th>Compensi LIS Holding</th><th>Guadagno LisPoint</th></tr>${r6}</table></div>
+ <p class="mute">Contanti al netto del fondo cassa. «—» = nessuna chiusura registrata nel mese. Tabacco e Monopolio: valore di vendita = ordini ÷ 0,9, guadagno = valore − ordini. ${esc(accK())}: senza IVA = importo ÷ 1,22; Brightstar: guadagno Lotto = 8% delle Entrate Gioco; Gratta e Vinci: valore = ordini ÷ 0,92, guadagno = valore − ordini; Lotteria Italia (parte dell'ordine): ÷ 0,9, guadagno 10%. LisPoint: compensi dagli estratti conto. Guadagno totale = tabacco + ${esc(accK())} + Brightstar + LisPoint. Altro (totale incassato meno totale reparti: tabacco, gratta e vinci, ricariche e simili) nel ${y}: <b class="${d===0?'ok':'ko'}">${d===0?'nessuna ✓':eur(d)}</b>.</p>
  <div class="noprint"><button class="btn" id="print">Stampa / PDF</button><button class="btn ghost" id="rcsv">Esporta CSV</button>
  <p class="mute">Per il PDF: <i>Stampa / PDF</i> → nella stampa tocca Condividi (o allarga l'anteprima) → <i>Salva in File</i>.</p></div>`}
 
 function rcsv(){const y=repY,{m,t,names}=annuale(y),v=x=>c2(x).toFixed(2).replace('.',','),q=s=>/[;"\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;
  const inc=r=>(r.c||0)+(r.pos||0)+(r.sat||0);
- const row=(l,r)=>[l,...names.map(k=>v(r.rep[k])),v(sumRep(r)),v(r.c),v(r.pos),v(r.sat),v(inc(r)),r.n,v(r.ot),v(r.ov),v(r.ag),v(r.avn),v(r.aan),v(r.ga),v(r.eg),v(r.al),v(r.og),v(r.gg),v(r.gl),v(r.gb),v(r.gt)].join(';');
- const out=[['Mese',...names.map(q),'Totale reparti','Contanti','POS','Satispay','Totale incassato','Chiusure','Ordini tabacco','Valore di vendita tabacco','Guadagno tabacco','Accessori venduti senza IVA','Acquisti accessori senza IVA','Guadagno accessori','Entrate Gioco Lotto','Guadagno Lotto','Ordini Gratta e Vinci','Guadagno Gratta e Vinci','Guadagno Lotteria Italia','Guadagno Brightstar','Guadagno totale'].join(';'),...m.map((r,i)=>row(MESI[i],r)),row('Totale '+y,t)];
+ const row=(l,r)=>[l,...names.map(k=>v(r.rep[k])),v(sumRep(r)),v(r.c),v(r.pos),v(r.sat),v(inc(r)),r.n,v(r.ot),v(r.ov),v(r.ag),v(r.avn),v(r.aan),v(r.ga),v(r.eg),v(r.al),v(r.og),v(r.gg),v(r.gl),v(r.gb),v(r.lp),v(r.lh),v(r.gp),v(r.gt)].join(';');
+ const out=[['Mese',...names.map(q),'Totale reparti','Contanti','POS','Satispay','Totale incassato','Chiusure','Ordini tabacco','Valore di vendita tabacco','Guadagno tabacco','Accessori venduti senza IVA','Acquisti accessori senza IVA','Guadagno accessori','Entrate Gioco Lotto','Guadagno Lotto','Ordini Gratta e Vinci','Guadagno Gratta e Vinci','Guadagno Lotteria Italia','Guadagno Brightstar','Compensi LIS Pay','Compensi LIS Holding','Guadagno LisPoint','Guadagno totale'].join(';'),...m.map((r,i)=>row(MESI[i],r)),row('Totale '+y,t)];
  saveFile(`report-annuale-${y}.csv`,'text/csv',out.join('\n'))}
 
 function vImp(){return `<h1>Reparti e backup</h1><h2>Reparti</h2>
@@ -511,8 +533,8 @@ function csv(){const[s,e]=rng(mode,anchor),a=iso(s),b=iso(e),m=x=>String(x==null
  const ds=Object.keys(db.days).filter(d=>d>=a&&d<=b).sort();
  // reparti attuali + reparti eliminati che hanno importi nel periodo
  const n=[...new Set([...db.reparti,...ds.flatMap(d=>Object.keys(db.days[d].rep||{}))])];
- const out=[['Data','Fondo cassa','Contanti','POS','Satispay',...n.map(q),'Ordine tabacco','Acquisto accessori','Saldo Brightstar','Entrate Gioco Lotto','Ordine Gratta e Vinci','di cui Lotteria Italia'].join(';')];
- ds.forEach(d=>{const r=db.days[d];out.push([d,m(r.f),m(r.c),m(r.pos),m(r.sat),...n.map(k=>m((r.rep||{})[k])),m(r.ot),m(r.aa),m(r.bs),m(r.eg),m(r.og),m(r.ol)].join(';'))});
+ const out=[['Data','Fondo cassa','Contanti','POS','Satispay',...n.map(q),'Ordine tabacco','Acquisto accessori','Saldo Brightstar','Entrate Gioco Lotto','Ordine Gratta e Vinci','di cui Lotteria Italia','Compensi LIS Pay','Compensi LIS Holding'].join(';')];
+ ds.forEach(d=>{const r=db.days[d];out.push([d,m(r.f),m(r.c),m(r.pos),m(r.sat),...n.map(k=>m((r.rep||{})[k])),m(r.ot),m(r.aa),m(r.bs),m(r.eg),m(r.og),m(r.ol),m(r.lp),m(r.lh)].join(';'))});
  saveFile(`chiusure-${a}_${b}.csv`,'text/csv',out.join('\n'))}
 
 // Riaprendo l'app (anche rimasta aperta in sottofondo) nel giorno dopo, la data torna a oggi
@@ -544,9 +566,9 @@ A.addEventListener('click',e=>{const h=e.target.closest('[data-b]');
   // dentro una scheda: con il suggerimento aperto la linea di separazione passa sotto il suggerimento
   const rw=t.previousElementSibling;if(rw&&rw.classList.contains('row'))rw.classList.toggle('nb',on);return}
  if(d.bs){bsS=+d.bs;document.querySelectorAll('[data-bs]').forEach(x=>{const on=x===b;x.classList.toggle('on',on);x.setAttribute('aria-pressed',on)});calc();return}
- if(id==='av'){const h=$('#hb');if(h)h.scrollIntoView({behavior:'smooth',block:'start'});const i=$('#eg');if(i)setTimeout(()=>i.focus({preventScroll:true}),350);return}
+ if(id==='av'||id==='av2'){const h=$('#'+d.to);if(h)h.scrollIntoView({behavior:'smooth',block:'start'});const i=$('#'+d.in);if(i)setTimeout(()=>i.focus({preventScroll:true}),350);return}
  if(id==='save'){const r=read();
-  if(!r.c&&!r.pos&&!r.sat&&!r.ot&&!r.aa&&!r.bs&&!r.og&&!r.ol&&r.eg==null&&!g0('#ct')&&!Object.keys(r.rep).length){toast('Inserisci almeno un importo');return}
+  if(!r.c&&!r.pos&&!r.sat&&!r.ot&&!r.aa&&!r.bs&&!r.og&&!r.ol&&r.eg==null&&r.lp==null&&r.lh==null&&!g0('#ct')&&!Object.keys(r.rep).length){toast('Inserisci almeno un importo');return}
   if((r.ol||0)>(r.og||0)&&!confirm(`«di cui Lotteria Italia» (${eur(r.ol)}) è più grande dell'Ordine Gratta e Vinci (${eur(r.og||0)}): l'ordine deve essere il totale, lotteria compresa.\n\nSalvare comunque?`))return;
   if(r.c<0&&!confirm(`Il fondo cassa è più grande dei contanti in cassa: i contanti incassati risultano ${eur(r.c)}.\n\nSalvare comunque?`))return;
   const old=db.days[cur];
