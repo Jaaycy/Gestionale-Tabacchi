@@ -100,6 +100,8 @@ h2 .ib{width:18px;height:18px;font-size:11px;vertical-align:0}
 .ts .tb{padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08)}
 .ts .tb span{display:block;font-size:12.5px;color:var(--mute)}.ts .tb b{font-size:17px}
 .ts .tr{display:flex;justify-content:space-between;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.1);font-size:15px;color:var(--mute)}.ts .tr b{color:var(--ink)}
+h2.tsh{text-align:center;margin-top:28px}
+.ts{text-align:center}.ts .tb{text-align:center}.ts .tr{justify-content:center;gap:10px}
 .ts.ko{border-color:rgba(255,123,114,.5);background:radial-gradient(120% 90% at 100% 0%,rgba(255,123,114,.25),transparent 60%),linear-gradient(160deg,#3a2230,#152031 70%)}
 .sg{flex:none;display:inline-flex;gap:2px;padding:3px;border-radius:12px;background:rgba(147,163,182,.1);border:1px solid var(--line)}
 .sg button{font:inherit;font-size:14px;font-weight:600;padding:6px 10px;border:0;border-radius:9px;background:none;color:var(--mute);white-space:nowrap;transition:background .2s,color .2s}
@@ -256,7 +258,7 @@ function vChiusura(){
   <p class="mute hint tip" id="t-ot">Solo il giorno in cui mandi l'ordine. Inserisci l'importo già senza aggio.</p>
   <div class="row last"><span class="lb"><label for="aa">Acquisto accessori</label>${ib('t-aa')}</span><input id="aa" inputmode="decimal" placeholder="0,00" value="${fi(r.aa)}"></div>
   <p class="mute hint tip" id="t-aa">Solo il giorno in cui compri. Inserisci il totale della fattura, IVA compresa.</p></div>
- <h2>Totale serata</h2><div id="q"></div>
+ <h2 class="tsh">Totale serata</h2><div id="q"></div>
  <div class="acts"><button class="btn" id="save">Salva chiusura</button>${db.days[cur]?'<button class="btn ghost" id="del">Elimina</button>':''}</div>`}
 
 const g0=s=>num(($(s)||{}).value);
