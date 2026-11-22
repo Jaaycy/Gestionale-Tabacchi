@@ -231,15 +231,15 @@ function vChiusura(){
   <label class="row"><span>Satispay</span><input id="sat" inputmode="decimal" placeholder="0,00" value="${fi(r.sat)}"></label></div>
  <h2>Incassi per reparto${ib('t-rep')}</h2><div class="card">${rep}</div>
  <p class="mute hint tip" id="t-rep">Copia i totali dallo scontrino di chiusura del registratore.</p>
- <h2>Saldo Brightstar${ib('t-bs')}</h2><div class="card"><div class="row"><span class="sg" role="group" aria-label="Saldo"><button type="button" data-bs="1" class="${bsS>0?'on':''}" aria-pressed="${bsS>0}">Devo io</button><button type="button" data-bs="-1" class="${bsS<0?'on':''}" aria-pressed="${bsS<0}">Mi devono</button></span><input id="bs" class="bs" aria-label="Saldo Brightstar" inputmode="decimal" placeholder="0,00" value="${r.bs?fi(Math.abs(r.bs)):''}"></div></div>
- <p class="mute hint tip" id="t-bs">Ogni sera: copia il saldo di fine giornata del terminale e scegli «Devo io» o «Mi devono». Serve a dividere «Altro».</p>
+ <h2 id="hb">Brightstar${ib('t-bw')}</h2><div class="card"><div class="row"><span>Saldo della sera</span><span class="sg" role="group" aria-label="Saldo della sera"><button type="button" data-bs="1" class="${bsS>0?'on':''}" aria-pressed="${bsS>0}">Devo io</button><button type="button" data-bs="-1" class="${bsS<0?'on':''}" aria-pressed="${bsS<0}">Mi devono</button></span></div>
+  <label class="row sub"><span>Importo saldo</span><input id="bs" aria-label="Importo del saldo Brightstar" inputmode="decimal" placeholder="0,00" value="${r.bs?fi(Math.abs(r.bs)):''}"></label>
+  <label class="row"><span>Entrate Gioco</span><input id="eg" inputmode="decimal" placeholder="0,00" value="${fi(r.eg)}"></label>
+  <label class="row last"><span>Ordine Gratta e Vinci</span><input id="og" inputmode="decimal" placeholder="0,00" value="${fi(r.og)}"></label></div>
+ <p class="mute hint tip" id="t-bw">Saldo: ogni sera, copia il saldo di fine giornata del terminale e scegli «Devo io» o «Mi devono». Entrate Gioco e Ordine Gratta e Vinci: 1 volta a settimana, quando arriva la mail del lunedì (Entrate Gioco dall'estratto conto Lotto; ordine = quanto paghi, già senza aggio).</p>
  <h2>Ordini e acquisti</h2><div class="card"><div class="row"><span class="lb"><label for="ot">Ordine tabacco</label>${ib('t-ot')}</span><input id="ot" inputmode="decimal" placeholder="0,00" value="${fi(r.ot)}"></div>
   <p class="mute hint tip" id="t-ot">Solo il giorno in cui mandi l'ordine. Inserisci l'importo già senza aggio.</p>
   <div class="row last"><span class="lb"><label for="aa">Acquisto accessori</label>${ib('t-aa')}</span><input id="aa" inputmode="decimal" placeholder="0,00" value="${fi(r.aa)}"></div>
   <p class="mute hint tip" id="t-aa">Solo il giorno in cui compri. Inserisci il totale della fattura, IVA compresa.</p></div>
- <h2 id="hb">Brightstar${ib('t-bw')}</h2><div class="card"><label class="row"><span>Entrate Gioco</span><input id="eg" inputmode="decimal" placeholder="0,00" value="${fi(r.eg)}"></label>
-  <label class="row last"><span>Ordine Gratta e Vinci</span><input id="og" inputmode="decimal" placeholder="0,00" value="${fi(r.og)}"></label></div>
- <p class="mute hint tip" id="t-bw">Da compilare 1 volta a settimana, quando arriva la mail del lunedì: Entrate Gioco dall'estratto conto Lotto. Ordine Gratta e Vinci: quanto paghi, già senza aggio, nel giorno dell'ordine.</p>
  <h2>Totale serata</h2><div class="card" id="q"></div>
  <div class="acts"><button class="btn" id="save">Salva chiusura</button>${db.days[cur]?'<button class="btn ghost" id="del">Elimina</button>':''}</div>`}
 
