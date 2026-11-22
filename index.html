@@ -138,7 +138,7 @@ nav button.on svg{transform:translateY(-1px) scale(1.08)}
 .ch .gl{stroke:var(--line);stroke-width:1;stroke-dasharray:2 3}
 /* barre «vetro»: riempimento semitrasparente + bordo chiaro */
 .ch .b0{fill:rgba(255,255,255,.07);stroke:rgba(255,255,255,.2);stroke-width:.8}.ch .b1{fill:url(#gb1);stroke:rgba(255,255,255,.55);stroke-width:.8;filter:drop-shadow(0 0 5px rgba(90,160,255,.45))}
-.ch .b0,.ch .b1{transform-box:fill-box;transform-origin:50% 100%;animation:grow .7s var(--ease) both}
+
 @keyframes grow{from{transform:scaleY(0)}}
 .ch .hit{fill:transparent;transition:fill .2s}.ch .hit.sel{fill:rgba(125,183,245,.14)}
 .lg{display:flex;gap:16px;font-size:13px;color:var(--mute);margin:2px 4px 6px}
@@ -408,7 +408,7 @@ function grafico(m,s,e,ps,pe){
   if(t)g+=`<text x="${f(x0+gw/2)}" y="${H-5}" text-anchor="middle" pointer-events="none">${t}</text>`}
  const yr=m==='settimana'?'':` (${s.getFullYear()} / ${ps.getFullYear()})`;
  return `<div class="card ch"><div class="lg"><span><i class="s1"></i>Periodo</span><span><i class="s0"></i>Anno prima</span></div>
- <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Grafico del totale incassato: periodo e anno prima${yr}"><defs><linearGradient id="gb1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e6f3ff" stop-opacity=".95"/><stop offset=".18" stop-color="#9fcbfb" stop-opacity=".78"/><stop offset="1" stop-color="#2f74d0" stop-opacity=".42"/></linearGradient></defs>${g}</svg>
+ <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Grafico del totale incassato: periodo e anno prima${yr}"><defs><linearGradient id="gb1" gradientUnits="userSpaceOnUse" x1="0" y1="${T+ph}" x2="0" y2="${T}"><stop offset="0" stop-color="#1d4f9c" stop-opacity=".45"/><stop offset=".45" stop-color="#3f86e0" stop-opacity=".62"/><stop offset=".8" stop-color="#9fcbfb" stop-opacity=".82"/><stop offset="1" stop-color="#eef7ff" stop-opacity=".97"/></linearGradient></defs>${g}</svg>
  <p id="ci" class="mute">${chInfo()}</p></div>`}
 function chInfo(){const c=chart;if(!c)return'';
  if(selB<0||selB>=c.a.length){
@@ -541,13 +541,20 @@ function vImp(){return `<h1>Impostazioni</h1><h2>Reparti</h2>
  <h2>Backup</h2><div class="card pad"><p class="mute" style="margin-top:0">I dati sono solo su questo iPhone. A fine mese salva un backup in File (iCloud Drive).</p>
  <button class="btn" id="bk">Salva backup</button><label class="btn ghost">Ripristina backup<input type="file" id="imp" accept=".json,application/json" hidden></label></div>`}
 
+// grafico: le barre crescono dal basso; il colore è legato all'altezza, quindi la cima schiarisce mentre sale
+function barSu(){const r=[...document.querySelectorAll('.ch rect.b0,.ch rect.b1')];if(!r.length)return;
+ if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+ const D=1100,t0=performance.now(),e=t=>1-Math.pow(1-t,3);
+ const v=r.map((el,k)=>{const y=+el.getAttribute('y'),h=+el.getAttribute('height');el.setAttribute('y',y+h);el.setAttribute('height',0);return{el,y,h,d:(+((el.style.animationDelay||'0').replace('ms','')))*1.6}});
+ const go=()=>{const now=performance.now();let on=false;for(const o of v){let t=(now-t0-o.d)/D;if(t<1)on=true;t=Math.max(0,Math.min(1,t));const hh=o.h*e(t);o.el.setAttribute('y',(o.y+o.h-hh).toFixed(2));o.el.setAttribute('height',hh.toFixed(2))}if(on)requestAnimationFrame(go)};
+ requestAnimationFrame(go)}
 // barra Giorno/Settimana/Mese/Anno: l'evidenziazione parte dalla posizione precedente e scivola su quella nuova
 const MODI=['giorno','settimana','mese','anno'];let segPrev=0;
 const segT=i=>`translateX(calc(${i} * (100% + 4px)))`;
 function segInd(){const g=document.querySelector('.sg-ind');if(!g)return;const i=MODI.indexOf(mode);requestAnimationFrame(()=>requestAnimationFrame(()=>{g.style.transform=segT(i)}));segPrev=i}
 function render(){const M=$('#app');M.innerHTML={chiusura:vChiusura,riepilogo:vRiepilogo,report:vReport,impostazioni:vImp}[view]();
  if(lastView!==null&&lastView!==view){M.classList.remove('enter');void M.offsetWidth;M.classList.add('enter')}lastView=view;lastQ=null;
- document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===(view==='report'?'riepilogo':view)));navInd(navIdx(view));segInd();calc();scrollTo(0,0)}
+ document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===(view==='report'?'riepilogo':view)));navInd(navIdx(view));segInd();calc();scrollTo(0,0);barSu()}
 
 async function saveFile(name,type,text){
  const f=new File([type.includes('csv')?'\ufeff'+text:text],name,{type});
