@@ -233,12 +233,12 @@ function vChiusura(){
   <label class="row"><span>Satispay</span><input id="sat" inputmode="decimal" placeholder="0,00" value="${fi(r.sat)}"></label></div>
  <h2>Incassi per reparto${ib('t-rep')}</h2><div class="card">${rep}</div>
  <p class="mute hint tip" id="t-rep">Copia i totali dallo scontrino di chiusura del registratore.</p>
- <h2 id="hb">Brightstar${ib('t-bw')}</h2><div class="card"><div class="row"><span>Saldo della sera</span><span class="sg" role="group" aria-label="Saldo della sera"><button type="button" data-bs="1" class="${bsS>0?'on':''}" aria-pressed="${bsS>0}">Devo io</button><button type="button" data-bs="-1" class="${bsS<0?'on':''}" aria-pressed="${bsS<0}">Mi devono</button></span></div>
+ <h2 id="hb">Brightstar${ib('t-bw')}</h2><div class="card"><div class="row"><span>Saldo terminale della sera</span><span class="sg" role="group" aria-label="Saldo terminale della sera"><button type="button" data-bs="1" class="${bsS>0?'on':''}" aria-pressed="${bsS>0}">Devo io</button><button type="button" data-bs="-1" class="${bsS<0?'on':''}" aria-pressed="${bsS<0}">Mi devono</button></span></div>
   <label class="row sub"><span>Importo saldo</span><input id="bs" aria-label="Importo del saldo Brightstar" inputmode="decimal" placeholder="0,00" value="${r.bs?fi(Math.abs(r.bs)):''}"></label>
   <label class="row"><span>Entrate Gioco</span><input id="eg" inputmode="decimal" placeholder="0,00" value="${fi(r.eg)}"></label>
   <label class="row"><span>Ordine Gratta e Vinci</span><input id="og" inputmode="decimal" placeholder="0,00" value="${fi(r.og)}"></label>
   <label class="row sub last"><span>di cui Lotteria Italia</span><input id="ol" inputmode="decimal" placeholder="0,00" value="${fi(r.ol)}"></label></div>
- <p class="mute hint tip" id="t-bw">Saldo: ogni sera, copia il saldo di fine giornata del terminale e scegli «Devo io» o «Mi devono». Entrate Gioco e Ordine Gratta e Vinci: 1 volta a settimana, quando arriva la mail del lunedì (Entrate Gioco dall'estratto conto Lotto; ordine = quanto paghi, già senza aggio). «di cui Lotteria Italia»: solo se nell'ordine ci sono anche quei biglietti, quanto li hai pagati.</p>
+ <p class="mute hint tip" id="t-bw">Saldo terminale della sera: ogni sera copia il saldo del terminale e scegli «Devo io» o «Mi devono» (promemoria di quanto ti addebiteranno, non è guadagno). Entrate Gioco e Ordine Gratta e Vinci: 1 volta a settimana, quando arriva la mail del lunedì (Entrate Gioco dall'estratto conto Lotto; ordine = quanto paghi, già senza aggio). «di cui Lotteria Italia»: solo se nell'ordine ci sono anche quei biglietti, quanto li hai pagati.</p>
  <h2 id="hl">LisPoint${ib('t-lp')}</h2><div class="card"><label class="row"><span>Compensi LIS Pay</span><input id="lp" inputmode="decimal" placeholder="0,00" value="${fi(r.lp)}"></label>
   <label class="row last"><span>Compensi LIS Holding</span><input id="lh" inputmode="decimal" placeholder="0,00" value="${fi(r.lh)}"></label></div>
  <p class="mute hint tip" id="t-lp">Da compilare 1 volta al mese, quando arrivano gli estratti conto LisPoint: copia il totale «Compensi» di LIS Pay (bollette, PagoPA) e di LIS Holding (ricariche).</p>
@@ -266,22 +266,18 @@ function daCopiare(){const[s,e]=rng('settimana',new Date(todayK+'T12:00')),a=iso
 // true se due chiusure hanno gli stessi importi (l'ordine dei reparti non conta)
 const stesso=(a,b)=>{const k=o=>JSON.stringify([o.c,o.f,o.pos,o.sat,o.ot||0,o.aa||0,o.bs||0,o.eg==null?null:o.eg,o.og||0,o.ol||0,o.lp==null?null:o.lp,o.lh==null?null:o.lh,Object.entries(o.rep||{}).sort()]);return k(a)===k(b)};
 function calc(){const q=$('#q');if(!q)return;
- const r=read(),tr=Object.values(r.rep).reduce((a,b)=>a+b,0),el=r.pos+r.sat,inc=r.c+el,d=Math.round((inc-tr)*100)/100,bs=r.bs||0,rs=c2(d-bs);
- // stato: e = nessun importo inserito, ok = quadra, al = «Altro» (incassato non battuto al registratore), ko = reparti (e saldo Brightstar) oltre l'incassato
- // rs = resto di Altro dopo il saldo Brightstar («Devo io» = soldi del gioco rimasti in cassa; «Mi devono» = vincite pagate dalla cassa)
- const st=!r.c&&!r.pos&&!r.sat&&!bs&&!Object.keys(r.rep).length?'e':rs<0?'ko':d===0&&!bs?'ok':'al';
+ const r=read(),tr=Object.values(r.rep).reduce((a,b)=>a+b,0),el=r.pos+r.sat,inc=r.c+el,d=Math.round((inc-tr)*100)/100;
+ // stato: e = nessun importo inserito, ok = importi inseriti, ko = reparti oltre l'incassato (errore da controllare).
+ // «Altro» non si mostra più (2026-11-22): i guadagni di tabacco, Brightstar e LisPoint hanno le loro schede
+ const st=!r.c&&!r.pos&&!r.sat&&!Object.keys(r.rep).length?'e':d<0?'ko':'ok';
  const pop=lastQ!==null&&lastQ!==st?' pop':'';lastQ=st;
- const badge=st==='e'?`<div class="qb e"><i>€</i><div><b>Totale serata</b><span>Inserisci gli importi per vedere il totale della serata.</span></div></div>`
-  :st==='ok'?`<div class="qb ok${pop}"><i>✓</i><div><b>Quadra ✓</b><span>L'incassato corrisponde ai reparti: niente in «Altro».</span></div></div>`
-  :st==='al'?`<div class="qb al${pop}"><i>+</i><div><span>Altro</span><b>${eur(d)}</b><span class="qt">${bs?`Brightstar ${eur(bs)} · resto ${eur(rs)} (tabacco, gratta e vinci, ricariche, bollette e simili).`:'Incassato non battuto al registratore: tabacco, gratta e vinci, Lotto, ricariche e simili.'}</span></div></div>`
-  :`<div class="qb ko${pop}"><i>!</i><div><span>Differenza</span><b>${eur(rs)}</b><span class="qt">${bs?`Reparti e saldo Brightstar superano l'incassato di ${eur(-rs)}: controlla gli importi copiati e il saldo («Devo io» o «Mi devono»).`:`I reparti superano l'incassato di ${eur(-d)}: controlla gli importi copiati dal registratore e i contanti contati.`}</span></div></div>`;
+ const badge=st==='ko'?`<div class="qb ko${pop}"><i>!</i><div><span>Differenza</span><b>${eur(d)}</b><span class="qt">I reparti superano l'incassato di ${eur(-d)}: controlla gli importi copiati dal registratore e i contanti contati.</span></div></div>`
+  :st==='e'?`<p class="mute" style="margin:12px 0 4px">Inserisci gli importi per vedere il totale della serata.</p>`:'';
  q.innerHTML=`${badge}<div class="row"><span>Totale reparti</span><b>${eur(tr)}</b></div>
- <div class="row sub"><span>Altro (incassato − reparti)</span><b>${eur(bs?d:Math.max(0,d))}</b></div>
- ${bs?`<div class="row sub"><span>di cui Brightstar (${bs>0?'devo io':'mi devono'})</span><b>${eur(bs)}</b></div><div class="row sub"><span>di cui resto (tabacco, ricariche…)</span><b>${eur(rs)}</b></div>`:''}
  <div class="row sub"><span>Elettronici (POS + Satispay)</span><b>${eur(el)}</b></div>
  <div class="row tot"><span>Contanti + elettronici</span><b>${eur(inc)}</b></div>`;
  const cn=$('#cn');if(cn)cn.innerHTML=r.c<0?`<span class="ko">Contanti incassati (senza fondo)</span><b class="ko">${eur(r.c)}</b>`:`<span>Contanti incassati (senza fondo)</span><b>${eur(r.c)}</b>`;
- const p=$('#qp');if(p){p.className='pill '+st+pop;p.textContent=st==='e'?'Da compilare':st==='ok'?'Quadra ✓':st==='al'?'Altro '+eur(d):eur(rs)}}
+ const p=$('#qp');if(p){p.className='pill'+(st==='ko'?' ko':st==='ok'?' al':'')+pop;p.textContent=st==='e'?'Da compilare':st==='ko'?eur(d):eur(inc)}}
 
 function rng(m,a){const s=new Date(a.getFullYear(),a.getMonth(),a.getDate()),e=new Date(s);
  if(m==='giorno'){}
