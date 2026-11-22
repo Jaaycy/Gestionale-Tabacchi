@@ -91,6 +91,16 @@ h2 .ib{width:18px;height:18px;font-size:11px;vertical-align:0}
 .card .row.last{border-bottom:0}.lb{white-space:nowrap}
 .card .row.nb{border-bottom:0;padding-bottom:2px}.card .hint{margin:0;padding:0 0 14px;border-bottom:1px solid var(--line);line-height:1.35}.card .hint:last-child{border-bottom:0;padding-bottom:12px}.card .hint+.row{padding-top:15px}
 .row.gu b{color:var(--ok);font-size:20px}
+/* Totale serata: riquadro finale in evidenza */
+.ts{position:relative;overflow:hidden;margin-top:6px;padding:18px 18px 16px;border-radius:22px;border:1px solid rgba(125,183,245,.35);background:radial-gradient(120% 90% at 100% 0%,rgba(157,156,255,.28),transparent 60%),radial-gradient(90% 80% at 0% 100%,rgba(76,195,138,.16),transparent 65%),linear-gradient(160deg,#1d3352,#152031 70%);box-shadow:0 18px 40px -18px rgba(42,116,201,.75),inset 0 1px 0 rgba(255,255,255,.08)}
+.ts .tl{font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#a9c8ee}
+.ts .tv{font-size:44px;font-weight:800;letter-spacing:-.025em;line-height:1.1;margin:6px 0 14px;background:linear-gradient(95deg,#ffffff,#cfe5ff 50%,#a9b8ff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.ts .tv small{font-size:22px}
+.ts .tg2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ts .tb{padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08)}
+.ts .tb span{display:block;font-size:12.5px;color:var(--mute)}.ts .tb b{font-size:17px}
+.ts .tr{display:flex;justify-content:space-between;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.1);font-size:15px;color:var(--mute)}.ts .tr b{color:var(--ink)}
+.ts.ko{border-color:rgba(255,123,114,.5);background:radial-gradient(120% 90% at 100% 0%,rgba(255,123,114,.25),transparent 60%),linear-gradient(160deg,#3a2230,#152031 70%)}
 .sg{flex:none;display:inline-flex;gap:2px;padding:3px;border-radius:12px;background:rgba(147,163,182,.1);border:1px solid var(--line)}
 .sg button{font:inherit;font-size:14px;font-weight:600;padding:6px 10px;border:0;border-radius:9px;background:none;color:var(--mute);white-space:nowrap;transition:background .2s,color .2s}
 .sg button.on{background:rgba(125,183,245,.18);color:var(--acc)}
@@ -189,7 +199,7 @@ const vendita=x=>{const k=cents(x);return sgn(k,Math.round(Math.abs(k)*10/9)/100
 const guadagno=x=>c2(vendita(x)-c2(x||0));
 // Accessori (IVA 22%, contabilità semplificata: l'IVA degli acquisti si recupera): importo senza IVA = importo ÷ 1,22
 const senzaIva=x=>{const k=cents(x);return sgn(k,Math.round(Math.abs(k)*100/122)/100)};
-// Brightstar: aggio Lotto = 8% delle Entrate Gioco dell'estratto conto; Gratta e Vinci dall'ordine pagato (già senza aggio 8%):
+// Brightstar: Lotto = «Aggio Gioco» copiato dall'estratto conto settimanale (campo ao); per i giorni vecchi con Entrate Gioco (eg) aggio = 8% delle entrate; Gratta e Vinci dall'ordine pagato (già senza aggio 8%):
 // valore = ordine ÷ 0,92, guadagno = valore − ordine. Per ogni importo in centesimi interi
 const aggioLotto=x=>{const k=cents(x);return sgn(k,Math.round(Math.abs(k)*8/100)/100)};
 const venditaGv=x=>{const k=cents(x);return sgn(k,Math.round(Math.abs(k)*100/92)/100)};
@@ -222,7 +232,7 @@ function vChiusura(){
   // reparti eliminati che hanno un importo in questa chiusura: compaiono in grigio, restano nella quadratura e nel salvataggio
   +Object.keys(rp).filter(n=>!db.reparti.includes(n)).map(n=>`<label class="row old"><span>${esc(n)}<em>eliminato</em></span><input data-r="${esc(n)}" inputmode="decimal" placeholder="0,00" value="${fi(rp[n])}"></label>`).join('');
  return `<div class="hd"><h1>Chiusura</h1><span class="pill" id="qp"></span></div>
- ${daCopiare()?'<button type="button" class="av noprint" id="av" data-to="hb" data-in="eg">Estratto conto Lotto della settimana da copiare nella scheda Brightstar ›</button>':''}
+ ${daCopiare()?'<button type="button" class="av noprint" id="av" data-to="hb" data-in="ao">Aggio Gioco Lotto della settimana da copiare nella scheda Brightstar ›</button>':''}
  ${daCopiareLp()?'<button type="button" class="av noprint" id="av2" data-to="hl" data-in="lp">Compensi LisPoint del mese da copiare nella scheda LisPoint ›</button>':''}
  <div class="card"><label class="row"><span>Data</span><input id="d" type="date" value="${cur}"></label></div>
  <h2>Cassa</h2><div class="card">
@@ -235,10 +245,10 @@ function vChiusura(){
  <p class="mute hint tip" id="t-rep">Copia i totali dallo scontrino di chiusura del registratore.</p>
  <h2 id="hb">Brightstar${ib('t-bw')}</h2><div class="card"><div class="row"><span>Saldo terminale della sera</span><span class="sg" role="group" aria-label="Saldo terminale della sera"><button type="button" data-bs="1" class="${bsS>0?'on':''}" aria-pressed="${bsS>0}">Devo io</button><button type="button" data-bs="-1" class="${bsS<0?'on':''}" aria-pressed="${bsS<0}">Mi devono</button></span></div>
   <label class="row sub"><span>Importo saldo</span><input id="bs" aria-label="Importo del saldo Brightstar" inputmode="decimal" placeholder="0,00" value="${r.bs?fi(Math.abs(r.bs)):''}"></label>
-  <label class="row"><span>Entrate Gioco</span><input id="eg" inputmode="decimal" placeholder="0,00" value="${fi(r.eg)}"></label>
+  <label class="row"><span>Aggio Gioco Lotto</span><input id="ao" inputmode="decimal" placeholder="0,00" value="${r.ao!=null?fi(r.ao):r.eg!=null?fi(aggioLotto(r.eg)):''}"></label>
   <label class="row"><span>Ordine Gratta e Vinci</span><input id="og" inputmode="decimal" placeholder="0,00" value="${fi(r.og)}"></label>
   <label class="row sub last"><span>di cui Lotteria Italia</span><input id="ol" inputmode="decimal" placeholder="0,00" value="${fi(r.ol)}"></label></div>
- <p class="mute hint tip" id="t-bw">Saldo terminale della sera: ogni sera copia il saldo del terminale e scegli «Devo io» o «Mi devono» (promemoria di quanto ti addebiteranno, non è guadagno). Entrate Gioco e Ordine Gratta e Vinci: 1 volta a settimana, quando arriva la mail del lunedì (Entrate Gioco dall'estratto conto Lotto; ordine = quanto paghi, già senza aggio). «di cui Lotteria Italia»: solo se nell'ordine ci sono anche quei biglietti, quanto li hai pagati.</p>
+ <p class="mute hint tip" id="t-bw">Saldo terminale della sera: ogni sera copia il saldo del terminale e scegli «Devo io» o «Mi devono» (promemoria di quanto ti addebiteranno, non è guadagno). Aggio Gioco Lotto: 1 volta a settimana, dall'estratto conto del Lotto (terminale o portale), riga «Aggio Gioco»: è il tuo guadagno sul Lotto. Ordine Gratta e Vinci: nel giorno dell'ordine, quanto paghi, già senza aggio. «di cui Lotteria Italia»: solo se nell'ordine ci sono anche quei biglietti, quanto li hai pagati.</p>
  <h2 id="hl">LisPoint${ib('t-lp')}</h2><div class="card"><label class="row"><span>Compensi LIS Pay</span><input id="lp" inputmode="decimal" placeholder="0,00" value="${fi(r.lp)}"></label>
   <label class="row last"><span>Compensi LIS Holding</span><input id="lh" inputmode="decimal" placeholder="0,00" value="${fi(r.lh)}"></label></div>
  <p class="mute hint tip" id="t-lp">Da compilare 1 volta al mese, quando arrivano gli estratti conto LisPoint: copia il totale «Compensi» di LIS Pay (bollette, PagoPA) e di LIS Holding (ricariche).</p>
@@ -246,25 +256,26 @@ function vChiusura(){
   <p class="mute hint tip" id="t-ot">Solo il giorno in cui mandi l'ordine. Inserisci l'importo già senza aggio.</p>
   <div class="row last"><span class="lb"><label for="aa">Acquisto accessori</label>${ib('t-aa')}</span><input id="aa" inputmode="decimal" placeholder="0,00" value="${fi(r.aa)}"></div>
   <p class="mute hint tip" id="t-aa">Solo il giorno in cui compri. Inserisci il totale della fattura, IVA compresa.</p></div>
- <h2>Totale serata</h2><div class="card" id="q"></div>
+ <h2>Totale serata</h2><div id="q"></div>
  <div class="acts"><button class="btn" id="save">Salva chiusura</button>${db.days[cur]?'<button class="btn ghost" id="del">Elimina</button>':''}</div>`}
 
 const g0=s=>num(($(s)||{}).value);
 function read(){const g=s=>num(($(s)||{}).value),rep={};
  document.querySelectorAll('[data-r]').forEach(i=>{if(i.value.trim()!=='')rep[i.dataset.r]=num(i.value)});
  // contanti incassati = contanti in cassa − fondo cassa (solo se i contanti in cassa sono stati inseriti)
- const ct=g('#ct'),f=g('#f'),o={c:ct?c2(ct-f):0,f,pos:g('#pos'),sat:g('#sat'),rep},ot=g('#ot'),aa=g('#aa'),bs=c2(Math.abs(g('#bs'))*bsS),og=g('#og'),ol=g('#ol'),eg=$('#eg'),lpI=$('#lp'),lhI=$('#lh');
+ const ct=g('#ct'),f=g('#f'),o={c:ct?c2(ct-f):0,f,pos:g('#pos'),sat:g('#sat'),rep},ot=g('#ot'),aa=g('#aa'),bs=c2(Math.abs(g('#bs'))*bsS),og=g('#og'),ol=g('#ol'),aoI=$('#ao'),lpI=$('#lp'),lhI=$('#lh');
  // ordine tabacco, acquisto accessori, saldo e ordine Gratta e Vinci si salvano solo se ci sono (così le chiusure vecchie restano identiche);
- // Entrate Gioco si salvano anche se zero, purché scritte (settimana senza giocate: l'avviso sparisce)
- if(ot)o.ot=ot;if(aa)o.aa=aa;if(bs)o.bs=bs;if(eg&&eg.value.trim()!=='')o.eg=num(eg.value);if(og)o.og=og;if(ol)o.ol=ol;
+ // Aggio Gioco si salva anche se zero, purché scritto (settimana senza giocate: l'avviso sparisce);
+ // giorno vecchio con Entrate Gioco: se l'aggio mostrato non è cambiato restano le Entrate Gioco (dati identici)
+ if(ot)o.ot=ot;if(aa)o.aa=aa;if(bs)o.bs=bs;if(aoI&&aoI.value.trim()!==''){const v=num(aoI.value),old=db.days[cur];if(old&&old.eg!=null&&old.ao==null&&v===aggioLotto(old.eg))o.eg=old.eg;else o.ao=v}if(og)o.og=og;if(ol)o.ol=ol;
  // compensi LisPoint: si salvano se scritti (anche 0, così l'avviso del mese sparisce)
  if(lpI&&lpI.value.trim()!=='')o.lp=num(lpI.value);if(lhI&&lhI.value.trim()!=='')o.lh=num(lhI.value);return o}
 // true se nel mese di oggi non sono ancora stati inseriti i compensi LisPoint
 function daCopiareLp(){const m=todayK.slice(0,7);for(const d in db.days)if(d.slice(0,7)===m&&(db.days[d].lp!=null||db.days[d].lh!=null))return false;return true}
-// true se nella settimana di oggi (da lunedì a domenica) non sono ancora state inserite le Entrate Gioco
-function daCopiare(){const[s,e]=rng('settimana',new Date(todayK+'T12:00')),a=iso(s),b=iso(e);for(const d in db.days)if(d>=a&&d<=b&&db.days[d].eg!=null)return false;return true}
+// true se nella settimana di oggi (da lunedì a domenica) non è ancora stato inserito l'Aggio Gioco Lotto
+function daCopiare(){const[s,e]=rng('settimana',new Date(todayK+'T12:00')),a=iso(s),b=iso(e);for(const d in db.days)if(d>=a&&d<=b&&(db.days[d].ao!=null||db.days[d].eg!=null))return false;return true}
 // true se due chiusure hanno gli stessi importi (l'ordine dei reparti non conta)
-const stesso=(a,b)=>{const k=o=>JSON.stringify([o.c,o.f,o.pos,o.sat,o.ot||0,o.aa||0,o.bs||0,o.eg==null?null:o.eg,o.og||0,o.ol||0,o.lp==null?null:o.lp,o.lh==null?null:o.lh,Object.entries(o.rep||{}).sort()]);return k(a)===k(b)};
+const stesso=(a,b)=>{const k=o=>JSON.stringify([o.c,o.f,o.pos,o.sat,o.ot||0,o.aa||0,o.bs||0,o.eg==null?null:o.eg,o.ao==null?null:o.ao,o.og||0,o.ol||0,o.lp==null?null:o.lp,o.lh==null?null:o.lh,Object.entries(o.rep||{}).sort()]);return k(a)===k(b)};
 function calc(){const q=$('#q');if(!q)return;
  const r=read(),tr=Object.values(r.rep).reduce((a,b)=>a+b,0),el=r.pos+r.sat,inc=r.c+el,d=Math.round((inc-tr)*100)/100;
  // stato: e = nessun importo inserito, ok = importi inseriti, ko = reparti oltre l'incassato (errore da controllare).
@@ -273,9 +284,9 @@ function calc(){const q=$('#q');if(!q)return;
  const pop=lastQ!==null&&lastQ!==st?' pop':'';lastQ=st;
  const badge=st==='ko'?`<div class="qb ko${pop}"><i>!</i><div><span>Differenza</span><b>${eur(d)}</b><span class="qt">I reparti superano l'incassato di ${eur(-d)}: controlla gli importi copiati dal registratore e i contanti contati.</span></div></div>`
   :st==='e'?`<p class="mute" style="margin:12px 0 4px">Inserisci gli importi per vedere il totale della serata.</p>`:'';
- q.innerHTML=`${badge}<div class="row"><span>Totale reparti</span><b>${eur(tr)}</b></div>
- <div class="row sub"><span>Elettronici (POS + Satispay)</span><b>${eur(el)}</b></div>
- <div class="row tot"><span>Contanti + elettronici</span><b>${eur(inc)}</b></div>`;
+ q.innerHTML=`${st==='ko'?badge:''}<div class="ts${st==='ko'?' ko':''}${pop}"><span class="tl">Incassato stasera</span><div class="tv">${bigEur(inc)}</div>
+ <div class="tg2"><div class="tb"><span>Contanti</span><b>${eur(r.c)}</b></div><div class="tb"><span>POS + Satispay</span><b>${eur(el)}</b></div></div>
+ <div class="tr"><span>Totale reparti</span><b>${eur(tr)}</b></div></div>`;
  const cn=$('#cn');if(cn)cn.innerHTML=r.c<0?`<span class="ko">Contanti incassati (senza fondo)</span><b class="ko">${eur(r.c)}</b>`:`<span>Contanti incassati (senza fondo)</span><b>${eur(r.c)}</b>`;
  const p=$('#qp');if(p){p.className='pill'+(st==='ko'?' ko':st==='ok'?' al':'')+pop;p.textContent=st==='e'?'Da compilare':st==='ko'?eur(d):eur(inc)}}
 
@@ -290,18 +301,18 @@ const lab=(m,s,e)=>m==='giorno'?s.toLocaleDateString('it-IT',{weekday:'short',da
 // Valore e guadagno si calcolano ordine per ordine (al centesimo) e poi si sommano:
 // così giorni, settimane, mesi e anno tornano sempre tra loro.
 // av = accessori venduti (IVA compresa), avn = senza IVA; aa = acquisti accessori (IVA compresa), aan = senza IVA;
-// ga = guadagno accessori (avn − aan); bs = saldo Brightstar delle sere (+ devo io, − mi devono); eg = Entrate Gioco Lotto, al = aggio Lotto 8%;
+// ga = guadagno accessori (avn − aan); bs = saldo Brightstar delle sere (+ devo io, − mi devono); al = guadagno Lotto (Aggio Gioco copiato, o 8% delle vecchie Entrate Gioco);
 // og = ordini Gratta e Vinci (totale pagato), ol = di cui Lotteria Italia; gv = valore (Gratta e Vinci ÷ 0,92 + lotteria ÷ 0,9);
 // gg = guadagno Gratta e Vinci (8%), gl = guadagno Lotteria Italia (10%); gb = guadagno Brightstar (al + gg + gl);
 // lp, lh = compensi LisPoint (LIS Pay, LIS Holding) dagli estratti conto mensili, gp = guadagno LisPoint (lp + lh);
 // gt = guadagno totale (tabacco + accessori + Brightstar + LisPoint). Calcolati giorno per giorno al centesimo.
-function tot(s,e){const a=iso(s),b=iso(e),t={n:0,c:0,pos:0,sat:0,rep:{},ot:0,ov:0,ag:0,av:0,avn:0,aa:0,aan:0,ga:0,bs:0,eg:0,al:0,og:0,ol:0,gv:0,gg:0,gl:0,gb:0,lp:0,lh:0,gp:0,gt:0},ak=accK();
+function tot(s,e){const a=iso(s),b=iso(e),t={n:0,c:0,pos:0,sat:0,rep:{},ot:0,ov:0,ag:0,av:0,avn:0,aa:0,aan:0,ga:0,bs:0,al:0,og:0,ol:0,gv:0,gg:0,gl:0,gb:0,lp:0,lh:0,gp:0,gt:0},ak=accK();
  for(const d in db.days){if(d<a||d>b)continue;const r=db.days[d],rp=r.rep||{};
-  // un giorno con solo ordini, acquisti o Entrate Gioco non conta come chiusura
-  if(!((r.ot||r.aa||r.og||r.ol||r.eg!=null||r.lp!=null||r.lh!=null)&&!r.c&&!r.pos&&!r.sat&&!r.bs&&!Object.keys(rp).length))t.n++;
+  // un giorno con solo ordini, acquisti o estratti conto non conta come chiusura
+  if(!((r.ot||r.aa||r.og||r.ol||r.eg!=null||r.ao!=null||r.lp!=null||r.lh!=null)&&!r.c&&!r.pos&&!r.sat&&!r.bs&&!Object.keys(rp).length))t.n++;
   t.c+=r.c||0;t.pos+=r.pos||0;t.sat+=r.sat||0;t.ot=c2(t.ot+(r.ot||0));t.ov=c2(t.ov+vendita(r.ot));t.ag=c2(t.ag+guadagno(r.ot));
   t.av=c2(t.av+(rp[ak]||0));t.avn=c2(t.avn+senzaIva(rp[ak]));t.aa=c2(t.aa+(r.aa||0));t.aan=c2(t.aan+senzaIva(r.aa));
-  t.ga=c2(t.avn-t.aan);t.bs=c2(t.bs+(r.bs||0));t.eg=c2(t.eg+(r.eg||0));t.al=c2(t.al+aggioLotto(r.eg));
+  t.ga=c2(t.avn-t.aan);t.bs=c2(t.bs+(r.bs||0));t.al=c2(t.al+(r.ao!=null?c2(r.ao):aggioLotto(r.eg)));
   // Lotteria Italia: parte dell'ordine pagata per i suoi biglietti, aggio 10% come il tabacco (÷ 0,9); il resto dell'ordine è Gratta e Vinci (÷ 0,92)
   const gq=c2((r.og||0)-(r.ol||0));t.og=c2(t.og+(r.og||0));t.ol=c2(t.ol+(r.ol||0));t.gv=c2(t.gv+venditaGv(gq)+vendita(r.ol));
   t.gg=c2(t.gg+guadagnoGv(gq));t.gl=c2(t.gl+guadagno(r.ol));t.gb=c2(t.al+t.gg+t.gl);
@@ -323,8 +334,7 @@ function cardTab(t){
  <div class="row sub"><span>IVA da versare (vendite − acquisti)</span><b>${eur(c2(t.av-t.avn-(t.aa-t.aan)))}</b></div></div>
  <p class="mute hint tip" id="t-acc">Senza IVA = importo ÷ 1,22 (l'IVA degli acquisti si recupera). Guadagno = venduti senza IVA − acquisti senza IVA. Gli acquisti contano nel giorno in cui li segni.</p>
  <h2>Brightstar${ib('t-bst')}</h2><div class="card">
- <div class="row"><span>Entrate Gioco Lotto</span><b>${eur(t.eg)}</b></div>
- <div class="row sub"><span>Guadagno Lotto (8%)</span><b>${eur(t.al)}</b></div>
+ <div class="row"><span>Guadagno Lotto (Aggio Gioco)</span><b>${eur(t.al)}</b></div>
  <div class="row"><span>Ordini Gratta e Vinci pagati</span><b>${eur(t.og)}</b></div>
  ${t.ol?`<div class="row sub"><span>di cui Lotteria Italia</span><b>${eur(t.ol)}</b></div>`:''}
  <div class="row sub"><span>Valore di vendita</span><b>${eur(t.gv)}</b></div>
@@ -332,7 +342,7 @@ function cardTab(t){
  ${t.ol?`<div class="row sub"><span>Guadagno Lotteria Italia</span><b>${eur(t.gl)}</b></div>`:''}
  <div class="row gu"><span>Guadagno</span><b>${eur(t.gb)}</b></div>
  <div class="row sub"><span>Saldo delle sere (${t.bs<0?'mi devono':'devo io'})</span><b>${eur(Math.abs(t.bs))}</b></div></div>
- <p class="mute hint tip" id="t-bst">Guadagno Lotto = 8% delle Entrate Gioco dell'estratto conto. Gratta e Vinci: valore = ordine ÷ 0,92, guadagno = valore − ordine (il tuo 8%). Lotteria Italia: valore = importo ÷ 0,9, guadagno 10%. Contano nel giorno in cui li segni. Il saldo delle sere è la somma dei saldi del terminale: non è guadagno.</p>
+ <p class="mute hint tip" id="t-bst">Guadagno Lotto = Aggio Gioco copiato dagli estratti conto settimanali del Lotto. Gratta e Vinci: valore = ordine ÷ 0,92, guadagno = valore − ordine (il tuo 8%). Lotteria Italia: valore = importo ÷ 0,9, guadagno 10%. Contano nel giorno in cui li segni. Il saldo delle sere è la somma dei saldi del terminale: non è guadagno.</p>
  <h2>LisPoint${ib('t-lps')}</h2><div class="card">
  <div class="row"><span>Compensi LIS Pay (bollette, PagoPA)</span><b>${eur(t.lp)}</b></div>
  <div class="row"><span>Compensi LIS Holding (ricariche)</span><b>${eur(t.lh)}</b></div>
@@ -472,12 +482,12 @@ function vReport(){
  const c3=(x,r)=>r.n||r.ot?`<td>${z(x)}</td>`:'<td class="z">—</td>';
  const r3=m.map((r,i)=>`<tr><td>${MESI[i]}</td>${c3(r.ot,r)}${c3(r.ov,r)}${c3(r.ag,r)}</tr>`).join('')
   +`<tr class="s"><td>Totale ${y}</td><td>${z(t.ot)}</td><td>${z(t.ov)}</td><td>${z(t.ag)}</td></tr>`;
- const c4=(x,r)=>r.n||r.ot||r.aa||r.eg||r.og||r.lp||r.lh?`<td>${z(x)}</td>`:'<td class="z">—</td>';
+ const c4=(x,r)=>r.n||r.ot||r.aa||r.al||r.og||r.lp||r.lh?`<td>${z(x)}</td>`:'<td class="z">—</td>';
  const r4=m.map((r,i)=>`<tr><td>${MESI[i]}</td>${c4(r.avn,r)}${c4(r.aan,r)}${c4(r.ga,r)}${c4(r.gt,r)}</tr>`).join('')
   +`<tr class="s"><td>Totale ${y}</td><td>${z(t.avn)}</td><td>${z(t.aan)}</td><td>${z(t.ga)}</td><td>${z(t.gt)}</td></tr>`;
- const c5=(x,r)=>r.n||r.eg||r.og?`<td>${z(x)}</td>`:'<td class="z">—</td>';
- const r5=m.map((r,i)=>`<tr><td>${MESI[i]}</td>${c5(r.eg,r)}${c5(r.al,r)}${c5(r.og,r)}${c5(r.gg,r)}${c5(r.gl,r)}${c5(r.gb,r)}</tr>`).join('')
-  +`<tr class="s"><td>Totale ${y}</td><td>${z(t.eg)}</td><td>${z(t.al)}</td><td>${z(t.og)}</td><td>${z(t.gg)}</td><td>${z(t.gl)}</td><td>${z(t.gb)}</td></tr>`;
+ const c5=(x,r)=>r.n||r.al||r.og?`<td>${z(x)}</td>`:'<td class="z">—</td>';
+ const r5=m.map((r,i)=>`<tr><td>${MESI[i]}</td>${c5(r.al,r)}${c5(r.og,r)}${c5(r.gg,r)}${c5(r.gl,r)}${c5(r.gb,r)}</tr>`).join('')
+  +`<tr class="s"><td>Totale ${y}</td><td>${z(t.al)}</td><td>${z(t.og)}</td><td>${z(t.gg)}</td><td>${z(t.gl)}</td><td>${z(t.gb)}</td></tr>`;
  const c6=(x,r)=>r.n||r.lp||r.lh?`<td>${z(x)}</td>`:'<td class="z">—</td>';
  const r6=m.map((r,i)=>`<tr><td>${MESI[i]}</td>${c6(r.lp,r)}${c6(r.lh,r)}${c6(r.gp,r)}</tr>`).join('')
   +`<tr class="s"><td>Totale ${y}</td><td>${z(t.lp)}</td><td>${z(t.lh)}</td><td>${z(t.gp)}</td></tr>`;
@@ -497,17 +507,17 @@ function vReport(){
  <h2>${esc(accK())} e guadagno totale (€)</h2>
  <div class="card tw"><table><tr><th>Mese</th><th>Venduti senza IVA</th><th>Acquisti senza IVA</th><th>Guadagno ${esc(accK())}</th><th>Guadagno totale</th></tr>${r4}</table></div>
  <h2>Brightstar (€)</h2>
- <div class="card tw"><table><tr><th>Mese</th><th>Entrate Gioco Lotto</th><th>Guadagno Lotto</th><th>Ordini Gratta e Vinci</th><th>Guadagno Gratta e Vinci</th><th>Guadagno Lotteria Italia</th><th>Guadagno Brightstar</th></tr>${r5}</table></div>
+ <div class="card tw"><table><tr><th>Mese</th><th>Guadagno Lotto (Aggio Gioco)</th><th>Ordini Gratta e Vinci</th><th>Guadagno Gratta e Vinci</th><th>Guadagno Lotteria Italia</th><th>Guadagno Brightstar</th></tr>${r5}</table></div>
  <h2>LisPoint (€)</h2>
  <div class="card tw"><table><tr><th>Mese</th><th>Compensi LIS Pay</th><th>Compensi LIS Holding</th><th>Guadagno LisPoint</th></tr>${r6}</table></div>
- <p class="mute">Contanti al netto del fondo cassa. «—» = nessuna chiusura registrata nel mese. Tabacco e Monopolio: valore di vendita = ordini ÷ 0,9, guadagno = valore − ordini. ${esc(accK())}: senza IVA = importo ÷ 1,22; Brightstar: guadagno Lotto = 8% delle Entrate Gioco; Gratta e Vinci: valore = ordini ÷ 0,92, guadagno = valore − ordini; Lotteria Italia (parte dell'ordine): ÷ 0,9, guadagno 10%. LisPoint: compensi dagli estratti conto. Guadagno totale = tabacco + ${esc(accK())} + Brightstar + LisPoint. Altro (totale incassato meno totale reparti: tabacco, gratta e vinci, ricariche e simili) nel ${y}: <b class="${d===0?'ok':'ko'}">${d===0?'nessuna ✓':eur(d)}</b>.</p>
+ <p class="mute">Contanti al netto del fondo cassa. «—» = nessuna chiusura registrata nel mese. Tabacco e Monopolio: valore di vendita = ordini ÷ 0,9, guadagno = valore − ordini. ${esc(accK())}: senza IVA = importo ÷ 1,22; Brightstar: guadagno Lotto = Aggio Gioco degli estratti conto del Lotto; Gratta e Vinci: valore = ordini ÷ 0,92, guadagno = valore − ordini; Lotteria Italia (parte dell'ordine): ÷ 0,9, guadagno 10%. LisPoint: compensi dagli estratti conto. Guadagno totale = tabacco + ${esc(accK())} + Brightstar + LisPoint. Altro (totale incassato meno totale reparti: tabacco, gratta e vinci, ricariche e simili) nel ${y}: <b class="${d===0?'ok':'ko'}">${d===0?'nessuna ✓':eur(d)}</b>.</p>
  <div class="noprint"><button class="btn" id="print">Stampa / PDF</button><button class="btn ghost" id="rcsv">Esporta CSV</button>
  <p class="mute">Per il PDF: <i>Stampa / PDF</i> → nella stampa tocca Condividi (o allarga l'anteprima) → <i>Salva in File</i>.</p></div>`}
 
 function rcsv(){const y=repY,{m,t,names}=annuale(y),v=x=>c2(x).toFixed(2).replace('.',','),q=s=>/[;"\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;
  const inc=r=>(r.c||0)+(r.pos||0)+(r.sat||0);
- const row=(l,r)=>[l,...names.map(k=>v(r.rep[k])),v(sumRep(r)),v(r.c),v(r.pos),v(r.sat),v(inc(r)),r.n,v(r.ot),v(r.ov),v(r.ag),v(r.avn),v(r.aan),v(r.ga),v(r.eg),v(r.al),v(r.og),v(r.gg),v(r.gl),v(r.gb),v(r.lp),v(r.lh),v(r.gp),v(r.gt)].join(';');
- const out=[['Mese',...names.map(q),'Totale reparti','Contanti','POS','Satispay','Totale incassato','Chiusure','Ordini tabacco','Valore di vendita tabacco','Guadagno tabacco','Accessori venduti senza IVA','Acquisti accessori senza IVA','Guadagno accessori','Entrate Gioco Lotto','Guadagno Lotto','Ordini Gratta e Vinci','Guadagno Gratta e Vinci','Guadagno Lotteria Italia','Guadagno Brightstar','Compensi LIS Pay','Compensi LIS Holding','Guadagno LisPoint','Guadagno totale'].join(';'),...m.map((r,i)=>row(MESI[i],r)),row('Totale '+y,t)];
+ const row=(l,r)=>[l,...names.map(k=>v(r.rep[k])),v(sumRep(r)),v(r.c),v(r.pos),v(r.sat),v(inc(r)),r.n,v(r.ot),v(r.ov),v(r.ag),v(r.avn),v(r.aan),v(r.ga),v(r.al),v(r.og),v(r.gg),v(r.gl),v(r.gb),v(r.lp),v(r.lh),v(r.gp),v(r.gt)].join(';');
+ const out=[['Mese',...names.map(q),'Totale reparti','Contanti','POS','Satispay','Totale incassato','Chiusure','Ordini tabacco','Valore di vendita tabacco','Guadagno tabacco','Accessori venduti senza IVA','Acquisti accessori senza IVA','Guadagno accessori','Aggio Gioco Lotto','Ordini Gratta e Vinci','Guadagno Gratta e Vinci','Guadagno Lotteria Italia','Guadagno Brightstar','Compensi LIS Pay','Compensi LIS Holding','Guadagno LisPoint','Guadagno totale'].join(';'),...m.map((r,i)=>row(MESI[i],r)),row('Totale '+y,t)];
  saveFile(`report-annuale-${y}.csv`,'text/csv',out.join('\n'))}
 
 function vImp(){return `<h1>Reparti e backup</h1><h2>Reparti</h2>
@@ -529,8 +539,8 @@ function csv(){const[s,e]=rng(mode,anchor),a=iso(s),b=iso(e),m=x=>String(x==null
  const ds=Object.keys(db.days).filter(d=>d>=a&&d<=b).sort();
  // reparti attuali + reparti eliminati che hanno importi nel periodo
  const n=[...new Set([...db.reparti,...ds.flatMap(d=>Object.keys(db.days[d].rep||{}))])];
- const out=[['Data','Fondo cassa','Contanti','POS','Satispay',...n.map(q),'Ordine tabacco','Acquisto accessori','Saldo Brightstar','Entrate Gioco Lotto','Ordine Gratta e Vinci','di cui Lotteria Italia','Compensi LIS Pay','Compensi LIS Holding'].join(';')];
- ds.forEach(d=>{const r=db.days[d];out.push([d,m(r.f),m(r.c),m(r.pos),m(r.sat),...n.map(k=>m((r.rep||{})[k])),m(r.ot),m(r.aa),m(r.bs),m(r.eg),m(r.og),m(r.ol),m(r.lp),m(r.lh)].join(';'))});
+ const out=[['Data','Fondo cassa','Contanti','POS','Satispay',...n.map(q),'Ordine tabacco','Acquisto accessori','Saldo Brightstar','Aggio Gioco Lotto','Ordine Gratta e Vinci','di cui Lotteria Italia','Compensi LIS Pay','Compensi LIS Holding'].join(';')];
+ ds.forEach(d=>{const r=db.days[d];out.push([d,m(r.f),m(r.c),m(r.pos),m(r.sat),...n.map(k=>m((r.rep||{})[k])),m(r.ot),m(r.aa),m(r.bs),m(r.ao!=null?r.ao:r.eg!=null?aggioLotto(r.eg):''),m(r.og),m(r.ol),m(r.lp),m(r.lh)].join(';'))});
  saveFile(`chiusure-${a}_${b}.csv`,'text/csv',out.join('\n'))}
 
 // Riaprendo l'app (anche rimasta aperta in sottofondo) nel giorno dopo, la data torna a oggi
@@ -564,7 +574,7 @@ A.addEventListener('click',e=>{const h=e.target.closest('[data-b]');
  if(d.bs){bsS=+d.bs;document.querySelectorAll('[data-bs]').forEach(x=>{const on=x===b;x.classList.toggle('on',on);x.setAttribute('aria-pressed',on)});calc();return}
  if(id==='av'||id==='av2'){const h=$('#'+d.to);if(h)h.scrollIntoView({behavior:'smooth',block:'start'});const i=$('#'+d.in);if(i)setTimeout(()=>i.focus({preventScroll:true}),350);return}
  if(id==='save'){const r=read();
-  if(!r.c&&!r.pos&&!r.sat&&!r.ot&&!r.aa&&!r.bs&&!r.og&&!r.ol&&r.eg==null&&r.lp==null&&r.lh==null&&!g0('#ct')&&!Object.keys(r.rep).length){toast('Inserisci almeno un importo');return}
+  if(!r.c&&!r.pos&&!r.sat&&!r.ot&&!r.aa&&!r.bs&&!r.og&&!r.ol&&r.eg==null&&r.ao==null&&r.lp==null&&r.lh==null&&!g0('#ct')&&!Object.keys(r.rep).length){toast('Inserisci almeno un importo');return}
   if((r.ol||0)>(r.og||0)&&!confirm(`«di cui Lotteria Italia» (${eur(r.ol)}) è più grande dell'Ordine Gratta e Vinci (${eur(r.og||0)}): l'ordine deve essere il totale, lotteria compresa.\n\nSalvare comunque?`))return;
   if(r.c<0&&!confirm(`Il fondo cassa è più grande dei contanti in cassa: i contanti incassati risultano ${eur(r.c)}.\n\nSalvare comunque?`))return;
   const old=db.days[cur];
