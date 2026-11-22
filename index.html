@@ -49,9 +49,15 @@ h2{font-size:12.5px;margin:24px 6px 8px;color:var(--mute);font-weight:700;text-t
 .acts{display:flex;gap:10px;margin-top:20px}.acts .btn{margin:0;padding:15px 18px}.acts #save{flex:1}
 .x{font:inherit;border:0;background:none;color:var(--ko);padding:4px}
 .mute{color:var(--mute);font-size:15px;margin:8px 0}
-.seg{display:flex;gap:4px;margin-bottom:12px;padding:4px;background:var(--card);border:1px solid var(--line);border-radius:16px}
-.seg button{flex:1;min-width:0;font:inherit;font-size:15px;font-weight:600;padding:8px 4px;border:0;background:none;border-radius:12px;color:var(--mute);transition:background .25s,color .25s,transform .14s}
-.seg button.on{background:linear-gradient(180deg,#4a95e8,#2a6fc4);color:#fff;box-shadow:0 4px 12px -4px rgba(42,116,201,.8)}
+.seg{position:relative;display:flex;gap:4px;margin-bottom:12px;padding:4px;border-radius:16px;background:rgba(24,36,53,.6);-webkit-backdrop-filter:saturate(170%) blur(18px);backdrop-filter:saturate(170%) blur(18px);border:1px solid rgba(255,255,255,.08);box-shadow:0 10px 26px -14px rgba(0,0,0,.7);touch-action:none;-webkit-user-select:none;user-select:none}
+.seg button{position:relative;z-index:1;-webkit-touch-callout:none;flex:1;min-width:0;font:inherit;font-size:15px;font-weight:600;padding:8px 4px;border:0;background:none;border-radius:12px;color:var(--mute);transition:background .25s,color .25s,transform .14s}
+.seg button.on{color:#fff}
+/* evidenziazione «vetro» che scivola (barra Giorno/Settimana/Mese/Anno e barra in basso) */
+.sg-ind{position:absolute;top:4px;bottom:4px;left:4px;width:calc((100% - 20px) / 4);border-radius:12px;pointer-events:none;
+ background:linear-gradient(180deg,rgba(110,170,240,.62),rgba(42,111,196,.5));border:1px solid rgba(255,255,255,.28);
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.35),inset 0 -1px 0 rgba(0,0,0,.15),0 6px 16px -6px rgba(42,116,201,.85);
+ -webkit-backdrop-filter:blur(10px) saturate(180%);backdrop-filter:blur(10px) saturate(180%);transition:transform .38s var(--ease)}
+.seg.drag .sg-ind{transform-origin:center}
 .nav2{display:flex;justify-content:space-between;align-items:center;margin:4px 0 12px}
 .nav2 button{font:inherit;font-size:22px;line-height:1;border:0;background:rgba(125,183,245,.08);color:var(--acc);width:42px;height:42px;border-radius:50%;transition:transform .14s}
 .nav2 button:active{transform:scale(.9)}
@@ -122,8 +128,8 @@ nav svg{width:25px;height:25px;fill:none;stroke:currentColor;stroke-width:1.8;st
 nav button.on{color:var(--acc)}
 nav{touch-action:none;-webkit-user-select:none;user-select:none}nav button{position:relative;z-index:1;-webkit-touch-callout:none}
 /* evidenziazione della voce attiva: scivola da una voce all'altra e segue il dito tenendo premuto */
-.nv-ind{position:absolute;top:6px;bottom:6px;left:6px;width:calc((100% - 20px) / 3);border-radius:18px;background:rgba(125,183,245,.15);box-shadow:inset 0 0 0 1px rgba(125,183,245,.12);transition:transform .38s var(--ease),background .2s;pointer-events:none}
-nav.drag .nv-ind{background:rgba(125,183,245,.24)}
+.nv-ind{position:absolute;top:6px;bottom:6px;left:6px;width:calc((100% - 20px) / 3);border-radius:18px;background:linear-gradient(180deg,rgba(255,255,255,.16),rgba(125,183,245,.1));border:1px solid rgba(255,255,255,.18);box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 6px 16px -8px rgba(0,0,0,.6);-webkit-backdrop-filter:blur(10px) saturate(180%);backdrop-filter:blur(10px) saturate(180%);transition:transform .38s var(--ease),background .2s;pointer-events:none}
+nav.drag .nv-ind{background:linear-gradient(180deg,rgba(255,255,255,.24),rgba(125,183,245,.18))}
 nav button.on svg{transform:translateY(-1px) scale(1.08)}
 #t{position:fixed;left:50%;bottom:calc(98px + env(safe-area-inset-bottom));transform:translate(-50%,14px);background:rgba(43,58,78,.9);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);color:var(--ink);font-weight:600;padding:11px 18px;border-radius:14px;border:1px solid rgba(255,255,255,.08);box-shadow:0 10px 26px -8px rgba(0,0,0,.6);opacity:0;transition:opacity .25s,transform .35s var(--ease);pointer-events:none;white-space:nowrap}
 #t.on{opacity:1;transform:translate(-50%,0)}
@@ -131,13 +137,14 @@ nav button.on svg{transform:translateY(-1px) scale(1.08)}
 .ch svg{display:block;width:100%;height:auto;overflow:visible}
 .ch text{fill:var(--mute);font-size:10px;font-variant-numeric:tabular-nums}
 .ch .gl{stroke:var(--line);stroke-width:1;stroke-dasharray:2 3}
-.ch .b0{fill:#4f6178}.ch .b1{fill:url(#gb1)}
+/* barre «vetro»: riempimento semitrasparente + bordo chiaro */
+.ch .b0{fill:rgba(120,140,170,.38);stroke:rgba(255,255,255,.16);stroke-width:.8}.ch .b1{fill:url(#gb1);stroke:rgba(255,255,255,.42);stroke-width:.8}
 .ch .b0,.ch .b1{transform-box:fill-box;transform-origin:50% 100%;animation:grow .7s var(--ease) both}
 @keyframes grow{from{transform:scaleY(0)}}
 .ch .hit{fill:transparent;transition:fill .2s}.ch .hit.sel{fill:rgba(125,183,245,.14)}
 .lg{display:flex;gap:16px;font-size:13px;color:var(--mute);margin:2px 4px 6px}
 .lg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
-.lg .s0{background:#4f6178}.lg .s1{background:var(--acc)}
+.lg .s0{background:rgba(120,140,170,.38);box-shadow:inset 0 0 0 1px rgba(255,255,255,.16)}.lg .s1{background:linear-gradient(180deg,rgba(191,224,255,.9),rgba(63,134,216,.55));box-shadow:inset 0 0 0 1px rgba(255,255,255,.42)}
 #ci{margin:6px 4px 4px;font-size:14px;min-height:2.8em}
 #ci b{color:var(--ink);font-weight:600}
 .ph{display:none}
@@ -147,7 +154,7 @@ nav button.on svg{transform:translateY(-1px) scale(1.08)}
 .hn{display:flex;justify-content:space-between;gap:10px;font-size:14px;margin-bottom:5px}.hn b{font-weight:600;white-space:nowrap}
 .hb{display:flex;align-items:center;gap:8px;height:12px;margin:3px 0}.hb small{font-size:12px;color:var(--mute);white-space:nowrap}
 .hb i{display:block;height:100%;min-width:0;border-radius:4px;transform-origin:0 50%;animation:growx .7s var(--ease) both}
-.hb .b1{background:linear-gradient(90deg,#4f97e6,#a9d2ff)}.hb .b0{background:#4f6178}
+.hb .b1{background:linear-gradient(90deg,rgba(63,134,216,.55),rgba(191,224,255,.85));box-shadow:inset 0 0 0 1px rgba(255,255,255,.3),inset 0 1px 0 rgba(255,255,255,.4)}.hb .b0{background:rgba(120,140,170,.38);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)}
 @keyframes growx{from{transform:scaleX(0)}}
 .hq{margin-top:8px;font-size:14px;font-weight:700}.hq.ok{color:var(--ok)}.hq.ko{color:var(--ko)}
 .tw{overflow-x:auto;-webkit-overflow-scrolling:touch;padding:2px 16px}
@@ -158,7 +165,7 @@ nav button.on svg{transform:translateY(-1px) scale(1.08)}
 .tw td.z{color:var(--mute)}
 .ph small{display:block;font-size:11pt;font-weight:400}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
-@media print{.ts{background:#fff!important;border:0!important;padding:0!important;text-align:left}.ts .big,.ts .tv{background:none!important;-webkit-text-fill-color:#000!important;color:#000}.ts.hero .hl,.ts.hero .hs{color:#444}.tip{display:block!important}.ib{display:none!important}:root{color-scheme:light;--ink:#000;--mute:#444;--line:#bbb;--bg:#fff;--card:#fff;--acc:#000}*{animation:none!important;box-shadow:none!important}body::before{display:none}nav,.noprint,#t{display:none!important}.ph{display:block;font-weight:700;font-size:20px;margin:0 0 10px}body{background:#fff;padding:0;font-size:12pt}.card{border:0;padding:0;background:#fff}h1{display:none}.hero{margin:0 0 10px}.big{font-size:22pt}.chip{background:none!important;padding:0}.ch .b1{fill:#000}.ch .b0,.lg .s0{fill:#bbb;background:#bbb}.ch .hit.sel{fill:transparent}.lg i,.hb i{-webkit-print-color-adjust:exact;print-color-adjust:exact}.hb .b1{background:#000}.hb .b0{background:#bbb}.tw{overflow:visible;padding:0}.tw table{font-size:8.5pt}.tw th{font-size:8pt;min-width:0}.tw th,.tw td{padding:3px 0 3px 6px}.tw td:first-child{position:static}h2{color:#000;margin:14pt 0 4pt;break-after:avoid;text-transform:none;letter-spacing:0;font-size:12pt}table{break-inside:avoid}}
+@media print{.ts{background:#fff!important;border:0!important;padding:0!important;text-align:left}.ts .big,.ts .tv{background:none!important;-webkit-text-fill-color:#000!important;color:#000}.ts.hero .hl,.ts.hero .hs{color:#444}.tip{display:block!important}.ib{display:none!important}:root{color-scheme:light;--ink:#000;--mute:#444;--line:#bbb;--bg:#fff;--card:#fff;--acc:#000}*{animation:none!important;box-shadow:none!important}body::before{display:none}nav,.noprint,#t{display:none!important}.ph{display:block;font-weight:700;font-size:20px;margin:0 0 10px}body{background:#fff;padding:0;font-size:12pt}.card{border:0;padding:0;background:#fff}h1{display:none}.hero{margin:0 0 10px}.big{font-size:22pt}.chip{background:none!important;padding:0}.ch .b1{fill:#000;stroke:none}.ch .b0{stroke:none}.ch .b0,.lg .s0{fill:#bbb;background:#bbb}.ch .hit.sel{fill:transparent}.lg i,.hb i{-webkit-print-color-adjust:exact;print-color-adjust:exact}.hb .b1{background:#000}.hb .b0{background:#bbb}.tw{overflow:visible;padding:0}.tw table{font-size:8.5pt}.tw th{font-size:8pt;min-width:0}.tw th,.tw td{padding:3px 0 3px 6px}.tw td:first-child{position:static}h2{color:#000;margin:14pt 0 4pt;break-after:avoid;text-transform:none;letter-spacing:0;font-size:12pt}table{break-inside:avoid}}
 </style>
 </head>
 <body>
@@ -402,7 +409,7 @@ function grafico(m,s,e,ps,pe){
   if(t)g+=`<text x="${f(x0+gw/2)}" y="${H-5}" text-anchor="middle" pointer-events="none">${t}</text>`}
  const yr=m==='settimana'?'':` (${s.getFullYear()} / ${ps.getFullYear()})`;
  return `<div class="card ch"><div class="lg"><span><i class="s1"></i>Periodo</span><span><i class="s0"></i>Anno prima</span></div>
- <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Grafico del totale incassato: periodo e anno prima${yr}"><defs><linearGradient id="gb1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a9d2ff"/><stop offset="1" stop-color="#4f97e6"/></linearGradient></defs>${g}</svg>
+ <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Grafico del totale incassato: periodo e anno prima${yr}"><defs><linearGradient id="gb1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bfe0ff" stop-opacity=".9"/><stop offset=".5" stop-color="#7cb6f5" stop-opacity=".62"/><stop offset="1" stop-color="#3f86d8" stop-opacity=".5"/></linearGradient></defs>${g}</svg>
  <p id="ci" class="mute">${chInfo()}</p></div>`}
 function chInfo(){const c=chart;if(!c)return'';
  if(selB<0||selB>=c.a.length){
@@ -462,7 +469,7 @@ function vRiepilogo(){
  const spiega=G1?'«Differenza in %» = di quanto il giorno è cambiato rispetto all\'anno prima; «—» quando non si può calcolare (anno prima a zero).'
   :`${t.n} chiusure registrate (anno prima: ${p.n}). Sotto ogni importo, in grigio, la media per chiusura (importo diviso per le chiusure registrate). «Differenza in %» = di quanto il periodo è cambiato rispetto all'anno prima; «—» quando non si può calcolare (nessuna chiusura o anno prima a zero).`;
  return `<h1>Riepilogo</h1>
- <div class="seg noprint">${['giorno','settimana','mese','anno'].map(m=>`<button data-m="${m}" class="${m===mode?'on':''}">${m[0].toUpperCase()+m.slice(1)}</button>`).join('')}</div>
+ <div class="seg noprint"><i class="sg-ind" aria-hidden="true" style="transform:${segT(segPrev)}"></i>${['giorno','settimana','mese','anno'].map(m=>`<button data-m="${m}" class="${m===mode?'on':''}">${m[0].toUpperCase()+m.slice(1)}</button>`).join('')}</div>
  <div class="nav2 noprint"><button data-s="-1" aria-label="Periodo precedente">‹</button><b>${L}</b><button data-s="1" aria-label="Periodo successivo">›</button></div>
  <div class="ph">Tabaccheria – riepilogo ${L}</div>
  ${H}${G}
@@ -535,9 +542,13 @@ function vImp(){return `<h1>Impostazioni</h1><h2>Reparti</h2>
  <h2>Backup</h2><div class="card pad"><p class="mute" style="margin-top:0">I dati sono solo su questo iPhone. A fine mese salva un backup in File (iCloud Drive).</p>
  <button class="btn" id="bk">Salva backup</button><label class="btn ghost">Ripristina backup<input type="file" id="imp" accept=".json,application/json" hidden></label></div>`}
 
+// barra Giorno/Settimana/Mese/Anno: l'evidenziazione parte dalla posizione precedente e scivola su quella nuova
+const MODI=['giorno','settimana','mese','anno'];let segPrev=0;
+const segT=i=>`translateX(calc(${i} * (100% + 4px)))`;
+function segInd(){const g=document.querySelector('.sg-ind');if(!g)return;const i=MODI.indexOf(mode);requestAnimationFrame(()=>requestAnimationFrame(()=>{g.style.transform=segT(i)}));segPrev=i}
 function render(){const M=$('#app');M.innerHTML={chiusura:vChiusura,riepilogo:vRiepilogo,report:vReport,impostazioni:vImp}[view]();
  if(lastView!==null&&lastView!==view){M.classList.remove('enter');void M.offsetWidth;M.classList.add('enter')}lastView=view;lastQ=null;
- document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===(view==='report'?'riepilogo':view)));navInd(navIdx(view));calc();scrollTo(0,0)}
+ document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===(view==='report'?'riepilogo':view)));navInd(navIdx(view));segInd();calc();scrollTo(0,0)}
 
 async function saveFile(name,type,text){
  const f=new File([type.includes('csv')?'\ufeff'+text:text],name,{type});
@@ -571,6 +582,16 @@ const nvEnd=e=>{if(!nvD||e.pointerId!==nvD.id)return;const d=nvD;nvD=null;NV.cla
  if(d.moved){nvSkip=true;setTimeout(()=>nvSkip=false,400);const v=NB[d.i].dataset.v;if(v!==(view==='report'?'riepilogo':view)){view=v;render()}else navInd(navIdx(view))}};
 NV.addEventListener('pointerup',nvEnd);
 NV.addEventListener('pointercancel',e=>{if(!nvD)return;nvD=null;NV.classList.remove('drag');NB.forEach(b=>b.classList.toggle('on',b.dataset.v===(view==='report'?'riepilogo':view)));navInd(navIdx(view))});
+let sgD=null,sgSkip=false;
+const sgAt=(sg,x)=>{let k=0,dm=1e9;sg.querySelectorAll('button').forEach((b,i)=>{const r=b.getBoundingClientRect(),d=Math.abs(x-(r.left+r.width/2));if(d<dm){dm=d;k=i}});return k};
+$('#app').addEventListener('pointerdown',e=>{const sg=e.target.closest('.seg');if(!sg||e.button>0)return;sgD={sg,x:e.clientX,i:sgAt(sg,e.clientX),moved:false,id:e.pointerId};try{sg.setPointerCapture(e.pointerId)}catch(_){}});
+$('#app').addEventListener('pointermove',e=>{if(!sgD||e.pointerId!==sgD.id)return;
+ if(!sgD.moved&&Math.abs(e.clientX-sgD.x)<8)return;
+ if(!sgD.moved){sgD.moved=true;sgD.sg.classList.add('drag')}
+ const i=sgAt(sgD.sg,e.clientX);if(i!==sgD.i||sgD.first===undefined){sgD.first=1;if(i!==sgD.i)hap();sgD.i=i;const g=sgD.sg.querySelector('.sg-ind');if(g)g.style.transform=segT(i);sgD.sg.querySelectorAll('button').forEach((b,k)=>b.classList.toggle('on',k===i))}});
+$('#app').addEventListener('pointerup',e=>{if(!sgD||e.pointerId!==sgD.id)return;const d=sgD;sgD=null;d.sg.classList.remove('drag');
+ if(d.moved){sgSkip=true;setTimeout(()=>sgSkip=false,400);segPrev=d.i;if(MODI[d.i]!==mode){mode=MODI[d.i];render()}}});
+$('#app').addEventListener('pointercancel',()=>{if(!sgD)return;sgD=null;render()});
 NV.addEventListener('click',e=>{if(nvSkip){nvSkip=false;return}const b=e.target.closest('button');if(b){view=b.dataset.v;render()}});
 $('#app').addEventListener('animationend',e=>{if(e.target.id==='app')e.target.classList.remove('enter')});
 const A=$('#app');
@@ -606,7 +627,7 @@ A.addEventListener('click',e=>{const h=e.target.closest('[data-b]');
   db.days[cur]=r;db.fondo=r.f;if(!save()){render();return}hap();toast('Chiusura salvata ✓');render()}
  else if(id==='tg'){cfOpen=!cfOpen;b.setAttribute('aria-expanded',cfOpen);const c=$('#cf');c.classList.toggle('open',cfOpen);c.inert=!cfOpen}
  else if(id==='del'){if(confirm('Eliminare la chiusura del '+cur+'?')){delete db.days[cur];if(!save()){render();return}hap();render();toast('Chiusura eliminata')}}
- else if(d.m){mode=d.m;render()}
+ else if(d.m){if(sgSkip){sgSkip=false;return}mode=d.m;render()}
  else if(d.s){const k=+d.s,a=new Date(anchor);
   if(mode==='giorno')a.setDate(a.getDate()+k);else if(mode==='settimana')a.setDate(a.getDate()+7*k);else if(mode==='mese'){a.setDate(1);a.setMonth(a.getMonth()+k)}else{const g=a.getDate();a.setDate(1);a.setFullYear(a.getFullYear()+k);a.setDate(Math.min(g,new Date(a.getFullYear(),a.getMonth()+1,0).getDate()))}
   anchor=a;render()}
