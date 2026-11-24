@@ -89,6 +89,18 @@ h3.mm{font-size:13px;margin:12px 0 0;padding:0 0 6px;color:var(--mute);font-weig
 .sw-c{position:relative;z-index:1;background:var(--card);touch-action:pan-y;transition:transform .28s var(--ease)}
 .sw.drag .sw-c{transition:none}
 .sw-del{position:absolute;top:0;right:0;bottom:0;width:92px;border:0;font:inherit;font-weight:700;color:#fff;background:linear-gradient(180deg,#ff8a80,#e5534b);display:flex;align-items:center;justify-content:center}
+.om .row{padding:7px 0;border:0}.om .row span{color:var(--mute);font-size:15px}
+.badge{font-size:11.5px;font-weight:700;padding:3px 8px;border-radius:99px;background:rgba(125,183,245,.15);color:var(--acc);white-space:nowrap}
+.badge.g{background:rgba(147,163,182,.15);color:var(--mute)}.badge.a{background:rgba(76,195,138,.14);color:var(--ok)}
+.newr{padding:14px 16px 4px;margin:0 -16px;border-top:1px solid var(--line)}
+.newr .opt{margin-top:10px}.newr .lbl{font-size:13px;color:var(--mute);margin:12px 0 0;text-align:center}
+.newr .dsc{font-size:13px;color:var(--mute);margin:10px 2px 6px;line-height:1.35;text-align:center}
+.newr .agp{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;font-size:14px;color:var(--mute)}
+.newr .agp input{width:64px;text-align:center;font:inherit;font-weight:700;color:var(--ink);background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:10px;padding:5px}
+.sw.full .sw-del{width:100%;justify-content:flex-end;padding-right:24px}
+.sw-del{transition:width .2s var(--ease)}
+.sw.gone{transition:opacity .2s;opacity:0}
+.sw:not(.drag):not(.open):not(.full):not(.gone) .sw-del{visibility:hidden}
 .chip{display:inline-block;font-weight:700;padding:2px 9px;border-radius:99px;background:rgba(147,163,182,.14);color:var(--ink);margin-right:4px}
 .chip.up{background:rgba(76,195,138,.15);color:var(--ok)}.chip.dn{background:rgba(255,123,114,.15);color:var(--ko)}
 table{width:100%;border-collapse:collapse;font-size:15px}
@@ -292,10 +304,6 @@ function vChiusura(){
  <h2 id="hl">LisPoint${ib('t-lp')}</h2><div class="card"><label class="row"><span>Compensi LIS Pay</span><input id="lp" inputmode="decimal" placeholder="0,00" value="${fi(r.lp)}"></label>
   <label class="row last"><span>Compensi LIS Holding</span><input id="lh" inputmode="decimal" placeholder="0,00" value="${fi(r.lh)}"></label></div>
  <p class="mute hint tip" id="t-lp">Da compilare 1 volta al mese, quando arrivano gli estratti conto LisPoint: copia il totale «Compensi» di LIS Pay (bollette, PagoPA) e di LIS Holding (ricariche).</p>
- <h2>Ordini e acquisti</h2><div class="card"><div class="row"><span class="lb"><label for="ot">Ordine tabacco</label>${ib('t-ot')}</span><input id="ot" inputmode="decimal" placeholder="0,00" value="${fi(r.ot)}"></div>
-  <p class="mute hint tip" id="t-ot">Solo il giorno in cui mandi l'ordine. Inserisci l'importo già senza aggio.</p>
-  <div class="row last"><span class="lb"><label for="aa">Acquisto accessori</label>${ib('t-aa')}</span><input id="aa" inputmode="decimal" placeholder="0,00" value="${fi(r.aa)}"></div>
-  <p class="mute hint tip" id="t-aa">Solo il giorno in cui compri. Inserisci il totale della fattura, IVA compresa.</p></div>
  <h2 class="tsh">Totale serata</h2><div id="q"></div>
  <div class="acts"><button class="btn" id="save">Salva chiusura</button>${db.days[cur]?'<button class="btn ghost" id="del">Elimina</button>':''}</div>`}
 
@@ -303,11 +311,11 @@ const g0=s=>num(($(s)||{}).value);
 function read(){const g=s=>num(($(s)||{}).value),rep={};
  document.querySelectorAll('[data-r]').forEach(i=>{if(i.value.trim()!=='')rep[i.dataset.r]=num(i.value)});
  // contanti incassati = contanti in cassa − fondo cassa (solo se i contanti in cassa sono stati inseriti)
- const ct=g('#ct'),f=g('#f'),o={c:ct?c2(ct-f):0,f,pos:g('#pos'),sat:g('#sat'),rep},ot=g('#ot'),aa=g('#aa'),bs=c2(Math.abs(g('#bs'))*bsS),og=g('#og'),ol=g('#ol'),aoI=$('#ao'),lpI=$('#lp'),lhI=$('#lh');
+ const ct=g('#ct'),f=g('#f'),o={c:ct?c2(ct-f):0,f,pos:g('#pos'),sat:g('#sat'),rep},od=db.days[cur]||{},ot=od.ot,aa=od.aa,bs=c2(Math.abs(g('#bs'))*bsS),og=g('#og'),ol=g('#ol'),aoI=$('#ao'),lpI=$('#lp'),lhI=$('#lh');
  // ordine tabacco, acquisto accessori, saldo e ordine Gratta e Vinci si salvano solo se ci sono (così le chiusure vecchie restano identiche);
  // Aggio Gioco si salva anche se zero, purché scritto (settimana senza giocate: l'avviso sparisce);
  // giorno vecchio con Entrate Gioco: se l'aggio mostrato non è cambiato restano le Entrate Gioco (dati identici)
- if(ot)o.ot=ot;if(aa)o.aa=aa;if(bs)o.bs=bs;if(aoI&&aoI.value.trim()!==''){const v=num(aoI.value),old=db.days[cur];if(old&&old.eg!=null&&old.ao==null&&v===aggioLotto(old.eg))o.eg=old.eg;else o.ao=v}if(og)o.og=og;if(ol)o.ol=ol;
+ if(ot!=null)o.ot=ot;if(aa!=null)o.aa=aa;if(od.acq)o.acq=od.acq;if(od.om)o.om=od.om;if(bs)o.bs=bs;if(aoI&&aoI.value.trim()!==''){const v=num(aoI.value),old=db.days[cur];if(old&&old.eg!=null&&old.ao==null&&v===aggioLotto(old.eg))o.eg=old.eg;else o.ao=v}if(og)o.og=og;if(ol)o.ol=ol;
  // compensi LisPoint: si salvano se scritti (anche 0, così l'avviso del mese sparisce)
  if(lpI&&lpI.value.trim()!=='')o.lp=num(lpI.value);if(lhI&&lhI.value.trim()!=='')o.lh=num(lhI.value);return o}
 // true se nel mese di oggi non sono ancora stati inseriti i compensi LisPoint
@@ -346,19 +354,39 @@ const lab=(m,s,e)=>m==='giorno'?s.toLocaleDateString('it-IT',{weekday:'short',da
 // gg = guadagno Gratta e Vinci (8%), gl = guadagno Lotteria Italia (10%); gb = guadagno Brightstar (al + gg + gl);
 // lp, lh = compensi LisPoint (LIS Pay, LIS Holding) dagli estratti conto mensili, gp = guadagno LisPoint (lp + lh);
 // gt = guadagno totale (tabacco + accessori + Brightstar + LisPoint). Calcolati giorno per giorno al centesimo.
-function tot(s,e){const a=iso(s),b=iso(e),t={n:0,c:0,pos:0,sat:0,rep:{},ot:0,ov:0,ag:0,av:0,avn:0,aa:0,aan:0,ga:0,bs:0,al:0,og:0,ol:0,gv:0,gg:0,gl:0,gb:0,lp:0,lh:0,gp:0,gt:0},ak=accK();
+function tot(s,e){const a=iso(s),b=iso(e),t={n:0,c:0,pos:0,sat:0,rep:{},ot:0,ov:0,ag:0,av:0,avn:0,aa:0,aan:0,ga:0,bs:0,al:0,og:0,ol:0,gv:0,gg:0,gl:0,gb:0,lp:0,lh:0,gp:0,gx:0,gt:0,xr:{}},ak=accK();
  for(const d in db.days){if(d<a||d>b)continue;const r=db.days[d],rp=r.rep||{};
   // un giorno con solo ordini, acquisti o estratti conto non conta come chiusura
-  if(!((r.ot||r.aa||r.og||r.ol||r.eg!=null||r.ao!=null||r.lp!=null||r.lh!=null)&&!r.c&&!r.pos&&!r.sat&&!r.bs&&!Object.keys(rp).length))t.n++;
+  if(!((r.ot||r.aa||r.om||r.acq||r.og||r.ol||r.eg!=null||r.ao!=null||r.lp!=null||r.lh!=null)&&!r.c&&!r.pos&&!r.sat&&!r.bs&&!Object.keys(rp).length))t.n++;
   t.c+=r.c||0;t.pos+=r.pos||0;t.sat+=r.sat||0;t.ot=c2(t.ot+(r.ot||0));t.ov=c2(t.ov+vendita(r.ot));t.ag=c2(t.ag+guadagno(r.ot));
   t.av=c2(t.av+(rp[ak]||0));t.avn=c2(t.avn+senzaIva(rp[ak]));t.aa=c2(t.aa+(r.aa||0));t.aan=c2(t.aan+senzaIva(r.aa));
   t.ga=c2(t.avn-t.aan);t.bs=c2(t.bs+(r.bs||0));t.al=c2(t.al+(r.ao!=null?c2(r.ao):aggioLotto(r.eg)));
   // Lotteria Italia: parte dell'ordine pagata per i suoi biglietti, aggio 10% come il tabacco (÷ 0,9); il resto dell'ordine è Gratta e Vinci (÷ 0,92)
   const gq=c2((r.og||0)-(r.ol||0));t.og=c2(t.og+(r.og||0));t.ol=c2(t.ol+(r.ol||0));t.gv=c2(t.gv+venditaGv(gq)+vendita(r.ol));
   t.gg=c2(t.gg+guadagnoGv(gq));t.gl=c2(t.gl+guadagno(r.ol));t.gb=c2(t.al+t.gg+t.gl);
-  t.lp=c2(t.lp+(r.lp||0));t.lh=c2(t.lh+(r.lh||0));t.gp=c2(t.lp+t.lh);t.gt=c2(t.ag+t.ga+t.gb+t.gp);
+  t.lp=c2(t.lp+(r.lp||0));t.lh=c2(t.lh+(r.lh||0));t.gp=c2(t.lp+t.lh);
+  // altri reparti con guadagno: IVA (vendite senza IVA − acquisti senza IVA) o aggio (incasso × aggio %), giorno per giorno al centesimo
+  for(const n of new Set([...Object.keys(rp),...Object.keys(r.acq||{})])){if(n===ak)continue;const y=tipoR(n);if(y.t==='inc')continue;
+   const x=t.xr[n]||(t.xr[n]={t:y.t,p:y.p,v:0,vn:0,a:0,an:0,g:0}),v=rp[n]||0;x.v=c2(x.v+v);
+   if(y.t==='aggio'){const g=aggioV(v,y.p);x.g=c2(x.g+g);t.gx=c2(t.gx+g)}
+   else{const i=y.t==='iva10'?10:22,a=(r.acq||{})[n]||0,vn=netto(v,i),an=netto(a,i);x.vn=c2(x.vn+vn);x.a=c2(x.a+a);x.an=c2(x.an+an);x.g=c2(x.g+vn-an);t.gx=c2(t.gx+vn-an)}}
+  t.gt=c2(t.ag+t.ga+t.gb+t.gp+t.gx);
   for(const k in rp)t.rep[k]=(t.rep[k]||0)+(rp[k]||0)}return t}
 // Riquadro «Tabacco e Monopolio» del Riepilogo: calcolato solo dagli ordini, separato dagli altri calcoli
+// schede del Riepilogo per i reparti con tipo (diversi dagli accessori)
+function cardX(t){return repX(t).map((n,j)=>{const x=t.xr[n]||{v:0,vn:0,a:0,an:0,g:0},y=tipoR(n),id='t-x'+j;
+ if(y.t==='aggio')return `<h2>${esc(n)} (aggio ${String(y.p).replace('.',',')}%)${ib(id)}</h2><div class="card">
+ <div class="row"><span>Incassato</span><b>${eur(x.v)}</b></div>
+ <div class="row gu"><span>Guadagno</span><b>${eur(x.g)}</b></div></div>
+ <p class="mute hint tip" id="${id}">Guadagno = incassato del reparto × ${String(y.p).replace('.',',')}%, giorno per giorno.</p>`;
+ const i=y.t==='iva10'?10:22;
+ return `<h2>${esc(n)} (IVA ${i}%)${ib(id)}</h2><div class="card">
+ <div class="row"><span>Venduti (IVA compresa)</span><b>${eur(x.v)}</b></div>
+ <div class="row sub"><span>Venduti senza IVA</span><b>${eur(x.vn)}</b></div>
+ <div class="row"><span>Acquisti (IVA compresa)</span><b>${eur(x.a)}</b></div>
+ <div class="row sub"><span>Acquisti senza IVA</span><b>${eur(x.an)}</b></div>
+ <div class="row gu"><span>Guadagno</span><b>${eur(x.g)}</b></div></div>
+ <p class="mute hint tip" id="${id}">Senza IVA = importo ÷ ${i===10?'1,10':'1,22'}. Guadagno = venduti senza IVA − acquisti senza IVA. Gli acquisti si scrivono in Spese › Ordini merce.</p>`}).join('')}
 function cardTab(t){
  return `<h2>Tabacco e Monopolio${ib('t-tab')}</h2><div class="card">
  <div class="row"><span>Ordini pagati</span><b>${eur(t.ot)}</b></div>
@@ -373,6 +401,7 @@ function cardTab(t){
  <div class="row gu"><span>Guadagno</span><b>${eur(t.ga)}</b></div>
  <div class="row sub"><span>IVA da versare (vendite − acquisti)</span><b>${eur(c2(t.av-t.avn-(t.aa-t.aan)))}</b></div></div>
  <p class="mute hint tip" id="t-acc">Senza IVA = importo ÷ 1,22 (l'IVA degli acquisti si recupera). Guadagno = venduti senza IVA − acquisti senza IVA. Gli acquisti contano nel giorno in cui li segni.</p>
+ ${cardX(t)}
  <h2>Brightstar${ib('t-bst')}</h2><div class="card">
  <div class="row"><span>Guadagno Lotto (Aggio Gioco)</span><b>${eur(t.al)}</b></div>
  <div class="row"><span>Ordini Gratta e Vinci pagati</span><b>${eur(t.og)}</b></div>
@@ -391,6 +420,7 @@ function cardTab(t){
  <h2>Guadagno totale${ib('t-gt')}</h2><div class="card">
  <div class="row"><span>Tabacco e Monopolio</span><b>${eur(t.ag)}</b></div>
  <div class="row"><span>${esc(accK())}</span><b>${eur(t.ga)}</b></div>
+ ${repX(t).map(n=>`<div class="row"><span>${esc(n)}</span><b>${eur((t.xr[n]||{}).g||0)}</b></div>`).join('')}
  <div class="row"><span>Brightstar</span><b>${eur(t.gb)}</b></div>
  <div class="row"><span>LisPoint</span><b>${eur(t.gp)}</b></div>
  <div class="row gu tot"><span>Totale</span><b>${eur(t.gt)}</b></div></div>
@@ -535,6 +565,8 @@ function vReport(){
  const c7=(x,r,q)=>r.n||r.gt||q.tot?`<td>${z(x)}</td>`:'<td class="z">—</td>';
  const r7=m.map((r,i)=>{const q=sm[i];return `<tr><td>${MESI[i]}</td>${c7(r.gt,r,q)}${c7(q.sf,r,q)}${c7(q.so,r,q)}${c7(q.iv,r,q)}${c7(c2(r.gt-q.tot),r,q)}</tr>`}).join('')
   +`<tr class="s"><td>Totale ${y}</td><td>${z(t.gt)}</td><td>${z(st.sf)}</td><td>${z(st.so)}</td><td>${z(st.iv)}</td><td>${z(c2(t.gt-st.tot))}</td></tr>`;
+ const xs=repX(t),r8=xs.length?m.map((r,i)=>`<tr><td>${MESI[i]}</td>${xs.map(n=>`<td>${z((r.xr[n]||{}).g||0)}</td>`).join('')}</tr>`).join('')
+  +`<tr class="s"><td>Totale ${y}</td>${xs.map(n=>`<td>${z((t.xr[n]||{}).g||0)}</td>`).join('')}</tr>`:'';
  const oggi=new Date().toLocaleDateString('it-IT',{day:'numeric',month:'long',year:'numeric'});
  return `<h1>Report annuale</h1>
  <div class="noprint"><button class="btn ghost" id="back" style="margin:0 0 10px">‹ Torna al riepilogo</button></div>
@@ -549,6 +581,8 @@ function vReport(){
  <div class="card tw"><table><tr><th>Mese</th><th>Ordini pagati</th><th>Valore di vendita</th><th>Guadagno</th></tr>${r3}</table></div>
  <h2>${esc(accK())} e guadagno totale (€)</h2>
  <div class="card tw"><table><tr><th>Mese</th><th>Venduti senza IVA</th><th>Acquisti senza IVA</th><th>Guadagno ${esc(accK())}</th><th>Guadagno totale</th></tr>${r4}</table></div>
+ ${xs.length?`<h2>Guadagno degli altri reparti (€)</h2>
+ <div class="card tw"><table><tr><th>Mese</th>${xs.map(n=>`<th>Guadagno ${esc(n)} (${esc(tipoL(n))})</th>`).join('')}</tr>${r8}</table></div>`:''}
  <h2>Brightstar (€)</h2>
  <div class="card tw"><table><tr><th>Mese</th><th>Guadagno Lotto (Aggio Gioco)</th><th>Ordini Gratta e Vinci</th><th>Guadagno Gratta e Vinci</th><th>Guadagno Lotteria Italia</th><th>Guadagno Brightstar</th></tr>${r5}</table></div>
  <h2>LisPoint (€)</h2>
@@ -559,12 +593,37 @@ function vReport(){
  <div class="noprint"><button class="btn" id="print">Stampa / PDF</button><button class="btn ghost" id="rcsv">Esporta CSV</button>
  <p class="mute">Per il PDF: <i>Stampa / PDF</i> → nella stampa tocca Condividi (o allarga l'anteprima) → <i>Salva in File</i>.</p></div>`}
 
-function rcsv(){const y=repY,{m,t,names}=annuale(y),sm=MESI.map((_,i)=>spese(new Date(y,i,1),new Date(y,i+1,0))),st=spese(new Date(y,0,1),new Date(y,11,31)),v=x=>c2(x).toFixed(2).replace('.',','),q=s=>/[;"\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;
+function rcsv(){const y=repY,{m,t,names}=annuale(y),xs=repX(t),sm=MESI.map((_,i)=>spese(new Date(y,i,1),new Date(y,i+1,0))),st=spese(new Date(y,0,1),new Date(y,11,31)),v=x=>c2(x).toFixed(2).replace('.',','),q=s=>/[;"\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;
  const inc=r=>(r.c||0)+(r.pos||0)+(r.sat||0);
- const row=(l,r,q)=>[l,...names.map(k=>v(r.rep[k])),v(sumRep(r)),v(r.c),v(r.pos),v(r.sat),v(inc(r)),r.n,v(r.ot),v(r.ov),v(r.ag),v(r.avn),v(r.aan),v(r.ga),v(r.al),v(r.og),v(r.gg),v(r.gl),v(r.gb),v(r.lp),v(r.lh),v(r.gp),v(r.gt),v(q.sf),v(q.so),v(q.iv),v(c2(r.gt-q.tot))].join(';');
- const out=[['Mese',...names.map(q),'Totale reparti','Contanti','POS','Satispay','Totale incassato','Chiusure','Ordini tabacco','Valore di vendita tabacco','Guadagno tabacco','Accessori venduti senza IVA','Acquisti accessori senza IVA','Guadagno accessori','Aggio Gioco Lotto','Ordini Gratta e Vinci','Guadagno Gratta e Vinci','Guadagno Lotteria Italia','Guadagno Brightstar','Compensi LIS Pay','Compensi LIS Holding','Guadagno LisPoint','Guadagno totale','Spese fisse senza IVA','Spese occasionali senza IVA','IVA delle spese','Guadagno netto'].join(';'),...m.map((r,i)=>row(MESI[i],r,sm[i])),row('Totale '+y,t,st)];
+ const row=(l,r,q)=>[l,...names.map(k=>v(r.rep[k])),v(sumRep(r)),v(r.c),v(r.pos),v(r.sat),v(inc(r)),r.n,v(r.ot),v(r.ov),v(r.ag),v(r.avn),v(r.aan),v(r.ga),...xs.map(n=>v((r.xr[n]||{}).g||0)),v(r.al),v(r.og),v(r.gg),v(r.gl),v(r.gb),v(r.lp),v(r.lh),v(r.gp),v(r.gt),v(q.sf),v(q.so),v(q.iv),v(c2(r.gt-q.tot))].join(';');
+ const out=[['Mese',...names.map(q),'Totale reparti','Contanti','POS','Satispay','Totale incassato','Chiusure','Ordini tabacco','Valore di vendita tabacco','Guadagno tabacco','Accessori venduti senza IVA','Acquisti accessori senza IVA','Guadagno accessori',...xs.map(n=>q('Guadagno '+n)),'Aggio Gioco Lotto','Ordini Gratta e Vinci','Guadagno Gratta e Vinci','Guadagno Lotteria Italia','Guadagno Brightstar','Compensi LIS Pay','Compensi LIS Holding','Guadagno LisPoint','Guadagno totale','Spese fisse senza IVA','Spese occasionali senza IVA','IVA delle spese','Guadagno netto'].join(';'),...m.map((r,i)=>row(MESI[i],r,sm[i])),row('Totale '+y,t,st)];
  saveFile(`report-annuale-${y}.csv`,'text/csv',out.join('\n'))}
 
+// ===== Tipi di reparto =====
+// db.tipi[nome] = {t:'iva22'|'iva10'|'aggio'|'inc', p: aggio %}. Il reparto accessori (db.acc) è sempre IVA 22% e usa i campi storici (aa).
+// Gli altri reparti con IVA hanno gli acquisti in days[d].acq[nome]; aggio = incasso del reparto × aggio %.
+const TIPI={iva22:'IVA 22%',iva10:'IVA 10%',aggio:'Aggio',inc:'Solo incasso'};
+const tipoR=n=>n===accK()?{t:'iva22'}:(db.tipi&&db.tipi[n])||{t:'inc'};
+const tipoL=n=>{const x=tipoR(n);return x.t==='aggio'?`Aggio ${String(x.p).replace('.',',')}%`:TIPI[x.t]};
+const ivaT=n=>tipoR(n).t==='iva10'?10:22;
+// reparti con acquisti da scrivere in Ordini merce (accessori compreso)
+const repIva=()=>db.reparti.filter(n=>/^iva/.test(tipoR(n).t));
+// reparti con guadagno calcolato, escluso accessori (che ha la sua scheda storica)
+const repX=t=>[...new Set([...db.reparti.filter(n=>n!==accK()&&tipoR(n).t!=='inc'),...Object.keys(t.xr)])];
+const aggioV=(v,p)=>{const k=cents(v);return sgn(k,Math.round(Math.abs(k)*(p||0)/100)/100)};
+let nrT='iva22',nrP=10,nrN='';
+// ===== Ordini merce (pagina Spese) =====
+const OMK=['ot','aa','acq','om'];
+const haOrd=r=>r&&(r.om||r.ot!=null||r.aa!=null||(r.acq&&Object.keys(r.acq).length));
+const vuoto=r=>!Object.keys(r).some(k=>k!=='om'&&!(k==='acq'&&!Object.keys(r.acq).length));
+function vOrdini(){const ds=Object.keys(db.days).filter(d=>haOrd(db.days[d])).sort().reverse(),ri=repIva();let mm='',h='';
+ for(const d of ds){const r=db.days[d],m=d.slice(0,7);if(m!==mm){mm=m;const t=new Date(d+'T12:00').toLocaleDateString('it-IT',{month:'long',year:'numeric'});h+=`<h3 class="mm">${t[0].toUpperCase()+t.slice(1)}</h3>`}
+  const extra=Object.keys(r.acq||{}).filter(n=>!ri.includes(n));
+  h+=sw('om:'+d,`<div class="sp om" data-d="${d}"><input type="date" class="dt" data-k="od" value="${d}">
+   <label class="row"><span>Ordine tabacco</span><input inputmode="decimal" data-k="ot" placeholder="0,00" value="${fi(r.ot)}"></label>
+   ${[...ri,...extra].map(n=>`<label class="row"><span>Acquisto ${esc(n)}</span><input inputmode="decimal" data-k="aq" data-n="${esc(n)}" placeholder="0,00" value="${fi(n===accK()?r.aa:(r.acq||{})[n])}"></label>`).join('')}</div>`)}
+ return `<h2>Ordini merce${ib('t-om')}</h2><p class="mute hint tip" id="t-om">Non sono spese: servono a calcolare il guadagno del tabacco (ordine già senza aggio) e dei reparti con IVA (fattura IVA compresa). Non entrano nel totale delle spese. Scrivili nel giorno in cui mandi l'ordine o compri.</p>
+ <div class="card spc">${h}<button type="button" class="addr" id="addom"><i>+</i>Aggiungi ordine</button></div>`}
 // ===== Spese =====
 // sf = spese fisse [{n nome, v importo IVA compresa, f 's' settimana | 'm' mese | 'a' anno, iva 0|10|22, da 'AAAA-MM-01' mese da cui contano}]
 // so = spese occasionali [{d giorno, n descrizione, v importo IVA compresa, iva}]
@@ -597,12 +656,13 @@ function vSpese(){const sf=sfL(),so=soL().map((x,i)=>[x,i]).sort((a,b)=>a[0].d<b
  let mm='',ls='';for(const[x,i]of so){const m=x.d.slice(0,7);if(m!==mm){mm=m;const t=new Date(x.d+'T12:00').toLocaleDateString('it-IT',{month:'long',year:'numeric'});ls+=`<h3 class="mm">${t[0].toUpperCase()+t.slice(1)}</h3>`}
   ls+=sw('so:'+i,`<div class="sp" data-t="so" data-i="${i}"><input type="date" class="dt" data-k="d" value="${x.d}"><label class="row"><input class="l" data-k="n" placeholder="Descrizione" value="${esc(x.n)}"><input inputmode="decimal" data-k="v" placeholder="0,00" value="${fi(x.v)}"></label><div class="opt">${ivaP(x.iva)}</div></div>`)}
  return `<h1>Spese</h1><div class="ts hero" id="sph">${spHero()}</div>
- <h2>Spese fisse${ib('t-sf')}</h2><p class="mute hint tip" id="t-sf">Si scrivono una volta sola: Tabby le conta da sola ogni settimana, mese o anno, dal mese in cui le inserisci. Scegli l'IVA scritta sulla fattura (affitto da privato: No IVA). Per eliminare una spesa scorrila verso sinistra.</p>
+ <h2>Spese fisse${ib('t-sf')}</h2><p class="mute hint tip" id="t-sf">Si scrivono una volta sola: Tabby le conta da sola ogni settimana, mese o anno, dal mese in cui le inserisci. Scegli l'IVA scritta sulla fattura (affitto da privato: No IVA). Per eliminare una spesa scorrila verso sinistra fino in fondo.</p>
  <div class="card spc">${sf.map((x,i)=>sw('sf:'+i,`<div class="sp" data-t="sf" data-i="${i}"><label class="row"><input class="l" data-k="n" placeholder="Nome spesa" value="${esc(x.n)}"><input inputmode="decimal" data-k="v" placeholder="0,00" value="${fi(x.v)}"></label>
   <div class="opt">${pl([['s','Sett.'],['m','Mese'],['a','Anno']],x.f,'fr')}${ivaP(x.iva)}</div></div>`)).join('')}
   <button type="button" class="addr" id="addsf"><i>+</i>Aggiungi spesa fissa</button></div>
- <h2>Spese occasionali${ib('t-so')}</h2><p class="mute hint tip" id="t-so">Bollette, riparazioni, acquisti per il negozio: scrivi la spesa con la data in cui la paghi. Per eliminarla scorrila verso sinistra.</p>
- <div class="card spc">${ls}<button type="button" class="addr" id="addso"><i>+</i>Aggiungi spesa</button></div>`}
+ <h2>Spese occasionali${ib('t-so')}</h2><p class="mute hint tip" id="t-so">Bollette, riparazioni, acquisti per il negozio: scrivi la spesa con la data in cui la paghi. Per eliminarla scorrila verso sinistra fino in fondo.</p>
+ <div class="card spc">${ls}<button type="button" class="addr" id="addso"><i>+</i>Aggiungi spesa</button></div>
+ ${vOrdini()}`}
 // riquadro del Riepilogo: guadagno totale − spese = guadagno netto
 function cardNetto(t,s,e){const q=spese(s,e),gn=c2(t.gt-q.tot);
  return `<h2>Spese e guadagno netto${ib('t-gn')}</h2><div class="card">
@@ -611,12 +671,22 @@ function cardNetto(t,s,e){const q=spese(s,e),gn=c2(t.gt-q.tot);
  <div class="row"><span>Spese occasionali</span><b>− ${eur(q.so)}</b></div>
  <div class="row gu tot${gn<0?' neg':''}"><span>Guadagno netto</span><b>${eur(gn)}</b></div></div>
  <p class="mute hint tip" id="t-gn">Spese senza IVA (l'IVA delle fatture la recuperi). Le spese fisse si dividono per i giorni: nel mese contano intere, nella settimana e nel giorno la loro parte. Contano dal mese in cui le hai inserite, mai per i mesi futuri. Non tiene ancora conto della merce rimasta sugli scaffali.</p>`}
+// elimina una voce (reparto, spesa fissa, spesa occasionale, ordine)
+function delItem(k){const i=k.indexOf(':'),w=k.slice(0,i),x=k.slice(i+1);
+ if(w==='rep'){const n=decodeURIComponent(x);if(confirm('Eliminare il reparto "'+n+'"? I dati già registrati restano nei totali.')){db.reparti=db.reparti.filter(y=>y!==n);save();render();toast('Reparto eliminato')}else swClose();return}
+ if(w==='om'){const r=db.days[x];if(r){OMK.forEach(y=>delete r[y]);if(vuoto(r))delete db.days[x]}save();render();toast('Ordine eliminato');return}
+ (w==='sf'?sfL():soL()).splice(+x,1);save();render();toast('Spesa eliminata')}
 // scorri verso sinistra per eliminare
 let swD=null;
-function swClose(x){document.querySelectorAll('.sw.open').forEach(w=>{if(w!==x){w.classList.remove('open');w.querySelector('.sw-c').style.transform=''}})}
-function vImp(){return `<h1>Impostazioni</h1><h2>Reparti${ib('t-rp')}</h2><p class="mute hint tip" id="t-rp">Tocca un nome per cambiarlo. Per eliminare un reparto scorrilo verso sinistra.</p>
- <div class="card spc">${db.reparti.map(n=>sw('rep:'+encodeURIComponent(n),`<div class="row"><input class="l" data-n="${esc(n)}" value="${esc(n)}"></div>`)).join('')}
- <div class="row"><input class="l" id="nn" placeholder="Nuovo reparto"><button class="x" id="add" style="color:var(--acc)">Aggiungi</button></div></div>
+function swClose(x){document.querySelectorAll('.sw.open,.sw.full').forEach(w=>{if(w!==x){w.classList.remove('open','full');w.querySelector('.sw-c').style.transform=''}})}
+function vImp(){return `<h1>Impostazioni</h1><h2>Reparti${ib('t-rp')}</h2><p class="mute hint tip" id="t-rp">Tocca un nome per cambiarlo. Accanto a ogni reparto c'è il suo tipo di calcolo, scelto quando lo aggiungi. Per eliminare un reparto scorrilo verso sinistra fino in fondo.</p>
+ <div class="card spc">${db.reparti.map(n=>{const y=tipoR(n);return sw('rep:'+encodeURIComponent(n),`<div class="row"><input class="l" data-n="${esc(n)}" value="${esc(n)}"><span class="badge${y.t==='inc'?' g':y.t==='aggio'?' a':''}">${esc(tipoL(n))}</span></div>`)}).join('')}
+ <div class="newr"><label class="row" style="padding:0;border:0"><input class="l" id="nn" placeholder="Nome del nuovo reparto" value="${esc(nrN)}"></label>
+ <div class="lbl">Come si calcola il guadagno?</div>
+ <div class="opt">${pl([['iva22','IVA 22%'],['iva10','IVA 10%'],['aggio','Aggio'],['inc','Solo incasso']],nrT,'tp')}</div>
+ ${nrT==='aggio'?`<div class="agp">Aggio <input id="np" inputmode="decimal" value="${String(nrP).replace('.',',')}"> %</div>`:''}
+ <p class="dsc">${{iva22:'Come gli Accessori: guadagno = vendite senza IVA − acquisti senza IVA (÷ 1,22). Gli acquisti si scrivono in Spese › Ordini merce.',iva10:'Come gli Accessori ma con IVA 10%: guadagno = vendite senza IVA − acquisti senza IVA (÷ 1,10). Gli acquisti si scrivono in Spese › Ordini merce.',aggio:'Come il tabacco: guadagni una percentuale fissa. Guadagno = incassato del reparto × aggio %.',inc:'Conta solo nell\'incasso, senza calcolo del guadagno.'}[nrT]}</p>
+ <button type="button" class="addr" id="add"><i>+</i>Aggiungi reparto</button></div></div>
  <h2>Backup</h2><div class="card pad"><p class="mute" style="margin-top:0">I dati sono solo su questo iPhone. A fine mese salva un backup in File (iCloud Drive).</p>
  <button class="btn" id="bk">Salva backup</button><label class="btn ghost">Ripristina backup<input type="file" id="imp" accept=".json,application/json" hidden></label></div>`}
 
@@ -681,9 +751,12 @@ $('#app').addEventListener('pointerdown',e=>{const c=e.target.closest('.sw-c');i
  const w=c.parentNode;swClose(w);swD={w,c,x:e.clientX,y:e.clientY,o:w.classList.contains('open')?-92:0,on:false,id:e.pointerId}});
 $('#app').addEventListener('pointermove',e=>{if(!swD||e.pointerId!==swD.id)return;const dx=e.clientX-swD.x,dy=e.clientY-swD.y;
  if(!swD.on){if(Math.abs(dx)<10||Math.abs(dx)<Math.abs(dy)*1.2){if(Math.abs(dy)>10)swD=null;return}swD.on=true;swD.w.classList.add('drag');try{swD.c.setPointerCapture(e.pointerId)}catch(_){}if(document.activeElement)document.activeElement.blur()}
- const o=Math.max(-130,Math.min(0,swD.o+dx));swD.c.style.transform=`translateX(${o}px)`;swD.cur=o});
+ const W=swD.w.offsetWidth,o=Math.max(-W,Math.min(0,swD.o+dx)),full=o<-W*.55;swD.c.style.transform=`translateX(${o}px)`;swD.cur=o;
+ if(full!==swD.w.classList.contains('full')){swD.w.classList.toggle('full',full);hap()}});
 const swEnd=e=>{if(!swD||e.pointerId!==swD.id)return;const d=swD;swD=null;if(!d.on)return;d.w.classList.remove('drag');
- const open=(d.cur??d.o)<-46;d.w.classList.toggle('open',open);d.c.style.transform=open?'translateX(-92px)':'';if(open)hap();
+ if(d.w.classList.contains('full')){const k=d.w.querySelector('.sw-del').dataset.del;d.c.style.transform=`translateX(-${d.w.offsetWidth}px)`;
+  if(k.startsWith('rep:')){setTimeout(()=>delItem(k),180)}else{d.w.classList.add('gone');setTimeout(()=>delItem(k),200)}return}
+ const open=(d.cur??d.o)<-46;d.w.classList.toggle('open',open);d.c.style.transform=open?'translateX(-92px)':'';
  const k=ev=>{ev.stopPropagation();ev.preventDefault()};d.c.addEventListener('click',k,{capture:true,once:true});setTimeout(()=>d.c.removeEventListener('click',k,{capture:true}),400)};
 $('#app').addEventListener('pointerup',swEnd);$('#app').addEventListener('pointercancel',swEnd);
 NV.addEventListener('click',e=>{if(nvSkip){nvSkip=false;return}const b=e.target.closest('button');if(b){view=b.dataset.v;render()}});
@@ -691,6 +764,15 @@ $('#app').addEventListener('animationend',e=>{if(e.target.id==='app')e.target.cl
 const A=$('#app');
 A.addEventListener('input',e=>{const t=e.target;if(t.inputMode==='decimal'){const c=clean(/paste|Replacement|Drop/i.test(e.inputType||'')?pasted(t.value):t.value);if(c!==t.value)t.value=c}if(view==='chiusura'&&t.id!=='d')calc()});
 A.addEventListener('change',e=>{const t=e.target;
+ const om=t.closest('.sp.om');
+ if(om&&t.dataset.k){const d=om.dataset.d,r=db.days[d];if(!r)return;const k=t.dataset.k;
+  if(k==='od'){const nd=t.value;if(!nd||nd===d){t.value=d;return}
+   if(haOrd(db.days[nd])){alert('C\'è già un ordine il '+new Date(nd+'T12:00').toLocaleDateString('it-IT')+': modifica quello.');t.value=d;return}
+   const z=db.days[nd]||{};OMK.forEach(x=>{if(r[x]!=null){z[x]=r[x];delete r[x]}});z.om=1;db.days[nd]=z;if(vuoto(r))delete db.days[d];save();render();return}
+  const v=/\d/.test(t.value)?Math.abs(num(t.value)):null;t.value=fi(v);
+  if(k==='ot'){if(v==null)delete r.ot;else r.ot=v}
+  else{const n=t.dataset.n;if(n===accK()){if(v==null)delete r.aa;else r.aa=v}else{r.acq=r.acq||{};if(v==null)delete r.acq[n];else r.acq[n]=v;if(!Object.keys(r.acq).length)delete r.acq}}
+  r.om=1;save();return}
  const sp=t.closest('.sp[data-t]');
  if(sp&&t.dataset.k){const x=(sp.dataset.t==='sf'?sfL():soL())[+sp.dataset.i];if(!x)return;const k=t.dataset.k;
   if(k==='v'){const v=/\d/.test(t.value)?Math.abs(num(t.value)):null;x.v=v;t.value=fi(v)}
@@ -704,7 +786,9 @@ A.addEventListener('change',e=>{const t=e.target;
   if(n!==o&&hasData(n)&&!confirm(`«${n}» è un reparto eliminato con importi già registrati.\n\nOK = riattivalo con il suo storico: gli importi di «${o}» vengono aggiunti ai suoi.\nAnnulla = scegli un altro nome.`)){t.value=o;return}
   db.reparti[db.reparti.indexOf(o)]=n;if(o===accK())db.acc=n;
   // sposta gli importi; se nello stesso giorno c'è già il nome nuovo, li somma (nessun importo viene perso)
-  for(const d in db.days){const r=db.days[d].rep;if(r&&o in r&&n!==o){r[n]=n in r?c2((r[n]||0)+(r[o]||0)):r[o];delete r[o]}}
+  for(const d in db.days){const r=db.days[d].rep;if(r&&o in r&&n!==o){r[n]=n in r?c2((r[n]||0)+(r[o]||0)):r[o];delete r[o]}
+   const q=db.days[d].acq;if(q&&o in q&&n!==o){q[n]=n in q?c2((q[n]||0)+(q[o]||0)):q[o];delete q[o]}}
+  if(db.tipi&&db.tipi[o]&&n!==o){if(!db.tipi[n])db.tipi[n]=db.tipi[o];delete db.tipi[o]}
   save();render()}
  else if(t.id==='imp'&&t.files[0]){const fr=new FileReader();
   fr.onload=()=>{try{const x=JSON.parse(fr.result);if(!x.days||!x.reparti)throw 0;
@@ -716,26 +800,27 @@ A.addEventListener('click',e=>{const h=e.target.closest('[data-b]');
  if(d.tip){const t=document.getElementById(d.tip);if(!t)return;const on=t.classList.toggle('on');b.setAttribute('aria-expanded',on);b.setAttribute('aria-label',on?'Nascondi suggerimento':'Mostra suggerimento');
   // dentro una scheda: con il suggerimento aperto la linea di separazione passa sotto il suggerimento
   const rw=t.previousElementSibling;if(rw&&rw.classList.contains('row'))rw.classList.toggle('nb',on);return}
- if(d.del){const[w,i]=d.del.split(':');
-  if(w==='rep'){const n=decodeURIComponent(i);if(confirm('Eliminare il reparto "'+n+'"? I dati già registrati restano nei totali.')){db.reparti=db.reparti.filter(x=>x!==n);save();render()}else swClose()}
-  else{(w==='sf'?sfL():soL()).splice(+i,1);save();hap();render();toast('Spesa eliminata')}return}
+ if(d.del){delItem(d.del);return}
  if((d.fr||d.iva!==undefined)&&b.closest('.sp[data-t]')){const sp=b.closest('.sp'),x=(sp.dataset.t==='sf'?sfL():soL())[+sp.dataset.i];if(!x)return;
   if(d.fr)x.f=d.fr;else x.iva=+d.iva;
   b.parentNode.querySelectorAll('button').forEach(y=>{y.classList.toggle('on',y===b);y.setAttribute('aria-pressed',y===b)});save();$('#sph').innerHTML=spHero();return}
+ if(d.tp){nrN=($('#nn')||{}).value||'';const np=$('#np');if(np)nrP=Math.abs(num(np.value))||nrP;nrT=d.tp;render();return}
+ if(id==='addom'){if(haOrd(db.days[todayK])){toast('L\'ordine di oggi c\'è già: modificalo o cambia la data');const l=document.querySelector(`.sp.om[data-d="${todayK}"]`);if(l)l.scrollIntoView({block:'center'});return}
+  db.days[todayK]=Object.assign(db.days[todayK]||{},{om:1});save();render();const l=document.querySelector(`.sp.om[data-d="${todayK}"]`);if(l){l.scrollIntoView({block:'center'});l.querySelector('input[data-k="ot"]').focus({preventScroll:true})}return}
  if(id==='addsf'||id==='addso'){if(id==='addsf')sfL().push({n:'',v:null,f:'m',iva:0,da:mese1(todayK)});else soL().push({d:todayK,n:'',v:null,iva:0});
   save();render();const l=[...document.querySelectorAll(id==='addsf'?'.sp[data-t="sf"]':'.sp[data-t="so"]')].find(z=>+z.dataset.i===(id==='addsf'?sfL():soL()).length-1);
   if(l){l.scrollIntoView({block:'center'});l.querySelector('input.l').focus({preventScroll:true})}return}
  if(d.bs){bsS=+d.bs;document.querySelectorAll('[data-bs]').forEach(x=>{const on=x===b;x.classList.toggle('on',on);x.setAttribute('aria-pressed',on)});calc();return}
  if(id==='av'||id==='av2'){const h=$('#'+d.to);if(h)h.scrollIntoView({behavior:'smooth',block:'start'});const i=$('#'+d.in);if(i)setTimeout(()=>i.focus({preventScroll:true}),350);return}
  if(id==='save'){const r=read();
-  if(!r.c&&!r.pos&&!r.sat&&!r.ot&&!r.aa&&!r.bs&&!r.og&&!r.ol&&r.eg==null&&r.ao==null&&r.lp==null&&r.lh==null&&!g0('#ct')&&!Object.keys(r.rep).length){toast('Inserisci almeno un importo');return}
+  if(!r.c&&!r.pos&&!r.sat&&!r.bs&&!r.og&&!r.ol&&r.eg==null&&r.ao==null&&r.lp==null&&r.lh==null&&!g0('#ct')&&!Object.keys(r.rep).length){toast('Inserisci almeno un importo');return}
   if((r.ol||0)>(r.og||0)&&!confirm(`«di cui Lotteria Italia» (${eur(r.ol)}) è più grande dell'Ordine Gratta e Vinci (${eur(r.og||0)}): l'ordine deve essere il totale, lotteria compresa.\n\nSalvare comunque?`))return;
   if(r.c<0&&!confirm(`Il fondo cassa è più grande dei contanti in cassa: i contanti incassati risultano ${eur(r.c)}.\n\nSalvare comunque?`))return;
   const old=db.days[cur];
   if(old&&!stesso(old,r)&&!confirm(`Esiste già una chiusura salvata per ${new Date(cur+'T12:00').toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}.\n\nSostituirla con questi importi?`))return;
   db.days[cur]=r;db.fondo=r.f;if(!save()){render();return}hap();toast('Chiusura salvata ✓');render()}
  else if(id==='tg'){cfOpen=!cfOpen;b.setAttribute('aria-expanded',cfOpen);const c=$('#cf');c.classList.toggle('open',cfOpen);c.inert=!cfOpen}
- else if(id==='del'){if(confirm('Eliminare la chiusura del '+cur+'?')){delete db.days[cur];if(!save()){render();return}hap();render();toast('Chiusura eliminata')}}
+ else if(id==='del'){if(confirm('Eliminare la chiusura del '+cur+'?')){const o=db.days[cur],k={};OMK.forEach(x=>{if(o[x]!=null)k[x]=o[x]});if(haOrd(k)){k.om=1;db.days[cur]=k}else delete db.days[cur];if(!save()){render();return}hap();render();toast('Chiusura eliminata')}}
  else if(d.m){if(sgSkip){sgSkip=false;return}mode=d.m;render()}
  else if(d.s){const k=+d.s,a=new Date(anchor);
   if(mode==='giorno')a.setDate(a.getDate()+k);else if(mode==='settimana')a.setDate(a.getDate()+7*k);else if(mode==='mese'){a.setDate(1);a.setMonth(a.getMonth()+k)}else{const g=a.getDate();a.setDate(1);a.setFullYear(a.getFullYear()+k);a.setDate(Math.min(g,new Date(a.getFullYear(),a.getMonth()+1,0).getDate()))}
@@ -747,9 +832,11 @@ A.addEventListener('click',e=>{const h=e.target.closest('[data-b]');
  else if(d.y){repY+=+d.y;render()}
  else if(id==='rcsv')rcsv();
  else if(id==='csv')csv();
- else if(id==='add'){const n=$('#nn').value.trim();if(n&&!db.reparti.includes(n)){
+ else if(id==='add'){const n=$('#nn').value.trim();if(!n){toast('Scrivi il nome del reparto');return}if(db.reparti.includes(n)){toast('Reparto già presente');return}
   if(hasData(n)&&!confirm(`«${n}» è un reparto eliminato con importi già registrati.\n\nOK = riattivalo con il suo storico.\nAnnulla = scegli un altro nome.`))return;
-  db.reparti.push(n);save();render()}}
+  const np=$('#np');if(np)nrP=Math.abs(num(np.value))||nrP;
+  if(n!==accK()){db.tipi=db.tipi||{};db.tipi[n]=nrT==='aggio'?{t:'aggio',p:nrP}:{t:nrT}}
+  db.reparti.push(n);nrN='';save();render();toast('Reparto aggiunto')}
  else if(d.x!==undefined){if(confirm('Eliminare il reparto "'+d.x+'"? I dati già registrati restano nei totali.')){db.reparti=db.reparti.filter(n=>n!==d.x);save();render()}}
  else if(id==='bk')saveFile(`backup-tabby-${iso(new Date())}.json`,'application/json',JSON.stringify(db))});
 render();
