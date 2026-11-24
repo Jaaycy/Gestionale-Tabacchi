@@ -100,6 +100,20 @@ h3.mm{font-size:13px;margin:12px 0 0;padding:0 0 6px;color:var(--mute);font-weig
 .sw.full .sw-del{width:100%;justify-content:flex-end;padding-right:24px}
 .sw-del{transition:width .2s var(--ease)}
 .sw.gone{transition:opacity .2s;opacity:0}
+.dlg{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:24px;background:rgba(4,10,20,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);opacity:0;transition:opacity .18s}
+.dlg.on{opacity:1}.dlg.out{opacity:0;pointer-events:none}
+.dlg .bx{width:100%;max-width:330px;border-radius:26px;padding:22px 20px 16px;text-align:center;background:linear-gradient(180deg,rgba(255,255,255,.1),rgba(255,255,255,.02)),rgba(20,32,50,.94);border:1px solid rgba(255,255,255,.12);box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 30px 60px -20px rgba(0,0,0,.9);transform:scale(.92);transition:transform .28s cubic-bezier(.3,1.35,.5,1)}
+.dlg.on .bx{transform:none}
+.dlg .ic{width:48px;height:48px;margin:0 auto 12px;border-radius:50%;display:grid;place-items:center;background:rgba(229,83,75,.16);box-shadow:inset 0 0 0 1px rgba(255,138,128,.35)}
+.dlg .ic.i{background:rgba(125,183,245,.15);box-shadow:inset 0 0 0 1px rgba(125,183,245,.35)}
+.dlg h3{margin:0 0 6px;font-size:18px;line-height:1.3;color:var(--ink)}
+.dlg p{margin:0 0 18px;font-size:14.5px;line-height:1.42;color:var(--mute)}
+.dlg .bt{display:grid;grid-template-columns:1fr 1fr;gap:10px}.dlg .bt.one{grid-template-columns:1fr}
+.dlg button{font:inherit;font-weight:700;font-size:15.5px;padding:13px 6px;border-radius:16px;border:0;-webkit-tap-highlight-color:transparent}
+.dlg .no{color:var(--ink);background:rgba(255,255,255,.08);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
+.dlg .si{color:#fff;background:linear-gradient(180deg,#ff8a80,#e5534b);box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 8px 20px -8px rgba(229,83,75,.8)}
+.dlg .si.b{background:linear-gradient(180deg,#5aa2f5,#2f74d0);box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 8px 20px -8px rgba(47,116,208,.8)}
+.dlg button:active{transform:scale(.97)}
 .of{padding:6px 0 12px}
 .of .oh{font-size:13px;color:var(--mute);font-weight:600;text-align:center;margin:6px 0 8px}
 .of .row{padding:0;border:0}.of .row input.l{font-weight:600}
@@ -287,7 +301,7 @@ if(!db.v5){db=mig5(db);mig=true}
 const accK=()=>db.acc||'Accessori';
 // Salva in memoria; se non riesce mostra solo l'errore, torna ai dati davvero salvati e restituisce false
 const save=()=>{try{localStorage.setItem(K,JSON.stringify(db));return true}catch(e){
- alert('Salvataggio NON riuscito: la memoria del telefono è piena o bloccata. Le ultime modifiche non sono state salvate.\n\nFai subito un backup da «Impostazioni» e libera spazio sul telefono.');
+ info('Salvataggio non riuscito','La memoria del telefono è piena o bloccata: le ultime modifiche non sono state salvate.\n\nFai subito un backup da «Impostazioni» e libera spazio sul telefono.');
  try{db=JSON.parse(localStorage.getItem(K))||init()}catch(_){}return false}};
 if(mig)save();
 if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();
@@ -298,9 +312,21 @@ const oggiD=()=>new Date(oggi()+'T12:00');
 let todayK=oggi(),bsS=1,cfOpen=true,view='chiusura',cur=todayK,mode='giorno',anchor=oggiD(),chart=null,selB=-1,repY=new Date().getFullYear(),lastView=null,lastQ=null,tT;
 function toast(m){const t=$('#t');t.textContent=m;t.classList.add('on');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('on'),1800)}
 // Vibrazione leggera: Android usa navigator.vibrate; su iPhone (iOS 18 o successivo) si usa il trucco dell'interruttore nascosto
-let hapL;function hap(){try{if(navigator.vibrate){navigator.vibrate(15);return}
- if(!hapL){hapL=document.createElement('label');hapL.style.display='none';hapL.setAttribute('aria-hidden','true');hapL.innerHTML='<input type="checkbox" switch>';document.body.appendChild(hapL)}
- hapL.click()}catch(e){}}
+function hap(){try{if(navigator.vibrate){navigator.vibrate(15);return}
+ // iPhone (iOS 18+, «Feedback aptico di sistema» acceso): un interruttore nascosto, toccato durante un gesto, fa vibrare
+ const l=document.createElement('label');l.style.display='none';l.setAttribute('aria-hidden','true');l.innerHTML='<input type="checkbox" switch>';document.head.appendChild(l);l.click();l.remove()}catch(e){}}
+// Finestre di conferma e avvisi con la grafica di Tabby (al posto di quelle di Safari).
+// ask({t titolo, m testo, ok, no (false = solo OK), danger rosso + cestino, ic icona}) → Promise true/false
+const IC_DEL='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ff8a80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>',
+ IC_INF='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7db7f5" stroke-width="2.2" stroke-linecap="round"><path d="M12 8v.01M12 11v6"/></svg>';
+function ask(o){if(window.__nd)return Promise.resolve(o.no===false?(alert(o.t+(o.m?'\n\n'+o.m:'')),true):confirm(o.t+(o.m?'\n\n'+o.m:'')));// solo per i test automatici
+ return new Promise(res=>{const d=document.createElement('div');d.className='dlg';const one=o.no===false;
+ d.innerHTML=`<div class="bx" role="alertdialog" aria-modal="true"><div class="ic${o.danger?'':' i'}">${o.danger?IC_DEL:IC_INF}</div><h3>${esc(o.t)}</h3>${o.m?`<p>${esc(o.m).replace(/\n/g,'<br>')}</p>`:''}<div class="bt${one?' one':''}">${one?'':`<button type="button" class="no">${esc(o.no||'Annulla')}</button>`}<button type="button" class="si${o.danger?'':' b'}">${esc(o.ok||'OK')}</button></div></div>`;
+ let done=false;const end=v=>{if(done)return;done=true;if(v&&o.danger)hap();d.classList.add('out');setTimeout(()=>d.remove(),200);document.removeEventListener('keydown',kd);res(v)};
+ const kd=e=>{if(e.key==='Escape')end(one);else if(e.key==='Enter')end(true)};
+ d.addEventListener('click',e=>{if(e.target.closest('.si'))end(true);else if(e.target.closest('.no')||e.target===d)end(one)});
+ document.addEventListener('keydown',kd);document.body.appendChild(d);d.offsetWidth;d.classList.add('on')})}
+function info(t,m){return ask({t,m,ok:'OK',no:false})}
 
 // Pallino «i» che mostra/nasconde il suggerimento con quell'id
 const ib=id=>`<button type="button" class="ib" data-tip="${id}" aria-expanded="false" aria-controls="${id}" aria-label="Mostra suggerimento"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="5.6" r="1.35"/><rect x="8.9" y="8.3" width="2.2" height="7" rx="1.1"/></svg></button>`;
@@ -728,7 +754,7 @@ function cardNetto(t,s,e){const q=spese(s,e),gn=c2(t.gt-q.tot);
 // elimina una voce (reparto, spesa fissa, spesa occasionale, ordine)
 function delItem(k){const i=k.indexOf(':'),w=k.slice(0,i),x=k.slice(i+1);
  if(w==='or'){const n=+x;(db.ord||[]).splice(n,1);if(of.e===n)ofReset();else if(of.e>n)of.e--;save();rOrd();toast('Ordine eliminato');return}
- if(w==='rep'){const n=decodeURIComponent(x);if(confirm('Eliminare il reparto "'+n+'"? I dati già registrati restano nei totali.')){hap();db.reparti=db.reparti.filter(y=>y!==n);save();render();toast('Reparto eliminato')}else swClose();return}
+ if(w==='rep'){const n=decodeURIComponent(x);ask({t:'Eliminare «'+n+'»?',m:'I dati già registrati restano nei totali.',ok:'Elimina',danger:1}).then(y=>{if(y){db.reparti=db.reparti.filter(z=>z!==n);save();render();toast('Reparto eliminato')}else swClose()});return}
  if(w==='om'){const r=db.days[x];if(r){OMK.forEach(y=>delete r[y]);if(vuoto(r))delete db.days[x]}save();render();toast('Ordine eliminato');return}
  (w==='sf'?sfL():soL()).splice(+x,1);save();render();toast('Spesa eliminata')}
 // scorri verso sinistra per eliminare
@@ -818,21 +844,21 @@ const swEnd=e=>{if(!swD||e.pointerId!==swD.id)return;const d=swD;swD=null;if(!d.
 let swAct=null;
 function swRun(){const a=swAct;if(!a)return;swAct=null;clearTimeout(a.t);hap();
  if(a.k.startsWith('rep:'))delItem(a.k);else{a.w.classList.add('gone');setTimeout(()=>delItem(a.k),200)}}
-$('#app').addEventListener('touchend',()=>{if(swAct)swRun()});
+$('#app').addEventListener('touchend',()=>{if(swD&&swD.on)swEnd({pointerId:swD.id,pointerType:'touch'});if(swAct)swRun()});
 $('#app').addEventListener('input',e=>{const t=e.target;if(t.id==='ov'){of.v=t.value;const p=$('#opv');if(p)p.innerHTML=opv()}else if(t.id==='onm')of.n=t.value});
 $('#app').addEventListener('pointerup',swEnd);$('#app').addEventListener('pointercancel',swEnd);
 NV.addEventListener('click',e=>{if(nvSkip){nvSkip=false;return}const b=e.target.closest('button');if(b){view=b.dataset.v;render()}});
 $('#app').addEventListener('animationend',e=>{if(e.target.id==='app')e.target.classList.remove('enter')});
 const A=$('#app');
 A.addEventListener('input',e=>{const t=e.target;if(t.inputMode==='decimal'){const c=clean(/paste|Replacement|Drop/i.test(e.inputType||'')?pasted(t.value):t.value);if(c!==t.value)t.value=c}if(view==='chiusura'&&t.id!=='d')calc()});
-A.addEventListener('change',e=>{const t=e.target;
+A.addEventListener('change',async e=>{const t=e.target;
  if(t.id==='ov'){const v=/\d/.test(t.value)?Math.abs(num(t.value)):null;t.value=v?fi(v):'';of.v=t.value;$('#opv').innerHTML=opv();return}
  if(t.id==='od'){if(!t.value)t.value=of.d||todayK;of.d=t.value;return}
  if(t.id==='onm'){of.n=t.value;return}
  const om=t.closest('.sp.om');
  if(om&&t.dataset.k){const d=om.dataset.d,r=db.days[d];if(!r)return;const k=t.dataset.k;
   if(k==='od'){const nd=t.value;if(!nd||nd===d){t.value=d;return}
-   if(haOrd(db.days[nd])){alert('C\'è già un ordine il '+new Date(nd+'T12:00').toLocaleDateString('it-IT')+': modifica quello.');t.value=d;return}
+   if(haOrd(db.days[nd])){info('C\'è già un ordine il '+new Date(nd+'T12:00').toLocaleDateString('it-IT'),'Modifica quello.');t.value=d;return}
    const z=db.days[nd]||{};OMK.forEach(x=>{if(r[x]!=null){z[x]=r[x];delete r[x]}});z.om=1;db.days[nd]=z;if(vuoto(r))delete db.days[d];save();render();return}
   const v=/\d/.test(t.value)?Math.abs(num(t.value)):null;t.value=fi(v);
   if(k==='ot'){if(v==null)delete r.ot;else r.ot=v}
@@ -848,7 +874,7 @@ A.addEventListener('change',e=>{const t=e.target;
  else if(t.inputMode==='decimal'){t.value=/\d/.test(t.value)?fi(num(t.value)):'';calc()}
  else if(t.dataset.n!==undefined){const o=t.dataset.n,n=t.value.trim();
   if(!n||(n!==o&&db.reparti.includes(n))){t.value=o;return}
-  if(n!==o&&hasData(n)&&!confirm(`«${n}» è un reparto eliminato con importi già registrati.\n\nOK = riattivalo con il suo storico: gli importi di «${o}» vengono aggiunti ai suoi.\nAnnulla = scegli un altro nome.`)){t.value=o;return}
+  if(n!==o&&hasData(n)&&!(await ask({t:`Riattivare «${n}»?`,m:`«${n}» è un reparto eliminato con importi già registrati. Riattivandolo ritrovi il suo storico e gli importi di «${o}» vengono aggiunti ai suoi.`,ok:'Riattiva',no:'Altro nome'}))){t.value=o;return}
   db.reparti[db.reparti.indexOf(o)]=n;if(o===accK())db.acc=n;
   // sposta gli importi; se nello stesso giorno c'è già il nome nuovo, li somma (nessun importo viene perso)
   for(const d in db.days){const r=db.days[d].rep;if(r&&o in r&&n!==o){r[n]=n in r?c2((r[n]||0)+(r[o]||0)):r[o];delete r[o]}
@@ -857,10 +883,10 @@ A.addEventListener('change',e=>{const t=e.target;
   if(db.tipi&&db.tipi[o]&&n!==o){if(!db.tipi[n])db.tipi[n]=db.tipi[o];delete db.tipi[o]}
   save();render()}
  else if(t.id==='imp'&&t.files[0]){const fr=new FileReader();
-  fr.onload=()=>{try{const x=JSON.parse(fr.result);if(!x.days||!x.reparti)throw 0;
-   if(confirm('Sostituire i dati attuali con quelli del backup?')){db=mig5(migra(x));const ok=save();render();if(ok)toast('Backup ripristinato')}}catch(_){alert('File di backup non valido.')}};
+  fr.onload=async()=>{try{const x=JSON.parse(fr.result);if(!x.days||!x.reparti)throw 0;
+   if(await ask({t:'Ripristinare il backup?',m:'Sostituire i dati attuali con quelli del backup. I dati di adesso vengono cancellati.',ok:'Ripristina',danger:1})){db=mig5(migra(x));const ok=save();render();if(ok)toast('Backup ripristinato')}}catch(_){info('File di backup non valido','Scegli il file .json salvato con «Salva backup».')}};
   fr.readAsText(t.files[0])}});
-A.addEventListener('click',e=>{const h=e.target.closest('[data-b]');
+A.addEventListener('click',async e=>{const h=e.target.closest('[data-b]');
  if(h){const i=+h.dataset.b;selB=selB===i?-1:i;document.querySelectorAll('.hit').forEach(r=>r.classList.toggle('sel',+r.dataset.b===selB));$('#ci').innerHTML=chInfo();return}
  const b=e.target.closest('button');if(!b)return;const d=b.dataset,id=b.id;
  if(d.tip){const t=document.getElementById(d.tip);if(!t)return;const on=t.classList.toggle('on');b.setAttribute('aria-expanded',on);b.setAttribute('aria-label',on?'Nascondi suggerimento':'Mostra suggerimento');
@@ -887,13 +913,13 @@ A.addEventListener('click',e=>{const h=e.target.closest('[data-b]');
  if(id==='av'||id==='av2'){const h=$('#'+d.to);if(h)h.scrollIntoView({behavior:'smooth',block:'start'});const i=$('#'+d.in);if(i)setTimeout(()=>i.focus({preventScroll:true}),350);return}
  if(id==='save'){const r=read();
   if(!r.c&&!r.pos&&!r.sat&&!r.bs&&!r.og&&!r.ol&&r.eg==null&&r.ao==null&&r.lp==null&&r.lh==null&&!g0('#ct')&&!Object.keys(r.rep).length){toast('Inserisci almeno un importo');return}
-  if((r.ol||0)>(r.og||0)&&!confirm(`«di cui Lotteria Italia» (${eur(r.ol)}) è più grande dell'Ordine Gratta e Vinci (${eur(r.og||0)}): l'ordine deve essere il totale, lotteria compresa.\n\nSalvare comunque?`))return;
-  if(r.c<0&&!confirm(`Il fondo cassa è più grande dei contanti in cassa: i contanti incassati risultano ${eur(r.c)}.\n\nSalvare comunque?`))return;
+  if((r.ol||0)>(r.og||0)&&!(await ask({t:'Controlla Lotteria Italia',m:`«di cui Lotteria Italia» (${eur(r.ol)}) è più grande dell'Ordine Gratta e Vinci (${eur(r.og||0)}): l'ordine deve essere il totale, lotteria compresa.`,ok:'Salva comunque',no:'Correggi'})))return;
+  if(r.c<0&&!(await ask({t:'Controlla il fondo cassa',m:`Il fondo cassa è più grande dei contanti in cassa: i contanti incassati risultano ${eur(r.c)}.`,ok:'Salva comunque',no:'Correggi'})))return;
   const old=db.days[cur];
-  if(old&&!stesso(old,r)&&!confirm(`Esiste già una chiusura salvata per ${new Date(cur+'T12:00').toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}.\n\nSostituirla con questi importi?`))return;
+  if(old&&!stesso(old,r)&&!(await ask({t:'Sostituire la chiusura?',m:`Esiste già una chiusura salvata per ${new Date(cur+'T12:00').toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}. Sostituirla con questi importi?`,ok:'Sostituisci',no:'Annulla'})))return;
   db.days[cur]=r;db.fondo=r.f;if(!save()){render();return}hap();toast('Chiusura salvata ✓');render()}
  else if(id==='tg'){cfOpen=!cfOpen;b.setAttribute('aria-expanded',cfOpen);const c=$('#cf');c.classList.toggle('open',cfOpen);c.inert=!cfOpen}
- else if(id==='del'){if(confirm('Eliminare la chiusura del '+cur+'?')){const o=db.days[cur],k={};OMK.forEach(x=>{if(o[x]!=null)k[x]=o[x]});if(haOrd(k)){k.om=1;db.days[cur]=k}else delete db.days[cur];if(!save()){render();return}hap();render();toast('Chiusura eliminata')}}
+ else if(id==='del'){if(await ask({t:'Eliminare la chiusura?',m:'Chiusura del '+new Date(cur+'T12:00').toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+'. Gli ordini merce restano.',ok:'Elimina',danger:1})){const o=db.days[cur],k={};OMK.forEach(x=>{if(o[x]!=null)k[x]=o[x]});if(haOrd(k)){k.om=1;db.days[cur]=k}else delete db.days[cur];if(!save()){render();return}render();toast('Chiusura eliminata')}}
  else if(d.m){if(sgSkip){sgSkip=false;return}mode=d.m;render()}
  else if(d.s){const k=+d.s,a=new Date(anchor);
   if(mode==='giorno')a.setDate(a.getDate()+k);else if(mode==='settimana')a.setDate(a.getDate()+7*k);else if(mode==='mese'){a.setDate(1);a.setMonth(a.getMonth()+k)}else{const g=a.getDate();a.setDate(1);a.setFullYear(a.getFullYear()+k);a.setDate(Math.min(g,new Date(a.getFullYear(),a.getMonth()+1,0).getDate()))}
@@ -906,11 +932,11 @@ A.addEventListener('click',e=>{const h=e.target.closest('[data-b]');
  else if(id==='rcsv')rcsv();
  else if(id==='csv')csv();
  else if(id==='add'){const n=$('#nn').value.trim();if(!n){toast('Scrivi il nome del reparto');return}if(db.reparti.includes(n)){toast('Reparto già presente');return}
-  if(hasData(n)&&!confirm(`«${n}» è un reparto eliminato con importi già registrati.\n\nOK = riattivalo con il suo storico.\nAnnulla = scegli un altro nome.`))return;
+  if(hasData(n)&&!(await ask({t:`Riattivare «${n}»?`,m:`«${n}» è un reparto eliminato con importi già registrati. Riattivandolo ritrovi il suo storico.`,ok:'Riattiva',no:'Altro nome'})))return;
   const np=$('#np');if(np)nrP=Math.abs(num(np.value))||nrP;
   if(n!==accK()){db.tipi=db.tipi||{};db.tipi[n]=nrT==='aggio'?{t:'aggio',p:nrP}:{t:nrT}}
   db.reparti.push(n);nrN='';save();render();toast('Reparto aggiunto')}
- else if(d.x!==undefined){if(confirm('Eliminare il reparto "'+d.x+'"? I dati già registrati restano nei totali.')){db.reparti=db.reparti.filter(n=>n!==d.x);save();render()}}
+ else if(d.x!==undefined){if(await ask({t:'Eliminare «'+d.x+'»?',m:'I dati già registrati restano nei totali.',ok:'Elimina',danger:1})){db.reparti=db.reparti.filter(n=>n!==d.x);save();render()}}
  else if(id==='bk')saveFile(`backup-tabby-${iso(new Date())}.json`,'application/json',JSON.stringify(db))});
 render();
 </script>
