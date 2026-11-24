@@ -66,6 +66,29 @@ h2{font-size:12.5px;margin:24px 6px 8px;color:var(--mute);font-weight:700;text-t
 .big{font-size:38px;font-weight:800;letter-spacing:-.02em;line-height:1.15;margin:4px 0 8px}
 .big small{font-size:20px;font-weight:700;color:var(--mute)}
 .hs{font-size:14px;color:var(--mute);margin-top:4px}
+.ib svg{width:13px;height:13px;fill:currentColor;display:block}h2 .ib svg{width:12px;height:12px}
+/* pagina Spese */
+.sp{padding:12px 16px;border-bottom:1px solid var(--line)}
+.sp .row{padding:0;border:0}.sp .row input.l{font-weight:600}
+.opt{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px;align-items:center;justify-content:center}
+.pl{display:inline-flex;border-radius:10px;padding:2px;background:rgba(255,255,255,.05);border:1px solid var(--line)}
+.pl button{font:inherit;font-size:12px;font-weight:600;border:0;background:none;color:var(--mute);padding:4px 6.5px;border-radius:8px;transition:background .2s,color .2s}
+.pl button.on{background:linear-gradient(180deg,rgba(96,165,250,.5),rgba(37,99,200,.4));color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.35)}
+.sp .dt{display:block;margin:0 auto 8px;text-align:center;font:inherit;font-size:13.5px;color:var(--mute);background:none;border:0;padding:0;color-scheme:dark}
+.addr{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;font:inherit;font-weight:600;color:var(--acc);background:none;border:0;padding:14px 0}
+.addr i{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;font-style:normal;font-size:19px;line-height:1;background:rgba(125,183,245,.15);box-shadow:inset 0 0 0 1px rgba(125,183,245,.35)}
+.ts.hero .hv{font-size:15px;font-weight:600;color:var(--ink);margin:-7px 0 8px}
+.ts.hero .hr{display:flex;justify-content:center;gap:18px;margin-top:10px;font-size:13.5px;color:var(--mute)}.ts.hero .hr b{display:block;font-size:15px;color:var(--ink)}
+h3.mm{font-size:13px;margin:12px 0 0;padding:0 0 6px;color:var(--mute);font-weight:600;border-bottom:1px solid var(--line)}
+.row.gu.neg b{color:var(--ko)}
+/* scorri verso sinistra per eliminare (Impostazioni e Spese) */
+.card.spc{overflow:hidden}
+.sw{position:relative;overflow:hidden;margin:0 -16px;border-bottom:1px solid var(--line)}
+.sw-c>.sp,.sw-c>.row{border-bottom:0}
+.sw-c>.row{padding-left:16px;padding-right:16px}
+.sw-c{position:relative;z-index:1;background:var(--card);touch-action:pan-y;transition:transform .28s var(--ease)}
+.sw.drag .sw-c{transition:none}
+.sw-del{position:absolute;top:0;right:0;bottom:0;width:92px;border:0;font:inherit;font-weight:700;color:#fff;background:linear-gradient(180deg,#ff8a80,#e5534b);display:flex;align-items:center;justify-content:center}
 .chip{display:inline-block;font-weight:700;padding:2px 9px;border-radius:99px;background:rgba(147,163,182,.14);color:var(--ink);margin-right:4px}
 .chip.up{background:rgba(76,195,138,.15);color:var(--ok)}.chip.dn{background:rgba(255,123,114,.15);color:var(--ko)}
 table{width:100%;border-collapse:collapse;font-size:15px}
@@ -121,13 +144,13 @@ h2.tsh{text-align:center;margin-top:28px}
 .av+.av{margin-top:-4px}
 .pop{animation:pop .45s var(--ease)}
 @keyframes pop{0%{transform:scale(.94)}55%{transform:scale(1.04)}100%{transform:scale(1)}}
-nav{position:fixed;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom));max-width:536px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:6px;border-radius:28px;background:linear-gradient(180deg,rgba(255,255,255,.1),rgba(255,255,255,.02)),rgba(16,26,42,.66);-webkit-backdrop-filter:saturate(200%) blur(26px);backdrop-filter:saturate(200%) blur(26px);border:1px solid rgba(255,255,255,.12);box-shadow:inset 0 1px 0 rgba(255,255,255,.18),inset 0 -1px 0 rgba(0,0,0,.3),0 20px 44px -14px rgba(0,0,0,.85)}
+nav{position:fixed;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom));max-width:536px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:6px;border-radius:28px;background:linear-gradient(180deg,rgba(255,255,255,.1),rgba(255,255,255,.02)),rgba(16,26,42,.66);-webkit-backdrop-filter:saturate(200%) blur(26px);backdrop-filter:saturate(200%) blur(26px);border:1px solid rgba(255,255,255,.12);box-shadow:inset 0 1px 0 rgba(255,255,255,.18),inset 0 -1px 0 rgba(0,0,0,.3),0 20px 44px -14px rgba(0,0,0,.85)}
 nav button{display:flex;flex-direction:column;align-items:center;gap:3px;font:inherit;font-size:11.5px;font-weight:600;border:0;background:none;padding:8px 2px 7px;border-radius:18px;color:var(--mute);transition:background .25s,color .25s,transform .14s}
 nav svg{width:25px;height:25px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:transform .3s var(--ease)}
 nav button.on{color:#cfe6ff}nav button.on svg{filter:drop-shadow(0 0 6px rgba(110,175,255,.75))}
 nav{touch-action:none;-webkit-user-select:none;user-select:none}nav button{position:relative;z-index:1;-webkit-touch-callout:none}
 /* evidenziazione della voce attiva: scivola da una voce all'altra e segue il dito tenendo premuto */
-.nv-ind{position:absolute;top:6px;bottom:6px;left:6px;width:calc((100% - 20px) / 3);border-radius:22px;background:radial-gradient(120% 90% at 50% 0%,rgba(255,255,255,.26),rgba(255,255,255,0) 65%),linear-gradient(180deg,rgba(125,183,245,.2),rgba(60,120,210,.14));box-shadow:inset 0 1px 0 rgba(255,255,255,.4),inset 0 0 0 1px rgba(255,255,255,.16),0 0 24px -6px rgba(90,160,255,.55),0 8px 18px -10px rgba(0,0,0,.7);-webkit-backdrop-filter:blur(12px) saturate(200%);backdrop-filter:blur(12px) saturate(200%);transition:transform .42s cubic-bezier(.3,1.35,.5,1),background .2s;pointer-events:none}
+.nv-ind{position:absolute;top:6px;bottom:6px;left:6px;width:calc((100% - 24px) / 4);border-radius:22px;background:radial-gradient(120% 90% at 50% 0%,rgba(255,255,255,.26),rgba(255,255,255,0) 65%),linear-gradient(180deg,rgba(125,183,245,.2),rgba(60,120,210,.14));box-shadow:inset 0 1px 0 rgba(255,255,255,.4),inset 0 0 0 1px rgba(255,255,255,.16),0 0 24px -6px rgba(90,160,255,.55),0 8px 18px -10px rgba(0,0,0,.7);-webkit-backdrop-filter:blur(12px) saturate(200%);backdrop-filter:blur(12px) saturate(200%);transition:transform .42s cubic-bezier(.3,1.35,.5,1),background .2s;pointer-events:none}
 nav.drag .nv-ind{background:linear-gradient(180deg,rgba(255,255,255,.24),rgba(125,183,245,.18))}
 nav button.on svg{transform:translateY(-1px) scale(1.08)}
 #t{position:fixed;left:50%;bottom:calc(98px + env(safe-area-inset-bottom));transform:translate(-50%,14px);background:rgba(43,58,78,.9);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);color:var(--ink);font-weight:600;padding:11px 18px;border-radius:14px;border:1px solid rgba(255,255,255,.08);box-shadow:0 10px 26px -8px rgba(0,0,0,.6);opacity:0;transition:opacity .25s,transform .35s var(--ease);pointer-events:none;white-space:nowrap}
@@ -172,7 +195,8 @@ nav button.on svg{transform:translateY(-1px) scale(1.08)}
 <nav>
 <button data-v="chiusura"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6M9 16h3"/></svg>Chiusura</button>
 <button data-v="riepilogo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h16"/><rect x="5" y="11" width="3" height="6" rx="1"/><rect x="10.5" y="6" width="3" height="11" rx="1"/><rect x="16" y="9" width="3" height="8" rx="1"/></svg>Riepilogo</button>
-<button data-v="impostazioni"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><path d="M16.5 13.5v6M13.5 16.5h6"/></svg>Impostazioni</button>
+<button data-v="spese"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7.5A2.5 2.5 0 0 1 6.5 5H17v3"/><rect x="4" y="8" width="16" height="11" rx="2.5"/><path d="M20 12h-3.5a1.5 1.5 0 0 0 0 3H20"/></svg>Spese</button>
+<button data-v="impostazioni"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Impostazioni</button>
 </nav>
 <div id="t"></div>
 <script>
@@ -241,7 +265,7 @@ let hapL;function hap(){try{if(navigator.vibrate){navigator.vibrate(15);return}
  hapL.click()}catch(e){}}
 
 // Pallino «i» che mostra/nasconde il suggerimento con quell'id
-const ib=id=>`<button type="button" class="ib" data-tip="${id}" aria-expanded="false" aria-controls="${id}" aria-label="Mostra suggerimento">i</button>`;
+const ib=id=>`<button type="button" class="ib" data-tip="${id}" aria-expanded="false" aria-controls="${id}" aria-label="Mostra suggerimento"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="5.6" r="1.35"/><rect x="8.9" y="8.3" width="2.2" height="7" rx="1.1"/></svg></button>`;
 function vChiusura(){
  const r=db.days[cur]||{},rp=r.rep||{};bsS=r.bs<0?-1:1;
  const rep=db.reparti.map(n=>`<label class="row"><span>${esc(n)}</span><input data-r="${esc(n)}" inputmode="decimal" placeholder="0,00" value="${fi(rp[n])}"></label>`).join('')
@@ -370,7 +394,7 @@ function cardTab(t){
  <div class="row"><span>Brightstar</span><b>${eur(t.gb)}</b></div>
  <div class="row"><span>LisPoint</span><b>${eur(t.gp)}</b></div>
  <div class="row gu tot"><span>Totale</span><b>${eur(t.gt)}</b></div></div>
- <p class="mute hint tip" id="t-gt">Non comprende ancora le spese del negozio, e non tiene conto della merce rimasta sugli scaffali.</p>`}
+ <p class="mute hint tip" id="t-gt">Prima delle spese: il guadagno netto è nel riquadro qui sotto.</p>`}
 const sumRep=t=>Object.values(t.rep).reduce((a,b)=>a+b,0);
 // Media per chiusura: importo diviso per le chiusure registrate; senza chiusure non c'è media (null)
 const media=(x,n)=>{if(!(n>0))return null;const k=Math.round((x||0)*100),m=Math.round(Math.abs(k)/n)/100;return k<0?-m:m};
@@ -472,7 +496,7 @@ function vRiepilogo(){
  <div class="nav2 noprint"><button data-s="-1" aria-label="Periodo precedente">‹</button><b>${L}</b><button data-s="1" aria-label="Periodo successivo">›</button></div>
  <div class="ph">Tabaccheria – riepilogo ${L}</div>
  ${H}${G}
- ${cardTab(t)}
+ ${cardTab(t)}${cardNetto(t,s,e)}
  <h2>Dettaglio</h2>
  <div class="card"><table class="rt"><tr><th>Voce</th>${th}<th>Differenza<small>in %</small></th></tr>${rows}</table></div>
  ${note?`<p class="mute">${note}</p>`:''}
@@ -507,6 +531,10 @@ function vReport(){
  const c6=(x,r)=>r.n||r.lp||r.lh?`<td>${z(x)}</td>`:'<td class="z">—</td>';
  const r6=m.map((r,i)=>`<tr><td>${MESI[i]}</td>${c6(r.lp,r)}${c6(r.lh,r)}${c6(r.gp,r)}</tr>`).join('')
   +`<tr class="s"><td>Totale ${y}</td><td>${z(t.lp)}</td><td>${z(t.lh)}</td><td>${z(t.gp)}</td></tr>`;
+ const sm=MESI.map((_,i)=>spese(new Date(y,i,1),new Date(y,i+1,0))),st=spese(new Date(y,0,1),new Date(y,11,31));
+ const c7=(x,r,q)=>r.n||r.gt||q.tot?`<td>${z(x)}</td>`:'<td class="z">—</td>';
+ const r7=m.map((r,i)=>{const q=sm[i];return `<tr><td>${MESI[i]}</td>${c7(r.gt,r,q)}${c7(q.sf,r,q)}${c7(q.so,r,q)}${c7(q.iv,r,q)}${c7(c2(r.gt-q.tot),r,q)}</tr>`}).join('')
+  +`<tr class="s"><td>Totale ${y}</td><td>${z(t.gt)}</td><td>${z(st.sf)}</td><td>${z(st.so)}</td><td>${z(st.iv)}</td><td>${z(c2(t.gt-st.tot))}</td></tr>`;
  const oggi=new Date().toLocaleDateString('it-IT',{day:'numeric',month:'long',year:'numeric'});
  return `<h1>Report annuale</h1>
  <div class="noprint"><button class="btn ghost" id="back" style="margin:0 0 10px">‹ Torna al riepilogo</button></div>
@@ -525,18 +553,69 @@ function vReport(){
  <div class="card tw"><table><tr><th>Mese</th><th>Guadagno Lotto (Aggio Gioco)</th><th>Ordini Gratta e Vinci</th><th>Guadagno Gratta e Vinci</th><th>Guadagno Lotteria Italia</th><th>Guadagno Brightstar</th></tr>${r5}</table></div>
  <h2>LisPoint (€)</h2>
  <div class="card tw"><table><tr><th>Mese</th><th>Compensi LIS Pay</th><th>Compensi LIS Holding</th><th>Guadagno LisPoint</th></tr>${r6}</table></div>
+ <h2>Spese e guadagno netto (€)</h2>
+ <div class="card tw"><table><tr><th>Mese</th><th>Guadagno totale</th><th>Spese fisse senza IVA</th><th>Spese occasionali senza IVA</th><th>IVA delle spese</th><th>Guadagno netto</th></tr>${r7}</table></div>
  <p class="mute">Contanti al netto del fondo cassa. «—» = nessuna chiusura registrata nel mese. Tabacco e Monopolio: valore di vendita = ordini ÷ 0,9, guadagno = valore − ordini. ${esc(accK())}: senza IVA = importo ÷ 1,22; Brightstar: guadagno Lotto = Aggio Gioco degli estratti conto del Lotto; Gratta e Vinci: valore = ordini ÷ 0,92, guadagno = valore − ordini; Lotteria Italia (parte dell'ordine): ÷ 0,9, guadagno 10%. LisPoint: compensi dagli estratti conto. Guadagno totale = tabacco + ${esc(accK())} + Brightstar + LisPoint.</p>
  <div class="noprint"><button class="btn" id="print">Stampa / PDF</button><button class="btn ghost" id="rcsv">Esporta CSV</button>
  <p class="mute">Per il PDF: <i>Stampa / PDF</i> → nella stampa tocca Condividi (o allarga l'anteprima) → <i>Salva in File</i>.</p></div>`}
 
-function rcsv(){const y=repY,{m,t,names}=annuale(y),v=x=>c2(x).toFixed(2).replace('.',','),q=s=>/[;"\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;
+function rcsv(){const y=repY,{m,t,names}=annuale(y),sm=MESI.map((_,i)=>spese(new Date(y,i,1),new Date(y,i+1,0))),st=spese(new Date(y,0,1),new Date(y,11,31)),v=x=>c2(x).toFixed(2).replace('.',','),q=s=>/[;"\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;
  const inc=r=>(r.c||0)+(r.pos||0)+(r.sat||0);
- const row=(l,r)=>[l,...names.map(k=>v(r.rep[k])),v(sumRep(r)),v(r.c),v(r.pos),v(r.sat),v(inc(r)),r.n,v(r.ot),v(r.ov),v(r.ag),v(r.avn),v(r.aan),v(r.ga),v(r.al),v(r.og),v(r.gg),v(r.gl),v(r.gb),v(r.lp),v(r.lh),v(r.gp),v(r.gt)].join(';');
- const out=[['Mese',...names.map(q),'Totale reparti','Contanti','POS','Satispay','Totale incassato','Chiusure','Ordini tabacco','Valore di vendita tabacco','Guadagno tabacco','Accessori venduti senza IVA','Acquisti accessori senza IVA','Guadagno accessori','Aggio Gioco Lotto','Ordini Gratta e Vinci','Guadagno Gratta e Vinci','Guadagno Lotteria Italia','Guadagno Brightstar','Compensi LIS Pay','Compensi LIS Holding','Guadagno LisPoint','Guadagno totale'].join(';'),...m.map((r,i)=>row(MESI[i],r)),row('Totale '+y,t)];
+ const row=(l,r,q)=>[l,...names.map(k=>v(r.rep[k])),v(sumRep(r)),v(r.c),v(r.pos),v(r.sat),v(inc(r)),r.n,v(r.ot),v(r.ov),v(r.ag),v(r.avn),v(r.aan),v(r.ga),v(r.al),v(r.og),v(r.gg),v(r.gl),v(r.gb),v(r.lp),v(r.lh),v(r.gp),v(r.gt),v(q.sf),v(q.so),v(q.iv),v(c2(r.gt-q.tot))].join(';');
+ const out=[['Mese',...names.map(q),'Totale reparti','Contanti','POS','Satispay','Totale incassato','Chiusure','Ordini tabacco','Valore di vendita tabacco','Guadagno tabacco','Accessori venduti senza IVA','Acquisti accessori senza IVA','Guadagno accessori','Aggio Gioco Lotto','Ordini Gratta e Vinci','Guadagno Gratta e Vinci','Guadagno Lotteria Italia','Guadagno Brightstar','Compensi LIS Pay','Compensi LIS Holding','Guadagno LisPoint','Guadagno totale','Spese fisse senza IVA','Spese occasionali senza IVA','IVA delle spese','Guadagno netto'].join(';'),...m.map((r,i)=>row(MESI[i],r,sm[i])),row('Totale '+y,t,st)];
  saveFile(`report-annuale-${y}.csv`,'text/csv',out.join('\n'))}
 
-function vImp(){return `<h1>Impostazioni</h1><h2>Reparti</h2>
- <div class="card">${db.reparti.map(n=>`<div class="row"><input class="l" data-n="${esc(n)}" value="${esc(n)}"><button class="x" data-x="${esc(n)}">Elimina</button></div>`).join('')}
+// ===== Spese =====
+// sf = spese fisse [{n nome, v importo IVA compresa, f 's' settimana | 'm' mese | 'a' anno, iva 0|10|22, da 'AAAA-MM-01' mese da cui contano}]
+// so = spese occasionali [{d giorno, n descrizione, v importo IVA compresa, iva}]
+// Importo senza IVA = importo × 100 ÷ (100 + IVA), al centesimo (l'IVA delle fatture si recupera, come per gli accessori).
+const mese1=k=>k.slice(0,8)+'01';
+const sfL=()=>{if(!db.sf)db.sf=[{n:'Affitto',v:null,f:'m',iva:0,da:mese1(todayK)},{n:'Canone LIS',v:null,f:'m',iva:22,da:mese1(todayK)}];return db.sf};
+const soL=()=>db.so||(db.so=[]);
+const netto=(v,i)=>{const k=cents(v);return sgn(k,Math.round(Math.abs(k)*100/(100+(i||0)))/100)};
+const ggMese=d=>new Date(d.getFullYear(),d.getMonth()+1,0).getDate(),ggAnno=d=>new Date(d.getFullYear(),1,29).getMonth()===1?366:365;
+// Spese del periodo [s,e]: le fisse si dividono per i giorni (mese intero = importo intero; settimana = importo ÷ 7 al giorno; anno = importo ÷ giorni dell'anno),
+// contano dal mese in cui sono state inserite e mai oltre il mese di oggi. sf/so senza IVA, iv = IVA (che si recupera), tot = sf + so.
+// Arrotondate al centesimo mese per mese: così la somma dei mesi è uguale all'anno.
+function spese(s,e){const fine=new Date(todayK.slice(0,4),+todayK.slice(5,7),0);let sf=0,sfl=0,so=0,sol=0;
+ for(const x of sfL()){if(!x.v)continue;const n=netto(x.v,x.iva),l=c2(x.v);let qn=0,ql=0,mm=-1;
+  const chiudi=()=>{sf=c2(sf+Math.round(qn*100)/100);sfl=c2(sfl+Math.round(ql*100)/100);qn=0;ql=0};
+  for(let d=new Date(s);d<=e&&d<=fine;d.setDate(d.getDate()+1)){if(iso(d)<(x.da||''))continue;
+   if(d.getMonth()!==mm){chiudi();mm=d.getMonth()}
+   const g=x.f==='s'?7:x.f==='a'?ggAnno(d):ggMese(d);qn+=n/g;ql+=l/g}
+  chiudi()}
+ const a=iso(s),b=iso(e);for(const x of soL()){if(!x.v||x.d<a||x.d>b)continue;so=c2(so+netto(x.v,x.iva));sol=c2(sol+c2(x.v))}
+ return{sf,so,tot:c2(sf+so),iv:c2(sfl+sol-sf-so)}}
+function spHero(){const d=new Date(todayK+'T12:00'),[s,e]=rng('mese',d),q=spese(s,e),m=d.toLocaleDateString('it-IT',{month:'long'});
+ return `<span class="hl">Spese di ${m}</span><div class="big">${bigEur(q.tot)}</div>
+ <div class="hv">+ ${eur(q.iv)} di IVA</div><div class="hs">senza IVA, perché l'IVA delle fatture la recuperi</div>
+ <div class="hr"><span>Fisse<b>${eur(q.sf)}</b></span><span>Occasionali<b>${eur(q.so)}</b></span></div>`}
+const pl=(o,cur,k)=>`<span class="pl">${o.map(([v,t])=>`<button type="button" data-${k}="${v}" class="${String(v)===String(cur)?'on':''}" aria-pressed="${String(v)===String(cur)}">${t}</button>`).join('')}</span>`;
+const ivaP=c=>pl([[0,'No IVA'],[10,'10%'],[22,'22%']],c,'iva');
+const sw=(del,html)=>`<div class="sw"><button type="button" class="sw-del" data-del="${del}" tabindex="-1">Elimina</button><div class="sw-c">${html}</div></div>`;
+function vSpese(){const sf=sfL(),so=soL().map((x,i)=>[x,i]).sort((a,b)=>a[0].d<b[0].d?1:a[0].d>b[0].d?-1:b[1]-a[1]);
+ let mm='',ls='';for(const[x,i]of so){const m=x.d.slice(0,7);if(m!==mm){mm=m;const t=new Date(x.d+'T12:00').toLocaleDateString('it-IT',{month:'long',year:'numeric'});ls+=`<h3 class="mm">${t[0].toUpperCase()+t.slice(1)}</h3>`}
+  ls+=sw('so:'+i,`<div class="sp" data-t="so" data-i="${i}"><input type="date" class="dt" data-k="d" value="${x.d}"><label class="row"><input class="l" data-k="n" placeholder="Descrizione" value="${esc(x.n)}"><input inputmode="decimal" data-k="v" placeholder="0,00" value="${fi(x.v)}"></label><div class="opt">${ivaP(x.iva)}</div></div>`)}
+ return `<h1>Spese</h1><div class="ts hero" id="sph">${spHero()}</div>
+ <h2>Spese fisse${ib('t-sf')}</h2><p class="mute hint tip" id="t-sf">Si scrivono una volta sola: Tabby le conta da sola ogni settimana, mese o anno, dal mese in cui le inserisci. Scegli l'IVA scritta sulla fattura (affitto da privato: No IVA). Per eliminare una spesa scorrila verso sinistra.</p>
+ <div class="card spc">${sf.map((x,i)=>sw('sf:'+i,`<div class="sp" data-t="sf" data-i="${i}"><label class="row"><input class="l" data-k="n" placeholder="Nome spesa" value="${esc(x.n)}"><input inputmode="decimal" data-k="v" placeholder="0,00" value="${fi(x.v)}"></label>
+  <div class="opt">${pl([['s','Sett.'],['m','Mese'],['a','Anno']],x.f,'fr')}${ivaP(x.iva)}</div></div>`)).join('')}
+  <button type="button" class="addr" id="addsf"><i>+</i>Aggiungi spesa fissa</button></div>
+ <h2>Spese occasionali${ib('t-so')}</h2><p class="mute hint tip" id="t-so">Bollette, riparazioni, acquisti per il negozio: scrivi la spesa con la data in cui la paghi. Per eliminarla scorrila verso sinistra.</p>
+ <div class="card spc">${ls}<button type="button" class="addr" id="addso"><i>+</i>Aggiungi spesa</button></div>`}
+// riquadro del Riepilogo: guadagno totale − spese = guadagno netto
+function cardNetto(t,s,e){const q=spese(s,e),gn=c2(t.gt-q.tot);
+ return `<h2>Spese e guadagno netto${ib('t-gn')}</h2><div class="card">
+ <div class="row"><span>Guadagno totale</span><b>${eur(t.gt)}</b></div>
+ <div class="row"><span>Spese fisse</span><b>− ${eur(q.sf)}</b></div>
+ <div class="row"><span>Spese occasionali</span><b>− ${eur(q.so)}</b></div>
+ <div class="row gu tot${gn<0?' neg':''}"><span>Guadagno netto</span><b>${eur(gn)}</b></div></div>
+ <p class="mute hint tip" id="t-gn">Spese senza IVA (l'IVA delle fatture la recuperi). Le spese fisse si dividono per i giorni: nel mese contano intere, nella settimana e nel giorno la loro parte. Contano dal mese in cui le hai inserite, mai per i mesi futuri. Non tiene ancora conto della merce rimasta sugli scaffali.</p>`}
+// scorri verso sinistra per eliminare
+let swD=null;
+function swClose(x){document.querySelectorAll('.sw.open').forEach(w=>{if(w!==x){w.classList.remove('open');w.querySelector('.sw-c').style.transform=''}})}
+function vImp(){return `<h1>Impostazioni</h1><h2>Reparti${ib('t-rp')}</h2><p class="mute hint tip" id="t-rp">Tocca un nome per cambiarlo. Per eliminare un reparto scorrilo verso sinistra.</p>
+ <div class="card spc">${db.reparti.map(n=>sw('rep:'+encodeURIComponent(n),`<div class="row"><input class="l" data-n="${esc(n)}" value="${esc(n)}"></div>`)).join('')}
  <div class="row"><input class="l" id="nn" placeholder="Nuovo reparto"><button class="x" id="add" style="color:var(--acc)">Aggiungi</button></div></div>
  <h2>Backup</h2><div class="card pad"><p class="mute" style="margin-top:0">I dati sono solo su questo iPhone. A fine mese salva un backup in File (iCloud Drive).</p>
  <button class="btn" id="bk">Salva backup</button><label class="btn ghost">Ripristina backup<input type="file" id="imp" accept=".json,application/json" hidden></label></div>`}
@@ -552,7 +631,7 @@ function barSu(){const r=[...document.querySelectorAll('.ch rect.b0,.ch rect.b1'
 const MODI=['giorno','settimana','mese','anno'];let segPrev=0;
 const segT=i=>`translateX(calc(${i} * (100% + 4px)))`;
 function segInd(){const g=document.querySelector('.sg-ind');if(!g)return;const i=MODI.indexOf(mode);requestAnimationFrame(()=>requestAnimationFrame(()=>{g.style.transform=segT(i)}));segPrev=i}
-function render(){const M=$('#app');M.innerHTML={chiusura:vChiusura,riepilogo:vRiepilogo,report:vReport,impostazioni:vImp}[view]();
+function render(){const M=$('#app');M.innerHTML={chiusura:vChiusura,riepilogo:vRiepilogo,report:vReport,impostazioni:vImp,spese:vSpese}[view]();
  if(lastView!==null&&lastView!==view){M.classList.remove('enter');void M.offsetWidth;M.classList.add('enter')}lastView=view;lastQ=null;
  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===(view==='report'?'riepilogo':view)));navInd(navIdx(view));segInd();calc();scrollTo(0,0);barSu()}
 
@@ -598,11 +677,26 @@ $('#app').addEventListener('pointermove',e=>{if(!sgD||e.pointerId!==sgD.id)retur
 $('#app').addEventListener('pointerup',e=>{if(!sgD||e.pointerId!==sgD.id)return;const d=sgD;sgD=null;d.sg.classList.remove('drag');
  if(d.moved){sgSkip=true;setTimeout(()=>sgSkip=false,400);segPrev=d.i;if(MODI[d.i]!==mode){mode=MODI[d.i];render()}}});
 $('#app').addEventListener('pointercancel',()=>{if(!sgD)return;sgD=null;render()});
+$('#app').addEventListener('pointerdown',e=>{const c=e.target.closest('.sw-c');if(!c){if(!e.target.closest('.sw-del'))swClose();return}
+ const w=c.parentNode;swClose(w);swD={w,c,x:e.clientX,y:e.clientY,o:w.classList.contains('open')?-92:0,on:false,id:e.pointerId}});
+$('#app').addEventListener('pointermove',e=>{if(!swD||e.pointerId!==swD.id)return;const dx=e.clientX-swD.x,dy=e.clientY-swD.y;
+ if(!swD.on){if(Math.abs(dx)<10||Math.abs(dx)<Math.abs(dy)*1.2){if(Math.abs(dy)>10)swD=null;return}swD.on=true;swD.w.classList.add('drag');try{swD.c.setPointerCapture(e.pointerId)}catch(_){}if(document.activeElement)document.activeElement.blur()}
+ const o=Math.max(-130,Math.min(0,swD.o+dx));swD.c.style.transform=`translateX(${o}px)`;swD.cur=o});
+const swEnd=e=>{if(!swD||e.pointerId!==swD.id)return;const d=swD;swD=null;if(!d.on)return;d.w.classList.remove('drag');
+ const open=(d.cur??d.o)<-46;d.w.classList.toggle('open',open);d.c.style.transform=open?'translateX(-92px)':'';if(open)hap();
+ const k=ev=>{ev.stopPropagation();ev.preventDefault()};d.c.addEventListener('click',k,{capture:true,once:true});setTimeout(()=>d.c.removeEventListener('click',k,{capture:true}),400)};
+$('#app').addEventListener('pointerup',swEnd);$('#app').addEventListener('pointercancel',swEnd);
 NV.addEventListener('click',e=>{if(nvSkip){nvSkip=false;return}const b=e.target.closest('button');if(b){view=b.dataset.v;render()}});
 $('#app').addEventListener('animationend',e=>{if(e.target.id==='app')e.target.classList.remove('enter')});
 const A=$('#app');
 A.addEventListener('input',e=>{const t=e.target;if(t.inputMode==='decimal'){const c=clean(/paste|Replacement|Drop/i.test(e.inputType||'')?pasted(t.value):t.value);if(c!==t.value)t.value=c}if(view==='chiusura'&&t.id!=='d')calc()});
 A.addEventListener('change',e=>{const t=e.target;
+ const sp=t.closest('.sp[data-t]');
+ if(sp&&t.dataset.k){const x=(sp.dataset.t==='sf'?sfL():soL())[+sp.dataset.i];if(!x)return;const k=t.dataset.k;
+  if(k==='v'){const v=/\d/.test(t.value)?Math.abs(num(t.value)):null;x.v=v;t.value=fi(v)}
+  else if(k==='d'){if(!t.value){t.value=x.d;return}x.d=t.value}
+  else x.n=t.value.trim();
+  save();$('#sph').innerHTML=spHero();return}
  if(t.id==='d'){cur=t.value||cur;render()}
  else if(t.inputMode==='decimal'){t.value=/\d/.test(t.value)?fi(num(t.value)):'';calc()}
  else if(t.dataset.n!==undefined){const o=t.dataset.n,n=t.value.trim();
@@ -622,6 +716,15 @@ A.addEventListener('click',e=>{const h=e.target.closest('[data-b]');
  if(d.tip){const t=document.getElementById(d.tip);if(!t)return;const on=t.classList.toggle('on');b.setAttribute('aria-expanded',on);b.setAttribute('aria-label',on?'Nascondi suggerimento':'Mostra suggerimento');
   // dentro una scheda: con il suggerimento aperto la linea di separazione passa sotto il suggerimento
   const rw=t.previousElementSibling;if(rw&&rw.classList.contains('row'))rw.classList.toggle('nb',on);return}
+ if(d.del){const[w,i]=d.del.split(':');
+  if(w==='rep'){const n=decodeURIComponent(i);if(confirm('Eliminare il reparto "'+n+'"? I dati già registrati restano nei totali.')){db.reparti=db.reparti.filter(x=>x!==n);save();render()}else swClose()}
+  else{(w==='sf'?sfL():soL()).splice(+i,1);save();hap();render();toast('Spesa eliminata')}return}
+ if((d.fr||d.iva!==undefined)&&b.closest('.sp[data-t]')){const sp=b.closest('.sp'),x=(sp.dataset.t==='sf'?sfL():soL())[+sp.dataset.i];if(!x)return;
+  if(d.fr)x.f=d.fr;else x.iva=+d.iva;
+  b.parentNode.querySelectorAll('button').forEach(y=>{y.classList.toggle('on',y===b);y.setAttribute('aria-pressed',y===b)});save();$('#sph').innerHTML=spHero();return}
+ if(id==='addsf'||id==='addso'){if(id==='addsf')sfL().push({n:'',v:null,f:'m',iva:0,da:mese1(todayK)});else soL().push({d:todayK,n:'',v:null,iva:0});
+  save();render();const l=[...document.querySelectorAll(id==='addsf'?'.sp[data-t="sf"]':'.sp[data-t="so"]')].find(z=>+z.dataset.i===(id==='addsf'?sfL():soL()).length-1);
+  if(l){l.scrollIntoView({block:'center'});l.querySelector('input.l').focus({preventScroll:true})}return}
  if(d.bs){bsS=+d.bs;document.querySelectorAll('[data-bs]').forEach(x=>{const on=x===b;x.classList.toggle('on',on);x.setAttribute('aria-pressed',on)});calc();return}
  if(id==='av'||id==='av2'){const h=$('#'+d.to);if(h)h.scrollIntoView({behavior:'smooth',block:'start'});const i=$('#'+d.in);if(i)setTimeout(()=>i.focus({preventScroll:true}),350);return}
  if(id==='save'){const r=read();
