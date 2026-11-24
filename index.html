@@ -100,6 +100,21 @@ h3.mm{font-size:13px;margin:12px 0 0;padding:0 0 6px;color:var(--mute);font-weig
 .sw.full .sw-del{width:100%;justify-content:flex-end;padding-right:24px}
 .sw-del{transition:width .2s var(--ease)}
 .sw.gone{transition:opacity .2s;opacity:0}
+.of{padding:6px 0 12px}
+.of .oh{font-size:13px;color:var(--mute);font-weight:600;text-align:center;margin:6px 0 8px}
+.of .row{padding:0;border:0}.of .row input.l{font-weight:600}
+.of .dt{display:block;margin:0 auto 8px;text-align:center;font:inherit;font-size:13.5px;color:var(--mute);background:none;border:0;padding:0;color-scheme:dark}
+.of .lbl{font-size:13px;color:var(--mute);margin:12px 0 0;text-align:center}
+.opv{font-size:13px;color:var(--mute);text-align:center;margin:12px 0 0;line-height:1.4}
+.opv b{color:var(--ink);font-weight:600}
+.of .bts{display:flex;justify-content:center}.of .bts .addr{width:auto;padding:14px 14px 4px}
+.addr.g{color:var(--mute)}
+.orow{display:block;width:100%;text-align:left;font:inherit;color:inherit;background:none;border:0;padding:12px 16px}
+.orow .on1{display:flex;justify-content:space-between;gap:10px;font-weight:600}
+.orow .on2{display:block;font-size:12.5px;color:var(--mute);margin-top:3px}
+.orow.ed{background:rgba(125,183,245,.09)}
+.of+h3.mm{border-top:1px solid var(--line);margin:0 -16px;padding:12px 16px 6px}
+.onone{text-align:center;color:var(--mute);font-size:13.5px;margin:0 -16px;padding:14px 0;border-top:1px solid var(--line)}
 .sw:not(.drag):not(.open):not(.full):not(.gone) .sw-del{visibility:hidden}
 .chip{display:inline-block;font-weight:700;padding:2px 9px;border-radius:99px;background:rgba(147,163,182,.14);color:var(--ink);margin-right:4px}
 .chip.up{background:rgba(76,195,138,.15);color:var(--ok)}.chip.dn{background:rgba(255,123,114,.15);color:var(--ko)}
@@ -239,6 +254,16 @@ const init=()=>({reparti:['Accessori'],acc:'Accessori',v2:1,v3:1,v4:1,fondo:0,da
 function migra(x){if(!x||x.v4)return x;
  if(!x.v3)x=migra3(x);
  x.acc='Accessori';x.v4=1;return x}
+// Versione 5: ordini merce come elenco db.ord [{d giorno, n nome, r reparto (null = tabacco), v importo, s 1 = importo senza IVA}];
+// gli ordini vecchi dei giorni (ot tabacco, aa accessori, acq altri reparti) diventano voci dell'elenco con gli stessi importi.
+// I giorni che avevano solo ordini (nessun incasso, nessun estratto) vengono tolti, come prima non contavano come chiusure.
+function mig5(x){if(!x||x.v5)return x;const o=x.ord||(x.ord=[]),ak=x.acc||'Accessori';
+ for(const d of Object.keys(x.days||{}).sort()){const r=x.days[d];if(!('ot' in r||'aa' in r||'acq' in r||'om' in r))continue;
+  if(r.ot)o.push({d,n:'',r:null,v:r.ot});if(r.aa)o.push({d,n:'',r:ak,v:r.aa});
+  for(const n in r.acq||{})if(r.acq[n])o.push({d,n:'',r:n,v:r.acq[n]});
+  delete r.ot;delete r.aa;delete r.acq;delete r.om;
+  if(!r.c&&!r.pos&&!r.sat&&!r.bs&&!Object.keys(r.rep||{}).length&&r.og==null&&r.ol==null&&r.eg==null&&r.ao==null&&r.lp==null&&r.lh==null)delete x.days[d]}
+ x.v5=1;return x}
 function migra3(x){
  if(!x.v2){const R=x.reparti||[];
   if(R.includes('Tabacchi')&&!R.includes('Tabacco'))for(const d in x.days||{}){const r=x.days[d].rep;if(r&&'Tabacchi' in r){r.Tabacco=c2((r.Tabacco||0)+(r.Tabacchi||0));delete r.Tabacchi}}
@@ -258,6 +283,7 @@ const venditaGv=x=>{const k=cents(x);return sgn(k,Math.round(Math.abs(k)*100/92)
 const guadagnoGv=x=>c2(venditaGv(x)-c2(x||0));
 let db,mig=false;try{db=JSON.parse(localStorage.getItem(K))||init()}catch(e){db=init()}
 if(!db.v4){db=migra(db);mig=true}
+if(!db.v5){db=mig5(db);mig=true}
 const accK=()=>db.acc||'Accessori';
 // Salva in memoria; se non riesce mostra solo l'errore, torna ai dati davvero salvati e restituisce false
 const save=()=>{try{localStorage.setItem(K,JSON.stringify(db));return true}catch(e){
@@ -371,7 +397,14 @@ function tot(s,e){const a=iso(s),b=iso(e),t={n:0,c:0,pos:0,sat:0,rep:{},ot:0,ov:
    if(y.t==='aggio'){const g=aggioV(v,y.p);x.g=c2(x.g+g);t.gx=c2(t.gx+g)}
    else{const i=y.t==='iva10'?10:22,a=(r.acq||{})[n]||0,vn=netto(v,i),an=netto(a,i);x.vn=c2(x.vn+vn);x.a=c2(x.a+a);x.an=c2(x.an+an);x.g=c2(x.g+vn-an);t.gx=c2(t.gx+vn-an)}}
   t.gt=c2(t.ag+t.ga+t.gb+t.gp+t.gx);
-  for(const k in rp)t.rep[k]=(t.rep[k]||0)+(rp[k]||0)}return t}
+  for(const k in rp)t.rep[k]=(t.rep[k]||0)+(rp[k]||0)}
+ // ordini merce: ognuno con la regola del suo reparto (tabacco ÷ 0,9; reparti con IVA: importo senza IVA), al centesimo
+ for(const o of db.ord||[]){if(o.d<a||o.d>b)continue;const v=o.v||0;
+  if(o.r==null){t.ot=c2(t.ot+v);t.ov=c2(t.ov+vendita(v));t.ag=c2(t.ag+guadagno(v));continue}
+  const i=ivaR(o.r);if(!i)continue;const q=ordIva(o,i);
+  if(o.r===ak){t.aa=c2(t.aa+q.a);t.aan=c2(t.aan+q.an);continue}
+  const y=tipoR(o.r),x=t.xr[o.r]||(t.xr[o.r]={t:y.t,p:y.p,v:0,vn:0,a:0,an:0,g:0});x.a=c2(x.a+q.a);x.an=c2(x.an+q.an);x.g=c2(x.g-q.an);t.gx=c2(t.gx-q.an)}
+ t.ga=c2(t.avn-t.aan);t.gt=c2(t.ag+t.ga+t.gb+t.gp+t.gx);return t}
 // Riquadro «Tabacco e Monopolio» del Riepilogo: calcolato solo dagli ordini, separato dagli altri calcoli
 // schede del Riepilogo per i reparti con tipo (diversi dagli accessori)
 function cardX(t){return repX(t).map((n,j)=>{const x=t.xr[n]||{v:0,vn:0,a:0,an:0,g:0},y=tipoR(n),id='t-x'+j;
@@ -386,7 +419,7 @@ function cardX(t){return repX(t).map((n,j)=>{const x=t.xr[n]||{v:0,vn:0,a:0,an:0
  <div class="row"><span>Acquisti (IVA compresa)</span><b>${eur(x.a)}</b></div>
  <div class="row sub"><span>Acquisti senza IVA</span><b>${eur(x.an)}</b></div>
  <div class="row gu"><span>Guadagno</span><b>${eur(x.g)}</b></div></div>
- <p class="mute hint tip" id="${id}">Senza IVA = importo ÷ ${i===10?'1,10':'1,22'}. Guadagno = venduti senza IVA − acquisti senza IVA. Gli acquisti si scrivono in Spese › Ordini merce.</p>`}).join('')}
+ <p class="mute hint tip" id="${id}">Senza IVA = importo ÷ ${i===10?'1,10':'1,22'}. Guadagno = venduti senza IVA − acquisti senza IVA. Gli acquisti si scrivono in Spese › Ordini merce (scegli il reparto).</p>`}).join('')}
 function cardTab(t){
  return `<h2>Tabacco e Monopolio${ib('t-tab')}</h2><div class="card">
  <div class="row"><span>Ordini pagati</span><b>${eur(t.ot)}</b></div>
@@ -616,14 +649,35 @@ let nrT='iva22',nrP=10,nrN='';
 const OMK=['ot','aa','acq','om'];
 const haOrd=r=>r&&(r.om||r.ot!=null||r.aa!=null||(r.acq&&Object.keys(r.acq).length));
 const vuoto=r=>!Object.keys(r).some(k=>k!=='om'&&!(k==='acq'&&!Object.keys(r.acq).length));
-function vOrdini(){const ds=Object.keys(db.days).filter(d=>haOrd(db.days[d])).sort().reverse(),ri=repIva();let mm='',h='';
- for(const d of ds){const r=db.days[d],m=d.slice(0,7);if(m!==mm){mm=m;const t=new Date(d+'T12:00').toLocaleDateString('it-IT',{month:'long',year:'numeric'});h+=`<h3 class="mm">${t[0].toUpperCase()+t.slice(1)}</h3>`}
-  const extra=Object.keys(r.acq||{}).filter(n=>!ri.includes(n));
-  h+=sw('om:'+d,`<div class="sp om" data-d="${d}"><input type="date" class="dt" data-k="od" value="${d}">
-   <label class="row"><span>Ordine tabacco</span><input inputmode="decimal" data-k="ot" placeholder="0,00" value="${fi(r.ot)}"></label>
-   ${[...ri,...extra].map(n=>`<label class="row"><span>Acquisto ${esc(n)}</span><input inputmode="decimal" data-k="aq" data-n="${esc(n)}" placeholder="0,00" value="${fi(n===accK()?r.aa:(r.acq||{})[n])}"></label>`).join('')}</div>`)}
- return `<h2>Ordini merce${ib('t-om')}</h2><p class="mute hint tip" id="t-om">Non sono spese: servono a calcolare il guadagno del tabacco (ordine già senza aggio) e dei reparti con IVA (fattura IVA compresa). Non entrano nel totale delle spese. Scrivili nel giorno in cui mandi l'ordine o compri.</p>
- <div class="card spc">${h}<button type="button" class="addr" id="addom"><i>+</i>Aggiungi ordine</button></div>`}
+// IVA del reparto per gli ordini (null = reparto senza acquisti: aggio o solo incasso)
+const ivaR=n=>{const t=tipoR(n).t;return t==='iva22'?22:t==='iva10'?10:null};
+// importo con e senza IVA di un ordine: s = importo scritto senza IVA
+const ordIva=(o,i)=>{const v=o.v||0;if(o.s){const k=cents(v);return {a:sgn(k,Math.round(Math.abs(k)*(100+i)/100)/100),an:c2(v)}}return {a:c2(v),an:netto(v,i)}};
+let of={e:-1,d:'',n:'',r:null,v:'',s:0};
+const ofReset=()=>{of={e:-1,d:of.d,n:'',r:of.r,v:'',s:0}};
+const ordR=()=>{const l=[...repIva()];if(of.r!=null&&!l.includes(of.r))l.push(of.r);return l};
+function opv(){const v=/\d/.test(of.v)?Math.abs(num(of.v)):0;
+ if(of.r==null)return v?`Valore di vendita <b>${eur(vendita(v))}</b> · guadagno <b>${eur(guadagno(v))}</b>`:'Importo dell\'ordine, già senza aggio.';
+ const i=ivaR(of.r)||22;if(!v)return of.s?'Importo della fattura senza IVA.':'Importo della fattura con IVA (totale).';
+ const q=ordIva({v,s:of.s},i);return `Senza IVA <b>${eur(q.an)}</b> · IVA ${i}% <b>${eur(c2(q.a-q.an))}</b> · Totale <b>${eur(q.a)}</b>`}
+function ordForm(){const l=ordR(),cur=of.r==null?-1:l.indexOf(of.r);
+ return `<div class="of"><h3 class="oh">${of.e>=0?'Modifica ordine':'Nuovo ordine'}</h3>
+ <input type="date" class="dt" id="od" value="${of.d||todayK}">
+ <label class="row"><input class="l" id="onm" placeholder="Nome (es. Logista)" value="${esc(of.n)}"><input inputmode="decimal" id="ov" placeholder="0,00" value="${esc(of.v)}"></label>
+ <div class="lbl">Reparto</div><div class="opt">${pl([[-1,'Tabacco'],...l.map((n,k)=>[k,esc(n)])],cur,'or')}</div>
+ ${of.r!=null?`<div class="opt">${pl([[0,'IVA compresa'],[1,'Senza IVA']],of.s?1:0,'os')}</div>`:''}
+ <p class="opv" id="opv">${opv()}</p>
+ <div class="bts">${of.e>=0?'<button type="button" class="addr g" id="ocan">Annulla</button><button type="button" class="addr" id="oadd">Salva modifiche</button>':'<button type="button" class="addr" id="oadd"><i>+</i>Aggiungi ordine</button>'}</div></div>`}
+function ordList(){const L=(db.ord||[]).map((o,i)=>[o,i]).sort((x,y)=>y[0].d.localeCompare(x[0].d)||y[1]-x[1]);if(!L.length)return '<p class="onone">Nessun ordine</p>';let mm='',h='';
+ for(const[o,i]of L){const m=o.d.slice(0,7);if(m!==mm){mm=m;const t=new Date(o.d+'T12:00').toLocaleDateString('it-IT',{month:'long',year:'numeric'});h+=`<h3 class="mm">${t[0].toUpperCase()+t.slice(1)}</h3>`}
+  const rn=o.r==null?'Tabacco':o.r,dt=new Date(o.d+'T12:00').toLocaleDateString('it-IT',{weekday:'short',day:'numeric',month:'short'});
+  h+=sw('or:'+i,`<button type="button" class="orow${of.e===i?' ed':''}" data-oe="${i}"><span class="on1"><span>${esc(o.n||rn)}</span><span>${eur(o.v)}</span></span><span class="on2">${dt} · ${esc(rn)}${o.r!=null?(o.s?' · senza IVA':' · IVA compresa'):''}</span></button>`)}
+ return h}
+const ordIn=()=>`<div id="ordf">${ordForm()}</div>${ordList()}`;
+function rOrd(){const c=$('#ordsec');if(c)c.innerHTML=ordIn()}
+function ofRead(){const g=id=>$(id);if(g('#od'))of.d=g('#od').value||todayK;if(g('#onm'))of.n=g('#onm').value;if(g('#ov'))of.v=g('#ov').value}
+function vOrdini(){return `<h2>Ordini merce${ib('t-om')}</h2><p class="mute hint tip" id="t-om">Ogni ordine ha nome, reparto e importo. Tabacco: importo dell'ordine, già senza aggio. Reparti con IVA: importo della fattura, con IVA compresa o senza IVA (la riga sotto ti mostra i conti). Non sono spese: non entrano nel totale delle spese. Tocca un ordine per modificarlo; scorrilo verso sinistra fino in fondo per eliminarlo.</p>
+ <div class="card spc" id="ordsec">${ordIn()}</div>`}
 // ===== Spese =====
 // sf = spese fisse [{n nome, v importo IVA compresa, f 's' settimana | 'm' mese | 'a' anno, iva 0|10|22, da 'AAAA-MM-01' mese da cui contano}]
 // so = spese occasionali [{d giorno, n descrizione, v importo IVA compresa, iva}]
@@ -673,7 +727,8 @@ function cardNetto(t,s,e){const q=spese(s,e),gn=c2(t.gt-q.tot);
  <p class="mute hint tip" id="t-gn">Spese senza IVA (l'IVA delle fatture la recuperi). Le spese fisse si dividono per i giorni: nel mese contano intere, nella settimana e nel giorno la loro parte. Contano dal mese in cui le hai inserite, mai per i mesi futuri. Non tiene ancora conto della merce rimasta sugli scaffali.</p>`}
 // elimina una voce (reparto, spesa fissa, spesa occasionale, ordine)
 function delItem(k){const i=k.indexOf(':'),w=k.slice(0,i),x=k.slice(i+1);
- if(w==='rep'){const n=decodeURIComponent(x);if(confirm('Eliminare il reparto "'+n+'"? I dati già registrati restano nei totali.')){db.reparti=db.reparti.filter(y=>y!==n);save();render();toast('Reparto eliminato')}else swClose();return}
+ if(w==='or'){const n=+x;(db.ord||[]).splice(n,1);if(of.e===n)ofReset();else if(of.e>n)of.e--;save();rOrd();toast('Ordine eliminato');return}
+ if(w==='rep'){const n=decodeURIComponent(x);if(confirm('Eliminare il reparto "'+n+'"? I dati già registrati restano nei totali.')){hap();db.reparti=db.reparti.filter(y=>y!==n);save();render();toast('Reparto eliminato')}else swClose();return}
  if(w==='om'){const r=db.days[x];if(r){OMK.forEach(y=>delete r[y]);if(vuoto(r))delete db.days[x]}save();render();toast('Ordine eliminato');return}
  (w==='sf'?sfL():soL()).splice(+x,1);save();render();toast('Spesa eliminata')}
 // scorri verso sinistra per eliminare
@@ -685,7 +740,7 @@ function vImp(){return `<h1>Impostazioni</h1><h2>Reparti${ib('t-rp')}</h2><p cla
  <div class="lbl">Come si calcola il guadagno?</div>
  <div class="opt">${pl([['iva22','IVA 22%'],['iva10','IVA 10%'],['aggio','Aggio'],['inc','Solo incasso']],nrT,'tp')}</div>
  ${nrT==='aggio'?`<div class="agp">Aggio <input id="np" inputmode="decimal" value="${String(nrP).replace('.',',')}"> %</div>`:''}
- <p class="dsc">${{iva22:'Come gli Accessori: guadagno = vendite senza IVA − acquisti senza IVA (÷ 1,22). Gli acquisti si scrivono in Spese › Ordini merce.',iva10:'Come gli Accessori ma con IVA 10%: guadagno = vendite senza IVA − acquisti senza IVA (÷ 1,10). Gli acquisti si scrivono in Spese › Ordini merce.',aggio:'Come il tabacco: guadagni una percentuale fissa. Guadagno = incassato del reparto × aggio %.',inc:'Conta solo nell\'incasso, senza calcolo del guadagno.'}[nrT]}</p>
+ <p class="dsc">${{iva22:'Come gli Accessori: guadagno = vendite senza IVA − acquisti senza IVA (÷ 1,22). Gli acquisti si scrivono in Spese › Ordini merce (scegli il reparto).',iva10:'Come gli Accessori ma con IVA 10%: guadagno = vendite senza IVA − acquisti senza IVA (÷ 1,10). Gli acquisti si scrivono in Spese › Ordini merce (scegli il reparto).',aggio:'Come il tabacco: guadagni una percentuale fissa. Guadagno = incassato del reparto × aggio %.',inc:'Conta solo nell\'incasso, senza calcolo del guadagno.'}[nrT]}</p>
  <button type="button" class="addr" id="add"><i>+</i>Aggiungi reparto</button></div></div>
  <h2>Backup</h2><div class="card pad"><p class="mute" style="margin-top:0">I dati sono solo su questo iPhone. A fine mese salva un backup in File (iCloud Drive).</p>
  <button class="btn" id="bk">Salva backup</button><label class="btn ghost">Ripristina backup<input type="file" id="imp" accept=".json,application/json" hidden></label></div>`}
@@ -711,11 +766,12 @@ async function saveFile(name,type,text){
  const u=URL.createObjectURL(f),a=document.createElement('a');a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),4000)}
 
 function csv(){const[s,e]=rng(mode,anchor),a=iso(s),b=iso(e),m=x=>String(x==null?'':x).replace('.',','),q=s=>/[;"\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;
- const ds=Object.keys(db.days).filter(d=>d>=a&&d<=b).sort();
+ const OR=(db.ord||[]).filter(o=>o.d>=a&&o.d<=b),ds=[...new Set([...Object.keys(db.days).filter(d=>d>=a&&d<=b),...OR.map(o=>o.d)])].sort();
+ const oT=d=>OR.filter(o=>o.d===d&&o.r==null).reduce((s,o)=>c2(s+o.v),0),oA=d=>OR.filter(o=>o.d===d&&o.r===accK()).reduce((s,o)=>c2(s+ordIva(o,22).a),0);
  // reparti attuali + reparti eliminati che hanno importi nel periodo
- const n=[...new Set([...db.reparti,...ds.flatMap(d=>Object.keys(db.days[d].rep||{}))])];
+ const n=[...new Set([...db.reparti,...ds.flatMap(d=>Object.keys((db.days[d]||{}).rep||{}))])];
  const out=[['Data','Fondo cassa','Contanti','POS','Satispay',...n.map(q),'Ordine tabacco','Acquisto accessori','Saldo Brightstar','Aggio Gioco Lotto','Ordine Gratta e Vinci','di cui Lotteria Italia','Compensi LIS Pay','Compensi LIS Holding'].join(';')];
- ds.forEach(d=>{const r=db.days[d];out.push([d,m(r.f),m(r.c),m(r.pos),m(r.sat),...n.map(k=>m((r.rep||{})[k])),m(r.ot),m(r.aa),m(r.bs),m(r.ao!=null?r.ao:r.eg!=null?aggioLotto(r.eg):''),m(r.og),m(r.ol),m(r.lp),m(r.lh)].join(';'))});
+ ds.forEach(d=>{const r=db.days[d]||{},xt=c2((r.ot||0)+oT(d)),xa=c2((r.aa||0)+oA(d));out.push([d,m(r.f),m(r.c),m(r.pos),m(r.sat),...n.map(k=>m((r.rep||{})[k])),xt?m(xt):m(r.ot),xa?m(xa):m(r.aa),m(r.bs),m(r.ao!=null?r.ao:r.eg!=null?aggioLotto(r.eg):''),m(r.og),m(r.ol),m(r.lp),m(r.lh)].join(';'))});
  saveFile(`chiusure-${a}_${b}.csv`,'text/csv',out.join('\n'))}
 
 // Riaprendo l'app (anche rimasta aperta in sottofondo) nel giorno dopo, la data torna a oggi
@@ -755,15 +811,24 @@ $('#app').addEventListener('pointermove',e=>{if(!swD||e.pointerId!==swD.id)retur
  if(full!==swD.w.classList.contains('full')){swD.w.classList.toggle('full',full);hap()}});
 const swEnd=e=>{if(!swD||e.pointerId!==swD.id)return;const d=swD;swD=null;if(!d.on)return;d.w.classList.remove('drag');
  if(d.w.classList.contains('full')){const k=d.w.querySelector('.sw-del').dataset.del;d.c.style.transform=`translateX(-${d.w.offsetWidth}px)`;
-  if(k.startsWith('rep:')){setTimeout(()=>delItem(k),180)}else{d.w.classList.add('gone');setTimeout(()=>delItem(k),200)}return}
+  // iPhone: Safari vibra solo dentro il «touchend» (dito alzato), quindi l'eliminazione parte da lì; mouse subito; riserva dopo 350 ms
+  swAct={k,w:d.w,t:setTimeout(swRun,350)};if(e.pointerType!=='touch')swRun();return}
  const open=(d.cur??d.o)<-46;d.w.classList.toggle('open',open);d.c.style.transform=open?'translateX(-92px)':'';
  const k=ev=>{ev.stopPropagation();ev.preventDefault()};d.c.addEventListener('click',k,{capture:true,once:true});setTimeout(()=>d.c.removeEventListener('click',k,{capture:true}),400)};
+let swAct=null;
+function swRun(){const a=swAct;if(!a)return;swAct=null;clearTimeout(a.t);hap();
+ if(a.k.startsWith('rep:'))delItem(a.k);else{a.w.classList.add('gone');setTimeout(()=>delItem(a.k),200)}}
+$('#app').addEventListener('touchend',()=>{if(swAct)swRun()});
+$('#app').addEventListener('input',e=>{const t=e.target;if(t.id==='ov'){of.v=t.value;const p=$('#opv');if(p)p.innerHTML=opv()}else if(t.id==='onm')of.n=t.value});
 $('#app').addEventListener('pointerup',swEnd);$('#app').addEventListener('pointercancel',swEnd);
 NV.addEventListener('click',e=>{if(nvSkip){nvSkip=false;return}const b=e.target.closest('button');if(b){view=b.dataset.v;render()}});
 $('#app').addEventListener('animationend',e=>{if(e.target.id==='app')e.target.classList.remove('enter')});
 const A=$('#app');
 A.addEventListener('input',e=>{const t=e.target;if(t.inputMode==='decimal'){const c=clean(/paste|Replacement|Drop/i.test(e.inputType||'')?pasted(t.value):t.value);if(c!==t.value)t.value=c}if(view==='chiusura'&&t.id!=='d')calc()});
 A.addEventListener('change',e=>{const t=e.target;
+ if(t.id==='ov'){const v=/\d/.test(t.value)?Math.abs(num(t.value)):null;t.value=v?fi(v):'';of.v=t.value;$('#opv').innerHTML=opv();return}
+ if(t.id==='od'){if(!t.value)t.value=of.d||todayK;of.d=t.value;return}
+ if(t.id==='onm'){of.n=t.value;return}
  const om=t.closest('.sp.om');
  if(om&&t.dataset.k){const d=om.dataset.d,r=db.days[d];if(!r)return;const k=t.dataset.k;
   if(k==='od'){const nd=t.value;if(!nd||nd===d){t.value=d;return}
@@ -788,11 +853,12 @@ A.addEventListener('change',e=>{const t=e.target;
   // sposta gli importi; se nello stesso giorno c'è già il nome nuovo, li somma (nessun importo viene perso)
   for(const d in db.days){const r=db.days[d].rep;if(r&&o in r&&n!==o){r[n]=n in r?c2((r[n]||0)+(r[o]||0)):r[o];delete r[o]}
    const q=db.days[d].acq;if(q&&o in q&&n!==o){q[n]=n in q?c2((q[n]||0)+(q[o]||0)):q[o];delete q[o]}}
+  if(n!==o)for(const x of db.ord||[])if(x.r===o)x.r=n;
   if(db.tipi&&db.tipi[o]&&n!==o){if(!db.tipi[n])db.tipi[n]=db.tipi[o];delete db.tipi[o]}
   save();render()}
  else if(t.id==='imp'&&t.files[0]){const fr=new FileReader();
   fr.onload=()=>{try{const x=JSON.parse(fr.result);if(!x.days||!x.reparti)throw 0;
-   if(confirm('Sostituire i dati attuali con quelli del backup?')){db=migra(x);const ok=save();render();if(ok)toast('Backup ripristinato')}}catch(_){alert('File di backup non valido.')}};
+   if(confirm('Sostituire i dati attuali con quelli del backup?')){db=mig5(migra(x));const ok=save();render();if(ok)toast('Backup ripristinato')}}catch(_){alert('File di backup non valido.')}};
   fr.readAsText(t.files[0])}});
 A.addEventListener('click',e=>{const h=e.target.closest('[data-b]');
  if(h){const i=+h.dataset.b;selB=selB===i?-1:i;document.querySelectorAll('.hit').forEach(r=>r.classList.toggle('sel',+r.dataset.b===selB));$('#ci').innerHTML=chInfo();return}
@@ -804,6 +870,13 @@ A.addEventListener('click',e=>{const h=e.target.closest('[data-b]');
  if((d.fr||d.iva!==undefined)&&b.closest('.sp[data-t]')){const sp=b.closest('.sp'),x=(sp.dataset.t==='sf'?sfL():soL())[+sp.dataset.i];if(!x)return;
   if(d.fr)x.f=d.fr;else x.iva=+d.iva;
   b.parentNode.querySelectorAll('button').forEach(y=>{y.classList.toggle('on',y===b);y.setAttribute('aria-pressed',y===b)});save();$('#sph').innerHTML=spHero();return}
+ if(d.or!==undefined){ofRead();const l=ordR();of.r=d.or==='-1'?null:l[+d.or];$('#ordf').innerHTML=ordForm();return}
+ if(d.os!==undefined){ofRead();of.s=+d.os;$('#ordf').innerHTML=ordForm();return}
+ if(d.oe!==undefined){const o=(db.ord||[])[+d.oe];if(!o)return;of={e:+d.oe,d:o.d,n:o.n||'',r:o.r,v:fi(o.v),s:o.s?1:0};rOrd();$('#ordf').scrollIntoView({block:'center',behavior:'smooth'});return}
+ if(id==='ocan'){ofReset();rOrd();return}
+ if(id==='oadd'){ofRead();const v=/\d/.test(of.v)?Math.abs(num(of.v)):0;if(!v){toast('Scrivi l\'importo');return}
+  const o={d:of.d||todayK,n:of.n.trim(),r:of.r,v};if(of.r!=null&&of.s)o.s=1;db.ord=db.ord||[];const ed=of.e>=0;if(ed)db.ord[of.e]=o;else db.ord.push(o);
+  if(!save())return;hap();ofReset();rOrd();toast(ed?'Ordine modificato':'Ordine aggiunto');return}
  if(d.tp){nrN=($('#nn')||{}).value||'';const np=$('#np');if(np)nrP=Math.abs(num(np.value))||nrP;nrT=d.tp;render();return}
  if(id==='addom'){if(haOrd(db.days[todayK])){toast('L\'ordine di oggi c\'è già: modificalo o cambia la data');const l=document.querySelector(`.sp.om[data-d="${todayK}"]`);if(l)l.scrollIntoView({block:'center'});return}
   db.days[todayK]=Object.assign(db.days[todayK]||{},{om:1});save();render();const l=document.querySelector(`.sp.om[data-d="${todayK}"]`);if(l){l.scrollIntoView({block:'center'});l.querySelector('input[data-k="ot"]').focus({preventScroll:true})}return}
