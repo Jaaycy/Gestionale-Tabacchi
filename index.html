@@ -183,6 +183,24 @@ h2.tsh{text-align:center;margin-top:28px}
 /* avviso settimanale dell'estratto conto Lotto: piccolo e grigio, sparisce quando la scheda Brightstar è compilata */
 .av{display:block;width:100%;font:inherit;font-size:13.5px;text-align:left;color:var(--mute);background:rgba(147,163,182,.07);border:1px dashed var(--line);border-radius:12px;padding:9px 12px;margin:0 0 12px}
 .av+.av{margin-top:-4px}
+.av.mx{color:#f5c26b;background:rgba(245,194,107,.08);border-color:rgba(245,194,107,.45)}
+.hd>:not(h1){margin-top:10px}
+.hr{display:flex;align-items:center;gap:10px;flex:none}
+.bell{position:relative;flex:none;width:42px;height:42px;padding:0;border-radius:50%;border:1px solid rgba(255,255,255,.12);background:linear-gradient(180deg,rgba(255,255,255,.1),rgba(255,255,255,.02)),rgba(18,30,48,.6);box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 8px 18px -10px rgba(0,0,0,.8);display:grid;place-items:center;color:#cfe6ff;transition:transform .14s}
+.bell:active{transform:scale(.92)}
+.bell svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.bdg{position:absolute;top:-4px;right:-4px;min-width:20px;height:20px;padding:0 5px;border-radius:10px;background:#ef4444;color:#fff;font-size:12px;font-weight:800;display:grid;place-items:center;box-shadow:0 0 0 2px #0d1726,0 0 12px rgba(239,68,68,.6)}
+.ntf{margin:4px 0 14px;padding:6px 0;border-radius:20px;background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.02)),rgba(16,26,42,.92);border:1px solid rgba(255,255,255,.12);box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 24px 50px -18px rgba(0,0,0,.9);animation:ntIn .22s ease}
+@keyframes ntIn{from{opacity:0;transform:translateY(-6px)}}
+.ntf h3{margin:10px 16px 4px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:800}
+.ntf h3.r{color:#f87171}.ntf h3.g{color:var(--mute)}
+.ntf .it{display:flex;align-items:center;gap:12px;width:100%;padding:11px 16px;font:inherit;font-size:15px;text-align:left;color:#e6eef8;background:none;border:0;border-top:1px solid rgba(255,255,255,.06)}
+.ntf h3+.it{border-top:0}
+.ntf .dt{flex:none;width:9px;height:9px;border-radius:50%}
+.ntf .dt.r{background:#ef4444;box-shadow:0 0 8px rgba(239,68,68,.7)}.ntf .dt.g{background:#7db7f5}
+.ntf .it small{display:block;color:var(--mute);font-size:12.5px;margin-top:2px}
+.ntf .it b{font-weight:600}.ntf .ch2{margin-left:auto;color:var(--mute);font-size:18px}
+.ntf .nt0{margin:12px 16px;color:var(--mute);text-align:center}
 .pop{animation:pop .45s var(--ease)}
 @keyframes pop{0%{transform:scale(.94)}55%{transform:scale(1.04)}100%{transform:scale(1)}}
 nav{position:fixed;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom));max-width:536px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:6px;border-radius:28px;background:linear-gradient(180deg,rgba(255,255,255,.1),rgba(255,255,255,.02)),rgba(16,26,42,.66);-webkit-backdrop-filter:saturate(200%) blur(26px);backdrop-filter:saturate(200%) blur(26px);border:1px solid rgba(255,255,255,.12);box-shadow:inset 0 1px 0 rgba(255,255,255,.18),inset 0 -1px 0 rgba(0,0,0,.3),0 20px 44px -14px rgba(0,0,0,.85)}
@@ -342,9 +360,9 @@ function vChiusura(){
  const rep=db.reparti.map(n=>`<label class="row"><span>${esc(n)}</span><input data-r="${esc(n)}" inputmode="decimal" placeholder="0,00" value="${fi(rp[n])}"></label>`).join('')
   // reparti eliminati che hanno un importo in questa chiusura: compaiono in grigio, restano nella quadratura e nel salvataggio
   +Object.keys(rp).filter(n=>!db.reparti.includes(n)).map(n=>`<label class="row old"><span>${esc(n)}<em>eliminato</em></span><input data-r="${esc(n)}" inputmode="decimal" placeholder="0,00" value="${fi(rp[n])}"></label>`).join('');
- return `<div class="hd"><h1>Chiusura</h1><span class="pill" id="qp"></span></div>
- ${daCopiare()?'<button type="button" class="av noprint" id="av" data-to="hb" data-in="ao">Aggio Gioco Lotto della settimana da copiare nella scheda Brightstar ›</button>':''}
- ${daCopiareLp()?'<button type="button" class="av noprint" id="av2" data-to="hl" data-in="lp">Compensi LisPoint del mese da copiare nella scheda LisPoint ›</button>':''}
+ const N=ntf(),nn=N.rec.length+N.fare.length,sh=ntShow;ntShow=false;
+ return `<div class="hd"><h1>Chiusura</h1><div class="hr"><span class="pill" id="qp"></span><button type="button" class="bell noprint" id="bell" aria-label="Notifiche${nn?': '+nn+' da fare':''}" aria-expanded="${sh}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.6 2H4.4Z"/><path d="M10 20.5a2.2 2.2 0 0 0 4 0"/></svg>${nn?`<span class="bdg">${nn>9?'9+':nn}</span>`:''}</button></div></div>
+ ${sh?ntPanel(N):''}
  <div class="card"><label class="row"><span>Data</span><input id="d" type="date" value="${cur}"></label></div>
  <h2>Cassa</h2><div class="card">
   <div class="row"><button class="tg" id="tg" aria-expanded="${cfOpen}">Contanti in cassa</button><input id="ct" aria-label="Contanti in cassa, fondo compreso" inputmode="decimal" placeholder="0,00" value="${db.days[cur]?fi(c2((r.c||0)+(r.f||0))):''}"></div>
@@ -377,10 +395,45 @@ function read(){const g=s=>num(($(s)||{}).value),rep={};
  if(ot!=null)o.ot=ot;if(aa!=null)o.aa=aa;if(od.acq)o.acq=od.acq;if(od.om)o.om=od.om;if(bs)o.bs=bs;if(aoI&&aoI.value.trim()!==''){const v=num(aoI.value),old=db.days[cur];if(old&&old.eg!=null&&old.ao==null&&v===aggioLotto(old.eg))o.eg=old.eg;else o.ao=v}if(og)o.og=og;if(ol)o.ol=ol;
  // compensi LisPoint: si salvano se scritti (anche 0, così l'avviso del mese sparisce)
  if(lpI&&lpI.value.trim()!=='')o.lp=num(lpI.value);if(lhI&&lhI.value.trim()!=='')o.lh=num(lhI.value);return o}
-// true se nel mese di oggi non sono ancora stati inseriti i compensi LisPoint
-function daCopiareLp(){const m=todayK.slice(0,7);for(const d in db.days)if(d.slice(0,7)===m&&(db.days[d].lp!=null||db.days[d].lh!=null))return false;return true}
-// true se nella settimana di oggi (da lunedì a domenica) non è ancora stato inserito l'Aggio Gioco Lotto
-function daCopiare(){const[s,e]=rng('settimana',new Date(todayK+'T12:00')),a=iso(s),b=iso(e);for(const d in db.days)if(d>=a&&d<=b&&(db.days[d].ao!=null||db.days[d].eg!=null))return false;return true}
+// ---- Notifiche (campanella, casse-v42): dati settimanali e mensili da copiare ----
+// rec = «Da recuperare»: settimane/mesi PASSATI rimasti vuoti, contati dalla prima settimana/mese in cui il dato è stato usato;
+// fare = «Da fare»: Aggio Gioco Lotto della settimana e Compensi LisPoint del mese in corso (come i vecchi avvisi grigi).
+// Ordine tabacco: 1 a settimana (Jackie), solo settimane passate. Un dato scritto anche 0 conta come fatto.
+let ntShow=false;
+const dK=k=>new Date(k+'T12:00'),addD=(k,n)=>{const d=dK(k);d.setDate(d.getDate()+n);return iso(d)},lun=k=>iso(rng('settimana',dK(k))[0]);
+const mNext=m=>{let y=+m.slice(0,4),n=+m.slice(5,7)+1;if(n>12){n=1;y++}return y+'-'+String(n).padStart(2,'0')};
+const mNome=d=>d.toLocaleDateString('it-IT',{month:'long'});
+function setL(a){const A=dK(a),B=dK(addD(a,6)),y=B.getFullYear()!==dK(todayK).getFullYear()?' '+B.getFullYear():'';
+ return (A.getMonth()===B.getMonth()?`${A.getDate()}–${B.getDate()} ${mNome(B)}`:`${A.getDate()} ${mNome(A)} – ${B.getDate()} ${mNome(B)}`)+y}
+function mesL(m){const d=dK(m+'-01'),t=mNome(d);return t+(d.getFullYear()!==dK(todayK).getFullYear()?' '+d.getFullYear():'')}
+function ntf(){const T=todayK,L0=lun(T),M0=T.slice(0,7),rec=[],fare=[],wA=new Set(),wT=new Set(),mL=new Set();
+ for(const d in db.days){const r=db.days[d];if(r.ao!=null||r.eg!=null)wA.add(lun(d));if(r.lp!=null||r.lh!=null)mL.add(d.slice(0,7))}
+ for(const o of db.ord||[])if(o.r==null&&o.d)wT.add(lun(o.d));
+ const wk=(S,k,t)=>{if(!S.size)return;for(let a=[...S].sort()[0];a<L0;a=addD(a,7))if(!S.has(a))rec.push({k,a,b:addD(a,6),t,s:'Settimana '+setL(a)})};
+ wk(wA,'ao','Aggio Gioco Lotto');wk(wT,'ot','Ordine tabacco');
+ if(mL.size)for(let m=[...mL].sort()[0];m<M0;m=mNext(m))if(!mL.has(m)){const l=iso(new Date(+m.slice(0,4),+m.slice(5,7),0)),n=mesL(m);rec.push({k:'lp',a:m+'-01',b:l,t:'Compensi LisPoint',s:n[0].toUpperCase()+n.slice(1)})}
+ if(!wA.has(L0))fare.push({k:'ao',t:'Aggio Gioco Lotto',s:'Questa settimana'});
+ if(!mL.has(M0))fare.push({k:'lp',t:'Compensi LisPoint',s:'Questo mese'});
+ return {rec,fare}}
+function ntPanel(N){const it=(x,c,i)=>`<button type="button" class="it" data-nt="${c}${i}"><span class="dt ${c}"></span><span><b>${x.t}</b><small>${x.s}</small></span><span class="ch2">›</span></button>`;
+ if(!N.rec.length&&!N.fare.length)return '<div class="ntf noprint" id="ntp"><p class="nt0">Tutto a posto: niente da copiare ✓</p></div>';
+ return `<div class="ntf noprint" id="ntp">${N.rec.length?'<h3 class="r">Da recuperare</h3>'+N.rec.map((x,i)=>it(x,'r',i)).join(''):''}${N.fare.length?'<h3 class="g">Da fare</h3>'+N.fare.map((x,i)=>it(x,'g',i)).join(''):''}</div>`}
+// Riepilogo: avviso se nel periodo mostrato manca un dato passato (solo settimana, mese, anno)
+function mancaP(s,e){const a=iso(s),b=iso(e),r=ntf().rec.filter(x=>x.a<=b&&x.b>=a);if(!r.length)return '';
+ const P=[],g=k=>r.filter(x=>x.k===k),w=(k,n)=>{const l=g(k);if(l.length)P.push(l.length===1?`${n} della settimana ${setL(l[0].a)}`:`${n} di ${l.length} settimane`)};
+ w('ao',"l'Aggio Gioco Lotto");w('ot',"l'ordine tabacco");const l=g('lp');if(l.length)P.push(l.length===1?`i Compensi LisPoint di ${mesL(l[0].a.slice(0,7))}`:`i Compensi LisPoint di ${l.length} mesi`);
+ const one=r.length===1&&r[0].k!=='lp',per=mode==='settimana'?'in questa settimana':mode==='mese'?'in questo mese':"in quest'anno";
+ return `<button type="button" class="av mx noprint" id="avr">⚠︎ Guadagno incompleto: ${per} ${one?'manca':'mancano'} ${P.length===1?P[0]:P.slice(0,-1).join(', ')+' e '+P[P.length-1]} ›</button>`}
+// giorno da aprire per un dato passato: l'ultima chiusura salvata nel periodo, altrimenti l'ultimo giorno (mai oltre oggi)
+function ntGiorno(a,b){const l=Object.keys(db.days).filter(d=>d>=a&&d<=b&&d<=todayK).sort();return l.length?l[l.length-1]:(b<todayK?b:todayK)}
+function ntVai(x){const p=$('#ntp');if(p)p.remove();const bl=$('#bell');if(bl)bl.setAttribute('aria-expanded','false');
+ const vai=(h,i)=>{const H=$('#'+h);if(H)H.scrollIntoView({behavior:'smooth',block:'start'});const I=$('#'+i);if(I)setTimeout(()=>I.focus({preventScroll:true}),350)};
+ const dl=k=>dK(k).toLocaleDateString('it-IT',{weekday:'short',day:'numeric',month:'short'});
+ if(x.k==='ot'){of={e:-1,d:x.b<todayK?x.b:todayK,n:'',r:null,v:'',s:0};view='spese';render();vai('ordsec','ov');toast('Nuovo ordine tabacco del '+dl(of.d));return}
+ const [h,i]=x.k==='ao'?['hb','ao']:['hl','lp'];
+ let g=cur;if(x.a)g=ntGiorno(x.a,x.b);else if(x.k==='ao'?lun(cur)!==lun(todayK):cur.slice(0,7)!==todayK.slice(0,7))g=todayK;
+ if(g!==cur||view!=='chiusura'){cur=g;view='chiusura';render();if(x.a)toast('Chiusura di '+dl(g))}
+ vai(h,i)}
 // true se due chiusure hanno gli stessi importi (l'ordine dei reparti non conta)
 const stesso=(a,b)=>{const k=o=>JSON.stringify([o.c,o.f,o.pos,o.sat,o.ot||0,o.aa||0,o.bs||0,o.eg==null?null:o.eg,o.ao==null?null:o.ao,o.og||0,o.ol||0,o.lp==null?null:o.lp,o.lh==null?null:o.lh,Object.entries(o.rep||{}).sort()]);return k(a)===k(b)};
 function calc(){const q=$('#q');if(!q)return;
@@ -591,7 +644,7 @@ function vRiepilogo(){
  <div class="seg noprint"><i class="sg-ind" aria-hidden="true" style="transform:${segT(segPrev)}"></i>${['giorno','settimana','mese','anno'].map(m=>`<button data-m="${m}" class="${m===mode?'on':''}">${m[0].toUpperCase()+m.slice(1)}</button>`).join('')}</div>
  <div class="nav2 noprint"><button data-s="-1" aria-label="Periodo precedente">‹</button><b>${L}</b><button data-s="1" aria-label="Periodo successivo">›</button></div>
  <div class="ph">Tabaccheria – riepilogo ${L}</div>
- ${H}${G}
+ ${G1?'':mancaP(s,e)}${H}${G}
  ${cardTab(t)}${cardNetto(t,s,e)}
  <h2>Dettaglio</h2>
  <div class="card"><table class="rt"><tr><th>Voce</th>${th}<th>Differenza<small>in %</small></th></tr>${rows}</table></div>
@@ -917,7 +970,9 @@ A.addEventListener('click',async e=>{const h=e.target.closest('[data-b]');
   save();render();const l=[...document.querySelectorAll(id==='addsf'?'.sp[data-t="sf"]':'.sp[data-t="so"]')].find(z=>+z.dataset.i===(id==='addsf'?sfL():soL()).length-1);
   if(l){l.scrollIntoView({block:'center'});l.querySelector('input.l').focus({preventScroll:true})}return}
  if(d.bs){bsS=+d.bs;document.querySelectorAll('[data-bs]').forEach(x=>{const on=x===b;x.classList.toggle('on',on);x.setAttribute('aria-pressed',on)});calc();return}
- if(id==='av'||id==='av2'){const h=$('#'+d.to);if(h)h.scrollIntoView({behavior:'smooth',block:'start'});const i=$('#'+d.in);if(i)setTimeout(()=>i.focus({preventScroll:true}),350);return}
+ if(id==='bell'){const p=$('#ntp');if(p)p.remove();else $('#app .hd').insertAdjacentHTML('afterend',ntPanel(ntf()));b.setAttribute('aria-expanded',!p);return}
+ if(d.nt){const N=ntf(),x=(d.nt[0]==='r'?N.rec:N.fare)[+d.nt.slice(1)];if(x)ntVai(x);return}
+ if(id==='avr'){view='chiusura';ntShow=true;render();return}
  if(id==='save'){const r=read();
   if(!r.c&&!r.pos&&!r.sat&&!r.bs&&!r.og&&!r.ol&&r.eg==null&&r.ao==null&&r.lp==null&&r.lh==null&&!g0('#ct')&&!Object.keys(r.rep).length){toast('Inserisci almeno un importo');return}
   if((r.ol||0)>(r.og||0)&&!(await ask({t:'Controlla Lotteria Italia',m:`«di cui Lotteria Italia» (${eur(r.ol)}) è più grande dell'Ordine Gratta e Vinci (${eur(r.og||0)}): l'ordine deve essere il totale, lotteria compresa.`,ok:'Salva comunque',no:'Correggi'})))return;
