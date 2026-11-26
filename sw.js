@@ -1,5 +1,9 @@
-const C='casse-v44',F=['./','index.html','manifest.json','icon-180.png','icon-192.png','icon-512.png'];
+const C='casse-v45',F=['./','index.html','manifest.json','icon-180.png','icon-192.png','icon-512.png'];
+// casse-v45: Tabby si apre SUBITO con i file salvati sul telefono (anche con internet lento o assente)
+// e intanto scarica in sottofondo la versione nuova: dopo un aggiornamento su GitHub si vede dalla seconda apertura.
 self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(F)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C).map(x=>caches.delete(x)))).then(()=>self.clients.claim()))});
 self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;
-e.respondWith(fetch(e.request).then(r=>{const c=r.clone();caches.open(C).then(x=>x.put(e.request,c));return r}).catch(()=>caches.match(e.request)))});
+const net=fetch(e.request).then(r=>{if(r&&r.ok){const c=r.clone();caches.open(C).then(x=>x.put(e.request,c))}return r});
+e.respondWith(caches.match(e.request,{ignoreSearch:true}).then(h=>h||net).catch(()=>caches.match('index.html')));
+e.waitUntil(net.then(()=>{},()=>{}))});
