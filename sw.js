@@ -1,4 +1,5 @@
-const C='casse-v50',F=['./','index.html','manifest.json','icon-180.png','icon-192.png','icon-512.png'];
+const C='casse-v51',F=['./','index.html','manifest.json','icon-180.png','icon-192.png','icon-512.png'];
+// casse-v51: IVA da mettere da parte nel Riepilogo (stima, IVA trimestrale)
 // casse-v50: foglia di tabacco dettagliata (anche nell'avvio, disegnata nella pagina: niente ritardo) + avvio senza scatto
 // casse-v49: effetto d'errore sui campi (ondeggia, bordo terracotta, messaggio sotto il campo)
 // casse-v48: barra e goccia in un unico pezzo (effetto liquido, scatto a dente), tendine a goccia, calendario di Tabby, annullo timbrato al salvataggio, avvio più grande

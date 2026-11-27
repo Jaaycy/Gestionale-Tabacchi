@@ -168,6 +168,8 @@ h2 .ib{width:18px;height:18px;font-size:11px;vertical-align:0}
 .card .row.last{border-bottom:0}.lb{white-space:nowrap}
 .card .row.nb{border-bottom:0;padding-bottom:2px}.card .hint{margin:0;padding:0 0 14px;border-bottom:1px solid var(--line);line-height:1.35}.card .hint:last-child{border-bottom:0;padding-bottom:12px}.card .hint+.row{padding-top:15px}
 .row.gu b{color:var(--ok);font-size:20px}
+.row.gu.iv b{color:var(--acc)}.row.gu.iv.cr b{color:var(--ok)}
+.row.iq span small{display:block;font-size:12.5px;font-weight:500;color:var(--mute);margin-top:3px}.row.iq b{color:var(--acc);white-space:nowrap}
 /* Totale serata: riquadro finale in evidenza */
 .ts{position:relative;overflow:hidden;margin-top:6px;padding:22px 18px 18px;border-radius:22px;border:0;color:var(--hi);background:linear-gradient(155deg,rgba(176,128,88,.40),rgba(122,86,60,.30) 50%,rgba(84,58,44,.26));-webkit-backdrop-filter:blur(14px) saturate(150%);backdrop-filter:blur(14px) saturate(150%);box-shadow:0 0 0 1px rgba(255,236,200,.24) inset,0 1.5px 0 rgba(255,255,255,.32) inset,0 22px 44px -22px rgba(10,10,25,.7)}
 .ts::before{content:"";position:absolute;width:260px;height:260px;border-radius:50%;left:50%;top:-40px;margin-left:-130px;background:radial-gradient(circle,rgba(255,226,170,.16),rgba(255,226,170,0) 62%);pointer-events:none}
@@ -717,7 +719,7 @@ function vRiepilogo(){
  <div class="nav2 noprint"><button data-s="-1" aria-label="Periodo precedente">‹</button><b>${L}</b><button data-s="1" aria-label="Periodo successivo">›</button></div>
  <div class="ph">Tabaccheria – riepilogo ${L}</div>
  ${G1?'':mancaP(s,e)}${H}${G}
- ${cardTab(t)}${cardNetto(t,s,e)}
+ ${cardTab(t)}${cardNetto(t,s,e)}${cardIva(s,e)}
  <h2>Dettaglio</h2>
  <div class="card"><table class="rt"><tr><th>Voce</th>${th}<th>Differenza<small>in %</small></th></tr>${rows}</table></div>
  ${note?`<p class="mute">${note}</p>`:''}
@@ -883,6 +885,27 @@ function cardNetto(t,s,e){const q=spese(s,e),gn=c2(t.gt-q.tot);
  <div class="row"><span>Spese occasionali</span><b>− ${eur(q.so)}</b></div>
  <div class="row gu tot${gn<0?' neg':''}"><span>Guadagno netto</span><b>${eur(gn)}</b></div></div>
  <p class="mute hint tip" id="t-gn">Spese senza IVA (l'IVA delle fatture la recuperi). Le spese fisse si dividono per i giorni: nel mese contano intere, nella settimana e nel giorno la loro parte. Contano dal mese in cui le hai inserite, mai per i mesi futuri. Non tiene ancora conto della merce rimasta sugli scaffali.</p>`}
+// ---- IVA da mettere da parte (casse-v51): STIMA per regime semplificato con IVA trimestrale (detto dalla commercialista) ----
+// IVA delle vendite dei reparti con IVA (Accessori 22% e reparti IVA 22%/10%) − IVA degli ordini merce di quei reparti − IVA delle spese (fisse e occasionali).
+// Tabacco, Lotto, Gratta e Vinci, LisPoint, reparti aggio e «Solo incasso» esclusi. Tutto al centesimo, con gli stessi conti di tot() e spese().
+function ivaStima(s,e){const t=tot(s,e),q=spese(s,e);let v=c2(t.av-t.avn),a=c2(t.aa-t.aan);
+ for(const n in t.xr){const x=t.xr[n];if(x.t==='iva22'||x.t==='iva10'){v=c2(v+x.v-x.vn);a=c2(a+x.a-x.an)}}
+ return{v,a,sp:q.iv,d:c2(v-a-q.iv)}}
+const TRIM=['gennaio–marzo','aprile–giugno','luglio–settembre','ottobre–dicembre'];
+// scadenze del versamento trimestrale: I 16 maggio, II 20 agosto, III 16 novembre; il IV trimestre va nel saldo annuale (16 marzo dell'anno dopo)
+const trimScad=(k,y)=>k===3?`saldo entro il 16 marzo ${y+1}, con la dichiarazione IVA`:`da versare entro il ${['16 maggio','20 agosto','16 novembre'][k]} ${y}`;
+function cardIva(s,e){const p=ivaStima(s,e),ivR=(l,x)=>`<div class="row iq"><span>${l}</span><b>${x.d<0?'credito ':''}${eur(Math.abs(x.d))}</b></div>`;let qr='';
+ if(mode==='anno'){const y=s.getFullYear();for(let k=0;k<4;k++){const a=new Date(y,3*k,1),b=new Date(y,3*k+3,0);if(iso(a)>todayK)break;
+   qr+=ivR(`Trimestre ${TRIM[k]}<small>${iso(b)>=todayK?'finora · ':''}${trimScad(k,y)}</small>`,ivaStima(a,b))}}
+ else{const y=s.getFullYear(),k=Math.floor(s.getMonth()/3),a=new Date(y,3*k,1),b=new Date(y,3*k+3,0);
+  qr=ivR(`Trimestre ${TRIM[k]}<small>${iso(b)>=todayK&&iso(a)<=todayK?'finora · ':''}${trimScad(k,y)}</small>`,ivaStima(a,b))}
+ return `<h2>IVA da mettere da parte${ib('t-iv')}</h2><div class="card">
+ <div class="row"><span>IVA sulle vendite</span><b>${eur(p.v)}</b></div>
+ <div class="row"><span>IVA sugli ordini merce</span><b>− ${eur(p.a)}</b></div>
+ <div class="row"><span>IVA sulle spese</span><b>− ${eur(p.sp)}</b></div>
+ <div class="row gu tot iv${p.d<0?' cr':''}"><span>${p.d<0?'IVA a credito':'Da mettere da parte'}</span><b>${eur(Math.abs(p.d))}</b></div>
+ ${qr}</div>
+ <p class="mute hint tip" id="t-iv">Stima, non il conto ufficiale (quello lo fa la commercialista). IVA che incassi sugli accessori e sugli altri reparti con IVA, meno l'IVA che paghi negli Ordini merce e nelle spese. Esempio: vendite 3.050 € → IVA 550; ordini 1.220 € → IVA 220; canone 79,30 € → IVA 14,30; da mettere da parte 315,70 €. Tabacco, Lotto, Gratta e Vinci e LisPoint non c'entrano. L'IVA si versa ogni 3 mesi: la riga del trimestre ti dice quanto e entro quando. A dicembre la commercialista può chiederti un acconto.</p>`}
 // elimina una voce (reparto, spesa fissa, spesa occasionale, ordine)
 function delItem(k){const i=k.indexOf(':'),w=k.slice(0,i),x=k.slice(i+1);
  if(w==='or'){const n=+x;(db.ord||[]).splice(n,1);if(of.e===n)ofReset();else if(of.e>n)of.e--;save();rOrd();toast('Ordine eliminato');return}
