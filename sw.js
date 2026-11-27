@@ -1,4 +1,5 @@
-const C='casse-v46',F=['./','index.html','manifest.json','icon-180.png','icon-192.png','icon-512.png'];
+const C='casse-v47',F=['./','index.html','manifest.json','icon-180.png','icon-192.png','icon-512.png'];
+// casse-v47: barra con linguetta e lampada di bottega; la linguetta e Giorno/Mese... seguono il dito; pagina disegnata dopo l'avvio dell'animazione
 // casse-v45: Tabby si apre SUBITO con i file salvati sul telefono (anche con internet lento o assente)
 // e intanto scarica in sottofondo la versione nuova: dopo un aggiornamento su GitHub si vede dalla seconda apertura.
 self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(F)).then(()=>self.skipWaiting()))});

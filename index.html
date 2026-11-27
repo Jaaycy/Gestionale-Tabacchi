@@ -60,7 +60,7 @@ h2{font-size:12.5px;margin:24px 6px 8px;color:var(--mute);font-weight:700;text-t
 .seg button.on{color:var(--hi)}
 /* evidenziazione «vetro» che scivola (barra Giorno/Settimana/Mese/Anno e barra in basso) */
 .sg-ind{position:absolute;top:4px;bottom:4px;left:4px;width:calc((100% - 20px) / 4);border-radius:14px;pointer-events:none;background:linear-gradient(180deg,rgba(176,128,88,.42),rgba(111,78,55,.34));box-shadow:0 0 0 1px rgba(255,236,200,.28) inset,0 1.5px 0 rgba(255,255,255,.38) inset,0 4px 12px -6px rgba(0,0,0,.5);color:var(--hi);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);transition:transform .4s var(--ease)}
-.seg.drag .sg-ind{transform-origin:center}
+.seg.drag .sg-ind{transition:none;filter:brightness(1.14)}
 .nav2{display:flex;justify-content:space-between;align-items:center;margin:4px 0 12px}
 .nav2 button{font:inherit;font-size:22px;line-height:1;border:0;background:rgba(225,212,187,.07);box-shadow:0 0 0 1px rgba(255,248,232,.16) inset,0 1.5px 0 rgba(255,255,255,.28) inset;color:var(--acc);width:42px;height:42px;border-radius:50%;transition:transform .14s}
 .nav2 button:active{transform:scale(.9)}
@@ -228,12 +228,16 @@ h2.tsh{text-align:center;margin-top:28px}
 nav{position:fixed;z-index:50;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom));max-width:536px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:6px;border-radius:28px;background:linear-gradient(180deg,rgba(150,108,75,.78),rgba(111,78,55,.70));-webkit-backdrop-filter:blur(18px) saturate(160%);backdrop-filter:blur(18px) saturate(160%);border:0;box-shadow:0 0 0 1px rgba(255,226,170,.30) inset,0 1.5px 0 rgba(255,255,255,.38) inset,0 16px 34px -12px rgba(0,0,0,.6)}
 nav button{display:flex;flex-direction:column;align-items:center;gap:3px;font:inherit;font-size:11.5px;font-weight:600;border:0;background:none;padding:8px 2px 7px;border-radius:18px;color:rgba(246,238,223,.72);transition:color .15s,transform .14s}
 nav svg{width:25px;height:25px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:transform .3s var(--ease)}
-nav button.on{color:#0F2042}
+nav button.on{color:#fff6e4}
 nav{touch-action:none;-webkit-user-select:none;user-select:none}nav button{position:relative;z-index:1;-webkit-touch-callout:none}
 /* evidenziazione della voce attiva: scivola da una voce all'altra e segue il dito tenendo premuto */
-.nv-ind{position:absolute;top:6px;bottom:6px;left:6px;width:calc((100% - 24px) / 4);border-radius:22px;background:linear-gradient(180deg,rgba(246,238,223,.95),rgba(225,212,187,.88));box-shadow:0 0 0 1px rgba(255,255,255,.5) inset,0 1px 0 #fff inset,0 4px 10px -4px rgba(0,0,0,.4);transition:transform .4s var(--ease),background .2s;pointer-events:none}
-nav.drag .nv-ind{background:linear-gradient(180deg,rgba(246,238,223,.85),rgba(225,212,187,.78))}
-nav button.on svg{transform:translateY(-1px) scale(1.08)}
+.nv-ind{position:absolute;top:6px;bottom:6px;left:6px;width:calc((100% - 24px) / 4);transition:transform .42s var(--ease);pointer-events:none;will-change:transform}
+.nv-ind::before{content:"";position:absolute;left:50%;top:-18px;width:22px;height:2.5px;margin-left:-11px;border-radius:0 0 3px 3px;background:linear-gradient(90deg,#b58e47,#f0d396,#b58e47);box-shadow:0 1px 5px rgba(240,211,150,.45)}
+.nv-ind::after{content:"";position:absolute;left:10%;right:10%;top:-15.5px;bottom:0;clip-path:polygon(38% 0,62% 0,100% 100%,0 100%);background:linear-gradient(180deg,rgba(246,214,150,.40),rgba(246,214,150,.10) 70%,rgba(246,214,150,0));border-radius:0 0 18px 18px;transition:opacity .2s}
+.nv-tab{position:absolute;left:50%;top:-20.5px;width:76px;height:15px;margin-left:-38px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='76' height='15' viewBox='0 0 76 15'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='rgb(158,114,80)' stop-opacity='.86'/%3E%3Cstop offset='1' stop-color='rgb(150,108,75)' stop-opacity='.80'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M0 15.6C10 15.6 12 1.6 24 1H52C64 1.6 66 15.6 76 15.6Z' fill='url(%23g)'/%3E%3Cpath d='M0 15C10 15 12 1.6 24 1H52C64 1.6 66 15 76 15' fill='none' stroke='rgb(255,226,170)' stroke-opacity='.32' stroke-width='1'/%3E%3Cpath d='M22 3.6H54' stroke='white' stroke-opacity='.28' stroke-width='1.1' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat center/76px 15px;transition:transform .3s var(--ease)}
+.nv-ind[data-e="0"] .nv-tab{transform:translateX(4px)}.nv-ind[data-e="3"] .nv-tab{transform:translateX(-4px)}
+nav.drag .nv-ind{transition:none}nav.drag .nv-ind::after{opacity:.75}
+nav button.on svg{transform:translateY(-5px) scale(1.06);filter:drop-shadow(0 1px 2px rgba(0,0,0,.3))}
 #t{position:fixed;left:50%;bottom:calc(98px + env(safe-area-inset-bottom));transform:translate(-50%,14px);background:rgba(28,44,80,.92);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);color:var(--ink);font-weight:600;padding:11px 18px;border-radius:14px;border:1px solid rgba(255,255,255,.08);box-shadow:0 10px 26px -8px rgba(0,0,0,.6);opacity:0;transition:opacity .25s,transform .35s var(--ease);pointer-events:none;white-space:nowrap}
 #t.on{opacity:1;transform:translate(-50%,0)}
 .ch{padding:12px 10px 6px}
@@ -665,7 +669,7 @@ function vRiepilogo(){
   +tr('Totale incassato',t.c+t.pos+t.sat,p.c+p.pos+p.sat,1)+tr('Ordini tabacco',t.ot,p.ot);
  const a=iso(s),b=iso(e),days=Object.keys(db.days).filter(d=>d>=a&&d<=b).sort().reverse();
  const list=G1?`<h2>Chiusura del giorno</h2><button class="btn${r?' ghost':''}" data-edit="${k}">${r?'Apri chiusura':'Inserisci chiusura'}</button>`
-  :`<h2>Chiusure del periodo</h2><div class="card">${days.map(d=>{const r=db.days[d];return `<button class="row ln" data-edit="${d}"><span>${new Date(d+'T12:00').toLocaleDateString('it-IT',{weekday:'short',day:'numeric',month:'short'})}</span><b>${eur((r.c||0)+(r.pos||0)+(r.sat||0))}</b></button>`}).join('')||'<p class="mute">Nessuna chiusura in questo periodo.</p>'}</div>`;
+  :`<h2>Chiusure del periodo</h2><div class="card">${cList(days)||'<p class="mute">Nessuna chiusura in questo periodo.</p>'}</div>`;
  const th=G1?'<th>Giorno</th><th>Anno prima</th>':'<th>Periodo<small>media</small></th><th>Anno prima<small>media</small></th>';
  const spiega=G1?'«Differenza in %» = di quanto il giorno è cambiato rispetto all\'anno prima; «—» quando non si può calcolare (anno prima a zero).'
   :`${t.n} chiusure registrate (anno prima: ${p.n}). Sotto ogni importo, in grigio, la media per chiusura (importo diviso per le chiusure registrate). «Differenza in %» = di quanto il periodo è cambiato rispetto all'anno prima; «—» quando non si può calcolare (nessuna chiusura o anno prima a zero).`;
@@ -871,9 +875,18 @@ function barSu(){const r=[...document.querySelectorAll('.ch rect.b0,.ch rect.b1'
 // barra Giorno/Settimana/Mese/Anno: l'evidenziazione parte dalla posizione precedente e scivola su quella nuova
 const MODI=['giorno','settimana','mese','anno'];let segPrev=0;
 const segT=i=>`translateX(calc(${i} * (100% + 4px)))`;
+// elenchi lunghi: le prime 40 righe subito, le altre appena finita l'animazione
+function cList(days){const h=days.map(d=>{const r=db.days[d];return `<button class="row ln" data-edit="${d}"><span>${new Date(d+'T12:00').toLocaleDateString('it-IT',{weekday:'short',day:'numeric',month:'short'})}</span><b>${eur((r.c||0)+(r.pos||0)+(r.sat||0))}</b></button>`});
+ if(h.length<=40)return h.join('');cRest=h.slice(40).join('');return h.slice(0,40).join('')+'<i id="crest"></i>'}
 function segInd(){const g=document.querySelector('.sg-ind');if(!g)return;const i=MODI.indexOf(mode);requestAnimationFrame(()=>requestAnimationFrame(()=>{g.style.transform=segT(i)}));segPrev=i}
 // (casse-v43) torna in cima solo quando cambia pagina: aggiungendo, eliminando o cambiando data resti dove sei
-function render(){const M=$('#app'),nuova=lastView!==view;M.innerHTML={chiusura:vChiusura,riepilogo:vRiepilogo,report:vReport,impostazioni:vImp,spese:vSpese}[view]();
+let rPend=0,cRest='',cTok=0;
+function flushRest(){const c=document.getElementById('crest');if(c&&cRest){c.outerHTML=cRest}cRest=''}
+// casse-v47: prima parte l'animazione (linguetta o Giorno/Mese...), poi Tabby disegna la pagina
+function renderPoi(){const t=++rPend;requestAnimationFrame(()=>requestAnimationFrame(()=>{if(t===rPend)render()}))}
+function render(){rPend++;const M=$('#app'),nuova=lastView!==view,oldSeg=!nuova&&M.querySelector('.seg');cRest='';M.innerHTML={chiusura:vChiusura,riepilogo:vRiepilogo,report:vReport,impostazioni:vImp,spese:vSpese}[view]();
+ if(oldSeg){const n=M.querySelector('.seg');if(n){oldSeg.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.m===mode));n.replaceWith(oldSeg)}}
+ if(cRest){const tk=++cTok;setTimeout(()=>{if(tk===cTok)flushRest()},450)}
  if(lastView!==null&&lastView!==view){M.classList.remove('enter');void M.offsetWidth;M.classList.add('enter')}lastView=view;lastQ=null;
  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===(view==='report'?'riepilogo':view)));navInd(navIdx(view));segInd();calc();if(nuova)scrollTo(0,0);barSu()}
 
@@ -896,18 +909,23 @@ const nuovoGiorno=()=>{const t=oggi();if(t===todayK)return;todayK=t;cur=t;anchor
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')nuovoGiorno()});
 addEventListener('pageshow',nuovoGiorno);addEventListener('focus',nuovoGiorno);
 // Barra in basso: tocco = cambia pagina; tieni premuto e scorri = l'evidenziazione segue il dito (vibrazione a ogni voce), al rilascio si apre la pagina
-const NV=$('nav'),NB=[...NV.querySelectorAll('button')],IND=document.createElement('i');IND.className='nv-ind';IND.setAttribute('aria-hidden','true');NV.prepend(IND);
+const NV=$('nav'),NB=[...NV.querySelectorAll('button')],IND=document.createElement('i');IND.className='nv-ind';IND.setAttribute('aria-hidden','true');IND.innerHTML='<i class="nv-tab"></i>';NV.prepend(IND);addEventListener('beforeprint',flushRest);
 function navIdx(v){return NB.findIndex(b=>b.dataset.v===(v==='report'?'riepilogo':v))}
-function navInd(i){if(i>=0)IND.style.transform=`translateX(calc(${i} * (100% + 4px)))`}
+function navInd(i){if(i>=0){IND.style.transform=`translateX(calc(${i} * (100% + 4px)))`;IND.dataset.e=i}}
+// mentre il dito scorre, la linguetta lo segue 1:1 (in pixel)
+function navFollow(x){const r=NV.getBoundingClientRect(),w=(r.width-24)/4,p=Math.max(0,Math.min(3*(w+4),x-r.left-6-w/2));IND.style.transform=`translateX(${p}px)`}
 const navAt=x=>{let k=0,dm=1e9;NB.forEach((b,i)=>{const r=b.getBoundingClientRect(),d=Math.abs(x-(r.left+r.width/2));if(d<dm){dm=d;k=i}});return k};
 let nvD=null,nvSkip=false;
 NV.addEventListener('pointerdown',e=>{if(e.button>0)return;nvD={x:e.clientX,i:navAt(e.clientX),moved:false,id:e.pointerId};try{NV.setPointerCapture(e.pointerId)}catch(_){}});
 NV.addEventListener('pointermove',e=>{if(!nvD||e.pointerId!==nvD.id)return;
  if(!nvD.moved&&Math.abs(e.clientX-nvD.x)<8)return;
- if(!nvD.moved){nvD.moved=true;NV.classList.add('drag');navInd(nvD.i)}
- const i=navAt(e.clientX);if(i!==nvD.i){nvD.i=i;navInd(i);NB.forEach((b,k)=>b.classList.toggle('on',k===i));hap()}});
+ if(!nvD.moved){nvD.moved=true;NV.classList.add('drag')}
+ navFollow(e.clientX);const i=navAt(e.clientX);if(i!==nvD.i){nvD.i=i;IND.dataset.e=i;NB.forEach((b,k)=>b.classList.toggle('on',k===i));hap()}});
 const nvEnd=e=>{if(!nvD||e.pointerId!==nvD.id)return;const d=nvD;nvD=null;NV.classList.remove('drag');
- if(d.moved){nvSkip=true;setTimeout(()=>nvSkip=false,400);const v=NB[d.i].dataset.v;if(v!==(view==='report'?'riepilogo':view)){view=v;render()}else navInd(navIdx(view))}};
+ if(d.moved){nvSkip=true;setTimeout(()=>nvSkip=false,400);const v=NB[d.i].dataset.v;if(v!==(view==='report'?'riepilogo':view)){navVai(v)}else navInd(navIdx(view))}
+ // tocco semplice: gestito qui (su Android/Chrome il click finisce sulla barra e non sul pulsante)
+ else{nvSkip=true;setTimeout(()=>nvSkip=false,400);const v=NB[d.i].dataset.v;if(v===(view==='report'?'riepilogo':view))scrollTo({top:0,behavior:'smooth'});else navVai(v)}};
+function navVai(v){view=v;NB.forEach(b=>b.classList.toggle('on',b.dataset.v===v));navInd(navIdx(v));renderPoi()}
 NV.addEventListener('pointerup',nvEnd);
 NV.addEventListener('pointercancel',e=>{if(!nvD)return;nvD=null;NV.classList.remove('drag');NB.forEach(b=>b.classList.toggle('on',b.dataset.v===(view==='report'?'riepilogo':view)));navInd(navIdx(view))});
 let sgD=null,sgSkip=false;
@@ -916,10 +934,12 @@ $('#app').addEventListener('pointerdown',e=>{const sg=e.target.closest('.seg');i
 $('#app').addEventListener('pointermove',e=>{if(!sgD||e.pointerId!==sgD.id)return;
  if(!sgD.moved&&Math.abs(e.clientX-sgD.x)<8)return;
  if(!sgD.moved){sgD.moved=true;sgD.sg.classList.add('drag');try{sgD.sg.setPointerCapture(e.pointerId)}catch(_){}}
- const i=sgAt(sgD.sg,e.clientX);if(i!==sgD.i||sgD.first===undefined){sgD.first=1;if(i!==sgD.i)hap();sgD.i=i;const g=sgD.sg.querySelector('.sg-ind');if(g)g.style.transform=segT(i);sgD.sg.querySelectorAll('button').forEach((b,k)=>b.classList.toggle('on',k===i))}});
+ const g=sgD.sg.querySelector('.sg-ind'),r=sgD.sg.getBoundingClientRect(),w=(r.width-20)/4;if(g)g.style.transform=`translateX(${Math.max(0,Math.min(3*(w+4),e.clientX-r.left-4-w/2))}px)`;
+ const i=sgAt(sgD.sg,e.clientX);if(i!==sgD.i||sgD.first===undefined){sgD.first=1;if(i!==sgD.i)hap();sgD.i=i;sgD.sg.querySelectorAll('button').forEach((b,k)=>b.classList.toggle('on',k===i))}});
+function segVai(sg,i){const g=sg.querySelector('.sg-ind');if(g)g.style.transform=segT(i);sg.querySelectorAll('button').forEach((b,k)=>b.classList.toggle('on',k===i));segPrev=i;if(MODI[i]!==mode){mode=MODI[i];renderPoi()}}
 $('#app').addEventListener('pointerup',e=>{if(!sgD||e.pointerId!==sgD.id)return;const d=sgD;sgD=null;d.sg.classList.remove('drag');
- if(d.moved){sgSkip=true;setTimeout(()=>sgSkip=false,400);segPrev=d.i;if(MODI[d.i]!==mode){mode=MODI[d.i];render()}}});
-$('#app').addEventListener('pointercancel',()=>{if(!sgD)return;sgD=null;render()});
+ if(d.moved){sgSkip=true;setTimeout(()=>sgSkip=false,400);segVai(d.sg,d.i)}});
+$('#app').addEventListener('pointercancel',()=>{if(!sgD)return;const d=sgD;sgD=null;d.sg.classList.remove('drag');segVai(d.sg,MODI.indexOf(mode))});
 $('#app').addEventListener('pointerdown',e=>{const c=e.target.closest('.sw-c');if(!c){if(!e.target.closest('.sw-del'))swClose();return}
  const w=c.parentNode;swClose(w);swD={w,c,x:e.clientX,y:e.clientY,o:w.classList.contains('open')?-92:0,on:false,id:e.pointerId,lx:e.clientX,lt:e.timeStamp,vx:0}});
 $('#app').addEventListener('pointermove',e=>{if(!swD||e.pointerId!==swD.id)return;const dx=e.clientX-swD.x,dy=e.clientY-swD.y;
@@ -944,7 +964,7 @@ function swGone(w,cb){if(!w||!w.isConnected){cb();return}w.style.height=w.offset
 $('#app').addEventListener('touchend',()=>{if(swD&&swD.on)swEnd({pointerId:swD.id,pointerType:'touch'});if(swAct)swRun()});
 $('#app').addEventListener('input',e=>{const t=e.target;if(t.id==='ov'){of.v=t.value;const p=$('#opv');if(p)p.innerHTML=opv()}else if(t.id==='onm')of.n=t.value});
 $('#app').addEventListener('pointerup',swEnd);$('#app').addEventListener('pointercancel',swEnd);
-NV.addEventListener('click',e=>{if(nvSkip){nvSkip=false;return}const b=e.target.closest('button');if(!b)return;if(b.dataset.v===view){scrollTo({top:0,behavior:'smooth'});return}view=b.dataset.v;render()});
+NV.addEventListener('click',e=>{if(nvSkip){nvSkip=false;return}const b=e.target.closest('button');if(!b)return;if(b.dataset.v===view){scrollTo({top:0,behavior:'smooth'});return}navVai(b.dataset.v)});
 $('#app').addEventListener('animationend',e=>{if(e.target.id==='app')e.target.classList.remove('enter')});
 const A=$('#app');
 A.addEventListener('input',e=>{const t=e.target;if(t.inputMode==='decimal'){const c=clean(/paste|Replacement|Drop/i.test(e.inputType||'')?pasted(t.value):t.value);if(c!==t.value)t.value=c}if(view==='chiusura'&&t.id!=='d')calc()});
@@ -1021,12 +1041,12 @@ A.addEventListener('click',async e=>{const h=e.target.closest('[data-b]');
   db.days[cur]=r;db.fondo=r.f;if(!save()){render();return}hap();toast('Chiusura salvata ✓');render()}
  else if(id==='tg'){cfOpen=!cfOpen;b.setAttribute('aria-expanded',cfOpen);const c=$('#cf');c.classList.toggle('open',cfOpen);c.inert=!cfOpen}
  else if(id==='del'){if(await ask({t:'Eliminare la chiusura?',m:'Chiusura del '+new Date(cur+'T12:00').toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+'. Gli ordini merce restano.',ok:'Elimina',danger:1})){const o=db.days[cur],k={};OMK.forEach(x=>{if(o[x]!=null)k[x]=o[x]});if(haOrd(k)){k.om=1;db.days[cur]=k}else delete db.days[cur];if(!save()){render();return}render();toast('Chiusura eliminata')}}
- else if(d.m){if(sgSkip){sgSkip=false;return}mode=d.m;render()}
+ else if(d.m){if(sgSkip){sgSkip=false;return}const sg=b.closest('.seg');if(sg)segVai(sg,MODI.indexOf(d.m));else{mode=d.m;render()}}
  else if(d.s){const k=+d.s,a=new Date(anchor);
   if(mode==='giorno')a.setDate(a.getDate()+k);else if(mode==='settimana')a.setDate(a.getDate()+7*k);else if(mode==='mese'){a.setDate(1);a.setMonth(a.getMonth()+k)}else{const g=a.getDate();a.setDate(1);a.setFullYear(a.getFullYear()+k);a.setDate(Math.min(g,new Date(a.getFullYear(),a.getMonth()+1,0).getDate()))}
   anchor=a;render();slide(k)}
  else if(d.edit){cur=d.edit;view='chiusura';render()}
- else if(id==='print')print();
+ else if(id==='print'){flushRest();print()}
  else if(id==='rep'){repY=anchor.getFullYear();view='report';render()}
  else if(id==='back'){view='riepilogo';render()}
  else if(d.y){repY+=+d.y;render();slide(+d.y)}
