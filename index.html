@@ -270,6 +270,12 @@ nav button.tick svg{animation:tick .22s cubic-bezier(.3,1.6,.5,1)}
 #save .lb{display:inline-block}
 #save .ic{position:absolute;left:50%;top:50%;pointer-events:none;overflow:visible}
 #save .ic .svs{fill:none;stroke:#f6eedf;stroke-width:2.2;stroke-linecap:round}
+/* (casse-v49) campo sbagliato o mancante: ondeggia come gelatina, bordo terracotta con «!», messaggio che scende sotto */
+.row.err{position:relative}
+.row.err input[aria-invalid]{background:rgba(217,101,79,.10)!important;box-shadow:inset 0 0 0 1.5px rgba(217,101,79,.85)!important}
+.row.err input.l[aria-invalid]{padding-right:32px}
+.row .ex{position:absolute;width:18px;height:18px;border-radius:50%;background:#d9654f;color:#fff8ea;font-size:12px;font-weight:800;line-height:18px;text-align:center;pointer-events:none}
+.erm{overflow:hidden;color:#e89a86;font-size:13.5px;font-weight:600;padding:0 2px 10px}
 nav button.on svg{transform:translateY(-5px) scale(1.06);filter:drop-shadow(0 1px 2px rgba(0,0,0,.3))}
 #t{position:fixed;left:50%;bottom:calc(98px + env(safe-area-inset-bottom));transform:translate(-50%,14px);background:rgba(28,44,80,.92);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);color:var(--ink);font-weight:600;padding:11px 18px;border-radius:14px;border:1px solid rgba(255,255,255,.08);box-shadow:0 10px 26px -8px rgba(0,0,0,.6);opacity:0;transition:opacity .25s,transform .35s var(--ease);pointer-events:none;white-space:nowrap}
 #t.on{opacity:1;transform:translate(-50%,0)}
@@ -1075,7 +1081,7 @@ A.addEventListener('click',async e=>{const h=e.target.closest('[data-b]');
  if(d.os!==undefined){ofRead();of.s=+d.os;$('#ordf').innerHTML=ordForm();return}
  if(d.oe!==undefined){const o=(db.ord||[])[+d.oe];if(!o)return;of={e:+d.oe,d:o.d,n:o.n||'',r:o.r,v:fi(o.v),s:o.s?1:0};rOrd();$('#ordf').scrollIntoView({block:'center',behavior:'smooth'});return}
  if(id==='ocan'){ofReset();rOrd();return}
- if(id==='oadd'){ofRead();const v=/\d/.test(of.v)?Math.abs(num(of.v)):0;if(!v){toast('Scrivi l\'importo');return}
+ if(id==='oadd'){ofRead();const v=/\d/.test(of.v)?Math.abs(num(of.v)):0;if(!v){campoErr($('#ov'),'Scrivi l\'importo');return}
   const o={d:of.d||todayK,n:of.n.trim(),r:of.r,v};if(of.r!=null&&of.s)o.s=1;db.ord=db.ord||[];const ed=of.e>=0;if(ed)db.ord[of.e]=o;else db.ord.push(o);
   if(!save())return;hap();ofReset();rOrd();toast(ed?'Ordine modificato':'Ordine aggiunto');return}
  if(d.tp){nrN=($('#nn')||{}).value||'';const np=$('#np');if(np)nrP=Math.abs(num(np.value))||nrP;nrT=d.tp;render();return}
@@ -1089,7 +1095,7 @@ A.addEventListener('click',async e=>{const h=e.target.closest('[data-b]');
  if(d.nt){const N=ntf(),x=(d.nt[0]==='r'?N.rec:N.fare)[+d.nt.slice(1)];if(x)ntVai(x);return}
  if(id==='avr'){view='chiusura';render();ntApri();return}
  if(id==='save'){const r=read();
-  if(!r.c&&!r.pos&&!r.sat&&!r.bs&&!r.og&&!r.ol&&r.eg==null&&r.ao==null&&r.lp==null&&r.lh==null&&!g0('#ct')&&!Object.keys(r.rep).length){toast('Inserisci almeno un importo');return}
+  if(!r.c&&!r.pos&&!r.sat&&!r.bs&&!r.og&&!r.ol&&r.eg==null&&r.ao==null&&r.lp==null&&r.lh==null&&!g0('#ct')&&!Object.keys(r.rep).length){campoErr($('#ct'),'Inserisci almeno un importo');return}
   if((r.ol||0)>(r.og||0)&&!(await ask({t:'Controlla Lotteria Italia',m:`«di cui Lotteria Italia» (${eur(r.ol)}) è più grande dell'Ordine Gratta e Vinci (${eur(r.og||0)}): l'ordine deve essere il totale, lotteria compresa.`,ok:'Salva comunque',no:'Correggi'})))return;
   if(r.c<0&&!(await ask({t:'Controlla il fondo cassa',m:`Il fondo cassa è più grande dei contanti in cassa: i contanti incassati risultano ${eur(r.c)}.`,ok:'Salva comunque',no:'Correggi'})))return;
   const old=db.days[cur];
@@ -1108,7 +1114,7 @@ A.addEventListener('click',async e=>{const h=e.target.closest('[data-b]');
  else if(d.y){repY+=+d.y;render();slide(+d.y)}
  else if(id==='rcsv')rcsv();
  else if(id==='csv')csv();
- else if(id==='add'){const n=$('#nn').value.trim();if(!n){toast('Scrivi il nome del reparto');return}if(db.reparti.includes(n)){toast('Reparto già presente');return}
+ else if(id==='add'){const n=$('#nn').value.trim();if(!n){campoErr($('#nn'),'Scrivi il nome del reparto');return}if(db.reparti.includes(n)){campoErr($('#nn'),'Reparto già presente');return}
   if(hasData(n)&&!(await ask({t:`Riattivare «${n}»?`,m:`«${n}» è un reparto eliminato con importi già registrati. Riattivandolo ritrovi il suo storico.`,ok:'Riattiva',no:'Altro nome'})))return;
   const np=$('#np');if(np)nrP=Math.abs(num(np.value))||nrP;
   if(n!==accK()){db.tipi=db.tipi||{};db.tipi[n]=nrT==='aggio'?{t:'aggio',p:nrP}:{t:nrT}}
@@ -1173,6 +1179,24 @@ function tipVai(t,on,nb){if(t._an){t._an.cancel();t._an=null}t._chiude=false;t.s
  else{const fin=()=>{t.classList.remove('on');t.style.overflow='';t._an=null;t._chiude=false;nb(false)};if(RM()){fin();return}
   const z='0px',h=t.offsetHeight;t._chiude=true;t.style.overflow='hidden';
   t._an=t.animate([{height:h+'px',opacity:1},{height:z,marginTop:z,marginBottom:z,paddingTop:z,paddingBottom:z,opacity:0,transform:'translateY(-4px)'}],{duration:300,easing:EE});t._an.onfinish=fin}}
+// (casse-v49) campo sbagliato o mancante: la pagina va al campo, che ondeggia come gelatina e diventa terracotta con un «!»;
+// sotto scende il messaggio. Appena si scrive nel campo l'errore sparisce.
+function campoErr(inp,msg){const row=inp&&inp.closest('.row');if(!row){toast(msg);return}
+ try{if(navigator.vibrate)navigator.vibrate([14,70,14]);else hap()}catch(e){}
+ document.querySelectorAll('.row.err').forEach(r=>{r.classList.remove('err');const x=r.querySelector('.ex');if(x)x.remove();const m=r.nextElementSibling;if(m&&m.classList.contains('erm'))m.remove();const i=r.querySelector('[aria-invalid]');if(i)i.removeAttribute('aria-invalid')});
+ const rr=row.getBoundingClientRect(),vis=rr.top>70&&rr.bottom<innerHeight-120;if(!vis)row.scrollIntoView({block:'center',behavior:RM()?'auto':'smooth'});
+ setTimeout(()=>{if(!inp.isConnected)return;row.classList.add('err');inp.setAttribute('aria-invalid','true');
+  const dx=getComputedStyle(inp).textAlign==='right',x=document.createElement('span');x.className='ex';x.textContent='!';x.setAttribute('aria-hidden','true');
+  x.style.top=(inp.offsetTop+inp.offsetHeight/2-9)+'px';x.style.left=(dx?inp.offsetLeft+10:inp.offsetLeft+inp.offsetWidth-28)+'px';row.appendChild(x);
+  const m=document.createElement('div');m.className='erm';m.setAttribute('role','alert');m.style.textAlign=dx?'right':'left';m.textContent=msg;row.after(m);
+  const fine=()=>{row.classList.remove('err');inp.removeAttribute('aria-invalid');if(RM()){x.remove();m.remove();return}
+   x.animate([{opacity:1},{opacity:0}],{duration:160}).onfinish=()=>x.remove();
+   m.animate([{height:m.offsetHeight+'px',opacity:1},{height:'0px',opacity:0,paddingBottom:'0px'}],{duration:260,easing:EE}).onfinish=()=>m.remove()};
+  inp.addEventListener('input',fine,{once:true});if(RM())return;
+  const h=m.offsetHeight;m.animate([{height:'0px',opacity:0,transform:'translateY(-8px)',paddingBottom:'0px'},{height:h+'px',opacity:1,transform:'translateY(2px)',offset:.7},{height:h+'px',opacity:1,transform:'none'}],{duration:420,easing:'cubic-bezier(.3,1.3,.5,1)'});
+  const W=[{transform:'none'},{transform:'translateX(-7px) rotate(-1.6deg)'},{transform:'translateX(6px) rotate(1.3deg)'},{transform:'translateX(-4px) rotate(-.8deg)'},{transform:'translateX(2px) rotate(.4deg)'},{transform:'none'}];
+  inp.animate(W,{duration:520,easing:'ease-out'});
+  x.animate([{transform:'scale(0)'},{transform:'translateX(-7px) scale(1.25)',offset:.25},{transform:'translateX(6px) scale(1)',offset:.45},{transform:'translateX(-4px)',offset:.65},{transform:'translateX(2px)',offset:.82},{transform:'none'}],{duration:520,easing:'ease-out'})},vis?0:380)}
 // cifre a puntini (3×5) dell'annullo; j: puntini un filo irregolari, come un datario consumato
 const DOTP={'0':'111101101101111','1':'010110010010111','2':'111001111100111','3':'111001111001111','4':'101101111001001','5':'111100111001111','6':'111100111101111','7':'111001001001001','8':'111101111101111','9':'111101111001111','.':'000000000000010'};
 function dotT(t,y,st,r,j){let o='',n=0;const x0=-(t.length*4*st-st)/2;[...t].forEach((c,k)=>{const m=DOTP[c];for(let i=0;i<15;i++)if(m[i]==='1'){let cx=x0+k*4*st+(i%3)*st,cy=y+Math.floor(i/3)*st,rr=r;
