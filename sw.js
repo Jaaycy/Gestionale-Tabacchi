@@ -1,4 +1,5 @@
-const C='casse-v53',F=['./','index.html','manifest.json','icon-180.png','icon-192.png','icon-512.png'];
+const C='casse-v54',F=['./','index.html','manifest.json','icon-180.png','icon-192.png','icon-512.png'];
+// casse-v54: frecce dell'anno e mesi del Report senza ridisegnare la pagina (pulsanti fermi, anni vicini preparati prima)
 // casse-v53: cambio pagina morbido (la pagina vecchia sfuma via, la nuova entra dal lato giusto), altezze ferme durante il passaggio
 // casse-v52: avvio senza barra sotto + immagine d'apertura, pagine più fluide, Report senza scorrimento, PDF creato da Tabby, swipe fluido
 // casse-v51: IVA da mettere da parte nel Riepilogo (stima, IVA trimestrale)

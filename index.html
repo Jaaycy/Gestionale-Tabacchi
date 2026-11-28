@@ -775,15 +775,21 @@ function rpList(S,P){const nome=P<0?'':' · '+MESI[P].toLowerCase();
  return S.map(x=>`<h2>${esc(x.t)}${nome}</h2><div class="card">${x.h.slice(1).map((h,j)=>{const v=P<0?x.T[j]:x.r[P][j],ct=x.n===j+1;
   return `<div class="rr${x.k===j+1?' t':''}"><span>${esc(h)}</span><b>${v==null?'—':ct?v:eur(v)}</b></div>`}).join('')}</div>`).join('')}
 function rpMesi(S){return `<button class="pa${repM<0?' on':''}" data-rm="-1">Tutto l'anno</button><div class="pm">${MESI.map((n,i)=>`<button class="${repM===i?'on':''}${S.some(x=>x.r[i].some(v=>v!=null))?'':' z'}" data-rm="${i}">${n.slice(0,3)}</button>`).join('')}</div>`}
-function rpBody(){
- const y=repY,{S,t}=repSez(y),z=x=>grp(x),oggi=new Date().toLocaleDateString('it-IT',{day:'numeric',month:'long',year:'numeric'});
+// (casse-v54) sezioni dell'anno tenute da parte (rpC) per frecce e mesi: si ricalcolano a ogni ridisegno completo della pagina
+let rpC={},rpP=0;const repSezC=y=>rpC[y]||(rpC[y]=repSez(y));
+// anni vicini preparati in anticipo, a pagina ferma: la freccia poi non deve calcolare niente
+function rpPrepara(){clearTimeout(rpP);if(PGNO())return;rpP=setTimeout(()=>{if(view!=='report')return;repSezC(repY-1);setTimeout(()=>{if(view==='report')repSezC(repY+1)},120)},900)}
+function rpTab(y,S){const z=x=>grp(x),oggi=new Date().toLocaleDateString('it-IT',{day:'numeric',month:'long',year:'numeric'});
  const tab=x=>`<h2>${esc(x.t)} (€)</h2>
  <div class="card tw"><table><tr>${x.h.map(h=>`<th>${esc(h)}</th>`).join('')}</tr>${x.r.map((r,i)=>`<tr><td>${MESI[i]}</td>${r.map((v,j)=>v==null?'<td class="z">—</td>':`<td>${x.n===j+1?v:z(v)}</td>`).join('')}</tr>`).join('')}<tr class="s"><td>Totale ${y}</td>${x.T.map((v,j)=>`<td>${x.n===j+1?v:z(v)}</td>`).join('')}</tr></table></div>`;
- return `${t.n?'':`<p class="mute">Nessuna chiusura registrata nel ${y}.</p>`}
- <div class="noprint" id="rpm">${rpMesi(S)}</div><div class="noprint" id="rpl">${rpList(S,repM)}</div>
- <div class="rtab"><div class="ph">Tabaccheria – report annuale ${y}<small>Totali mensili degli incassi. Importi in euro. Generato il ${oggi}.</small></div>
+ return `<div class="rtab"><div class="ph">Tabaccheria – report annuale ${y}<small>Totali mensili degli incassi. Importi in euro. Generato il ${oggi}.</small></div>
  ${S.map(tab).join('\n ')}
- <p class="mute">Contanti al netto del fondo cassa. «—» = nessuna chiusura registrata nel mese. Tabacco e Monopolio: valore di vendita = ordini ÷ 0,9, guadagno = valore − ordini. ${esc(accK())}: senza IVA = importo ÷ 1,22; Brightstar: guadagno Lotto = Aggio Gioco degli estratti conto del Lotto; Gratta e Vinci: valore = ordini ÷ 0,92, guadagno = valore − ordini; Lotteria Italia (parte dell'ordine): ÷ 0,9, guadagno 10%. LisPoint: compensi dagli estratti conto. Guadagno totale = tabacco + ${esc(accK())} + Brightstar + LisPoint.</p></div>
+ <p class="mute">Contanti al netto del fondo cassa. «—» = nessuna chiusura registrata nel mese. Tabacco e Monopolio: valore di vendita = ordini ÷ 0,9, guadagno = valore − ordini. ${esc(accK())}: senza IVA = importo ÷ 1,22; Brightstar: guadagno Lotto = Aggio Gioco degli estratti conto del Lotto; Gratta e Vinci: valore = ordini ÷ 0,92, guadagno = valore − ordini; Lotteria Italia (parte dell'ordine): ÷ 0,9, guadagno 10%. LisPoint: compensi dagli estratti conto. Guadagno totale = tabacco + ${esc(accK())} + Brightstar + LisPoint.</p></div>`}
+function rpBody(){
+ const y=repY;rpC={};const R=repSezC(y),{S,t}=R;rpPrepara();
+ return `<p class="mute" id="rpn"${t.n?' hidden':''}>Nessuna chiusura registrata nel ${y}.</p>
+ <div class="noprint" id="rpm">${rpMesi(S)}</div><div class="noprint" id="rpl">${rpList(S,repM)}</div>
+ ${rpTab(y,S)}
  <p class="mute noprint">«—» = nessuna chiusura registrata. Tocca un mese per vedere solo quel mese. Il PDF contiene le tabelle complete, mese per mese, per la commercialista.</p>`}
 function vReport(){
  return `<h1>Report annuale</h1>
@@ -793,8 +799,15 @@ function vReport(){
  <div class="noprint"><button class="btn" id="print">Crea PDF</button><button class="btn ghost" id="rcsv">Esporta CSV</button>
  <p class="mute">Crea PDF → si apre la condivisione: <i>Salva in File</i>, Mail o WhatsApp.</p></div>`}
 // frecce dell'anno e mesi: cambia solo il contenuto, la pagina resta ferma dov'è e un unico blocco sfuma
-function rpAnno(k){const y0=scrollY;repY+=k;render();if(scrollY!==y0)scrollTo(0,y0)}
-function rpMese(i){const l=$('#rpl'),mm=$('#rpm');if(!l)return;const dir=Math.sign(i-repM),an=!PGNO();if(an)pgGhost([l],dir,18);repM=i;const{S}=repSez(repY);mm.innerHTML=rpMesi(S);l.innerHTML=rpList(S,i);if(an)pgIn([l],dir,18)}
+// (casse-v54) frecce dell'anno e mesi: la pagina NON viene ridisegnata. Restano gli stessi pulsanti (la pressione finisce morbida),
+// cambiano solo le scritte dell'anno, lo stato dei mesi e l'elenco #rpl; le tabelle nascoste del PDF si aggiornano dopo, a passaggio finito.
+let rpT=0;
+function rpStati(S){$('#rpm').querySelectorAll('button').forEach(b=>{const i=+b.dataset.rm;b.classList.toggle('on',i===repM);if(i>=0)b.classList.toggle('z',!S.some(x=>x.r[i].some(v=>v!=null)))})}
+function rpCambia(dir,fn){const l=$('#rpl');if(!l)return;const an=!PGNO(),M=$('#app'),h0=M.offsetHeight;if(an)pgGhost([l],dir,20);fn();if(an){pgIn([l],dir,20);pgAltezza(M,h0)}}
+function rpAnno(k){if(!$('#rpl')){repY+=k;render();return}
+ rpCambia(k,()=>{repY+=k;if(pgK)pgK.y=repY;$('#rpy').textContent=repY;const{S,t}=repSezC(repY);$('#rpn').hidden=!!t.n;rpStati(S);$('#rpl').innerHTML=rpList(S,repM)});
+ clearTimeout(rpT);const y=repY;rpT=setTimeout(()=>{const r=document.querySelector('#rpb .rtab');if(r&&view==='report'&&repY===y)r.outerHTML=rpTab(y,repSezC(y).S)},PGNO()?0:650);rpPrepara()}
+function rpMese(i){if(i===repM||!$('#rpl'))return;const dir=Math.sign(i-repM);rpCambia(dir,()=>{repM=i;const{S}=repSezC(repY);rpStati(S);$('#rpl').innerHTML=rpList(S,i)})}
 function rcsv(){const y=repY,{m,t,names}=annuale(y),xs=repX(t),sm=MESI.map((_,i)=>spese(new Date(y,i,1),new Date(y,i+1,0))),st=spese(new Date(y,0,1),new Date(y,11,31)),v=x=>c2(x).toFixed(2).replace('.',','),q=s=>/[;"\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;
  const inc=r=>(r.c||0)+(r.pos||0)+(r.sat||0);
  const row=(l,r,q)=>[l,...names.map(k=>v(r.rep[k])),v(sumRep(r)),v(r.c),v(r.pos),v(r.sat),v(inc(r)),r.n,v(r.ot),v(r.ov),v(r.ag),v(r.avn),v(r.aan),v(r.ga),...xs.map(n=>v((r.xr[n]||{}).g||0)),v(r.al),v(r.og),v(r.gg),v(r.gl),v(r.gb),v(r.lp),v(r.lh),v(r.gp),v(r.gt),v(q.sf),v(q.so),v(q.iv),v(c2(r.gt-q.tot))].join(';');
@@ -1044,7 +1057,7 @@ function pdfDa(root,d){
   walk(n)}};
  walk(root)}
 function pdfCrea(){
- const A=$('#app'),rp=view==='report',root=rp?A.querySelector('.rtab'):A;if(!root)return;
+ const A=$('#app'),rp=view==='report';if(rp){clearTimeout(rpT);const r=A.querySelector('.rtab');if(r)r.outerHTML=rpTab(repY,repSezC(repY).S)}const root=rp?A.querySelector('.rtab'):A;if(!root)return;
  const d=pdfDoc(rp);pdfDa(root,d);
  const ph=root.querySelector('.ph'),nm=ph&&ph.firstChild?ph.firstChild.textContent:'tabby';
  const slug=nm.toLowerCase().replace(/^tabaccheria\s*–\s*/,'').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
