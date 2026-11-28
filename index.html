@@ -315,6 +315,7 @@ nav button.on svg{transform:translateY(-5px) scale(1.06);filter:drop-shadow(0 1p
 .hq{margin-top:8px;font-size:14px;font-weight:700}.hq.ok{color:var(--ok)}.hq.ko{color:var(--ko)}
 /* (casse-v52) Report senza scorrimento: Tutto l'anno + mesi, sezioni a elenco; le tabelle complete (.rtab) restano nascoste e servono al PDF */
 .rtab{display:none}
+
 .ver{text-align:center;font-size:12.5px;margin:28px 0 0;opacity:.7}
 .pgh *,.pga,.pga *{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
 .pa{display:block;width:100%;margin:0 0 6px;font:inherit;font-size:15px;font-weight:600;color:var(--mute);background:rgba(225,212,187,.06);border:0;border-radius:12px;padding:9px 0;box-shadow:0 0 0 1px rgba(255,248,232,.10) inset;transition:transform .14s}
@@ -805,11 +806,13 @@ function vReport(){
 // cambiano solo le scritte dell'anno, lo stato dei mesi e l'elenco #rpl; le tabelle nascoste del PDF si aggiornano dopo, a passaggio finito.
 let rpT=0;
 function rpStati(S){$('#rpm').querySelectorAll('button').forEach(b=>{const i=+b.dataset.rm;b.classList.toggle('on',i===repM);if(i>=0)b.classList.toggle('z',!S.some(x=>x.r[i].some(v=>v!=null)))})}
-function rpCambia(dir,fn){const l=$('#rpl');if(!l)return;const an=!PGNO(),M=$('#app'),h0=M.offsetHeight;if(an)pgGhost([l],dir,20);fn();if(an){pgIn([l],dir,20);pgAltezza(M,h0)}}
+// (casse-v57) Report: anno e importi girano sui rulli come nel Riepilogo; la pagina resta ferma
+function rpSet(el,h){if(PGNO()||RM()){el.innerHTML=h;return}const T=document.createElement('div');T.innerHTML=h;rollKids(el,T)}
+function rpCambia(dir,fn){const l=$('#rpl');if(!l)return;const M=$('#app'),h0=M.offsetHeight;rollFine();rollDir=dir||1;fn();if(!PGNO())pgAltezza(M,h0)}
 function rpAnno(k){if(!$('#rpl')){repY+=k;render();return}
- rpCambia(k,()=>{repY+=k;if(pgK)pgK.y=repY;$('#rpy').textContent=repY;const{S,t}=repSezC(repY);const pn=$('#rpn');pn.hidden=!!t.n;pn.textContent=`Nessuna chiusura registrata nel ${repY}.`;rpStati(S);$('#rpl').innerHTML=rpList(S,repM)});
+ rpCambia(k,()=>{repY+=k;if(pgK)pgK.y=repY;rpSet($('#rpy'),String(repY));const{S,t}=repSezC(repY);const pn=$('#rpn');pn.hidden=!!t.n;pn.textContent=`Nessuna chiusura registrata nel ${repY}.`;rpStati(S);rpSet($('#rpl'),rpList(S,repM))});
  clearTimeout(rpT);const y=repY;rpT=setTimeout(()=>{const r=document.querySelector('#rpb .rtab');if(r&&view==='report'&&repY===y)r.outerHTML=rpTab(y,repSezC(y).S)},PGNO()?0:650);rpPrepara()}
-function rpMese(i){if(i===repM||!$('#rpl'))return;const dir=Math.sign(i-repM);rpCambia(dir,()=>{repM=i;const{S}=repSezC(repY);rpStati(S);$('#rpl').innerHTML=rpList(S,i)})}
+function rpMese(i){if(i===repM||!$('#rpl'))return;const dir=Math.sign(i-repM);rpCambia(dir,()=>{repM=i;const{S}=repSezC(repY);rpStati(S);rpSet($('#rpl'),rpList(S,i))})}
 function rcsv(){const y=repY,{m,t,names}=annuale(y),xs=repX(t),sm=MESI.map((_,i)=>spese(new Date(y,i,1),new Date(y,i+1,0))),st=spese(new Date(y,0,1),new Date(y,11,31)),v=x=>c2(x).toFixed(2).replace('.',','),q=s=>/[;"\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;
  const inc=r=>(r.c||0)+(r.pos||0)+(r.sat||0);
  const row=(l,r,q)=>[l,...names.map(k=>v(r.rep[k])),v(sumRep(r)),v(r.c),v(r.pos),v(r.sat),v(inc(r)),r.n,v(r.ot),v(r.ov),v(r.ag),v(r.avn),v(r.aan),v(r.ga),...xs.map(n=>v((r.xr[n]||{}).g||0)),v(r.al),v(r.og),v(r.gg),v(r.gl),v(r.gb),v(r.lp),v(r.lh),v(r.gp),v(r.gt),v(q.sf),v(q.so),v(q.iv),v(c2(r.gt-q.tot))].join(';');
@@ -941,7 +944,7 @@ function delItem(k){const i=k.indexOf(':'),w=k.slice(0,i),x=k.slice(i+1);
 let swD=null;
 function swClose(x){document.querySelectorAll('.sw.open,.sw.full').forEach(w=>{if(w!==x){w.classList.remove('open','full');w.querySelector('.sw-c').style.transform=''}})}
 // (casse-v56) versione scritta in fondo a Impostazioni: così si vede subito se il telefono ha già quella nuova (uguale alla cache di sw.js)
-const VER='casse-v56';
+const VER='casse-v57';
 function vImp(){return `<h1>Impostazioni</h1><h2>Reparti${ib('t-rp')}</h2><p class="mute hint tip" id="t-rp">Tocca un nome per cambiarlo. Accanto a ogni reparto c'è il suo tipo di calcolo, scelto quando lo aggiungi. Per eliminare un reparto scorrilo verso sinistra fino in fondo.</p>
  <div class="card spc">${db.reparti.map(n=>{const y=tipoR(n);return sw('rep:'+encodeURIComponent(n),`<div class="row"><input class="l" data-n="${esc(n)}" value="${esc(n)}"><span class="badge${y.t==='inc'?' g':y.t==='aggio'?' a':''}">${esc(tipoL(n))}</span></div>`)}).join('')}
  <div class="newr"><label class="row" style="padding:0;border:0"><input class="l" id="nn" placeholder="Nome del nuovo reparto" value="${esc(nrN)}"></label>
@@ -1004,7 +1007,52 @@ let pgT=0;
 function pgAltezza(M,h0){if(M.offsetHeight>=h0)return;clearTimeout(pgT);M.style.minHeight=h0+'px';
  pgT=setTimeout(()=>{M.style.minHeight='';const max=document.documentElement.scrollHeight-innerHeight;if(scrollY>max+1){M.style.minHeight=h0+'px';scrollTo({top:max,behavior:'smooth'});pgT=setTimeout(()=>{M.style.minHeight=''},500)}},560)}
 function renderPoi(){const t=++rPend;requestAnimationFrame(()=>requestAnimationFrame(()=>{if(t===rPend)render()}))}
-function render(){rPend++;if($('#ntp'))ntChiudi(true);calChiudi(null,true);const M=$('#app'),nuova=lastView!==view,oldSeg=!nuova&&M.querySelector('.seg'),oldNav=!nuova&&M.querySelector('.nav2'),pgDopo=pgPrima(M),h0=pgDopo&&!nuova?M.offsetHeight:0;if(nuova){clearTimeout(pgT);M.style.minHeight=''}cRest='';M.innerHTML={chiusura:vChiusura,riepilogo:vRiepilogo,report:vReport,impostazioni:vImp,spese:vSpese}[view]();
+// (casse-v57) Riepilogo, frecce ‹ ›: la pagina resta ferma; Tabby confronta la pagina nuova con quella che vedi e fa girare solo le righe cambiate.
+// (casse-v57) frecce «da bottega»: le righe cambiate girano come le fasce di un timbro datario / i rulli di un vecchio registratore:
+// la vecchia riga sale e sparisce dentro la sua finestra, la nuova arriva da sotto (al contrario andando indietro), una dopo l'altra.
+// Il testo vero è già quello nuovo e resta testo normale (niente pezzi di parola spostati), la vecchia riga è solo una copia sopra, poi tolta.
+let rollDir=1;const rolls=new Set();
+function rollFine(){rolls.forEach(f=>f());rolls.clear()}
+const rBlk=(e,M)=>{while(e&&e!==M){if(e.nodeType===1){const d=getComputedStyle(e).display;if(d!=='contents'&&!d.startsWith('table'))return e}e=e.parentNode}return M};
+function rDiff(a,b,out){
+ if(a.nodeType!==b.nodeType||a.nodeName!==b.nodeName){out.push(a.nodeType===1?a:a.parentNode);return}
+ if(a.nodeType===3){if(a.nodeValue!==b.nodeValue)out.push(a.parentNode);return}
+ if(a.nodeType!==1)return;
+ if(a.namespaceURI==='http://www.w3.org/2000/svg'&&a.nodeName.toLowerCase()==='svg'){if(a.outerHTML!==b.outerHTML)out.push(a);return}
+ if(a.attributes.length!==b.attributes.length||[...b.attributes].some(t=>a.getAttribute(t.name)!==t.value)){out.push(a);return}
+ rDiffKids(a,b,out)}
+function rDiffKids(a,b,out){const ac=a.childNodes,bc=b.childNodes;if(ac.length!==bc.length){out.push(a);return}for(let i=0;i<ac.length;i++)rDiff(ac[i],bc[i],out)}
+function morph(a,b){
+ if(a.nodeType!==b.nodeType||a.nodeName!==b.nodeName){a.replaceWith(b);return}
+ if(a.nodeType===3){if(a.nodeValue!==b.nodeValue)a.nodeValue=b.nodeValue;return}
+ if(a.nodeType!==1)return;
+ if(a.namespaceURI==='http://www.w3.org/2000/svg'&&a.nodeName.toLowerCase()==='svg'){if(a.outerHTML!==b.outerHTML)a.replaceWith(b);return}
+ for(const at of [...a.attributes])if(!b.hasAttribute(at.name))a.removeAttribute(at.name);
+ for(const at of [...b.attributes])if(a.getAttribute(at.name)!==at.value)a.setAttribute(at.name,at.value);
+ morphKids(a,b)}
+function morphKids(a,b){const ac=[...a.childNodes],bc=[...b.childNodes];
+ if(ac.length!==bc.length){a.replaceChildren(...bc);return}
+ ac.forEach((n,i)=>morph(n,bc[i]))}
+// a = contenitore vivo, b = nuovo contenuto (stesso tag, non ancora in pagina)
+function rollKids(a,b){if(RM()||!a.animate){morphKids(a,b);return}
+ const ch=[];rDiffKids(a,b,ch);const set=new Set(ch.map(e=>rBlk(e,a)));
+ const T=[...set].filter(e=>e.isConnected&&![...set].some(o=>o!==e&&o.contains(e))).map(e=>({e,r:e.getBoundingClientRect(),c:e.cloneNode(true)}));
+ morphKids(a,b);const dir=rollDir||1,anims=[],cl=[],rs=[];
+ T.sort((x,y)=>x.r.top-y.r.top||x.r.left-y.r.left).forEach(({e,r,c},q)=>{if(!e.isConnected||!r.height)return;
+  const p=e.parentNode;if(!p)return;if(getComputedStyle(e).display==='inline'){const d0=e.style.display;e.style.display='inline-block';c.style.display='inline-block';rs.push(()=>e.style.display=d0)}const n=e.getBoundingClientRect();
+  c.removeAttribute('id');c.querySelectorAll('[id]').forEach(x=>x.removeAttribute('id'));c.setAttribute('aria-hidden','true');
+  Object.assign(c.style,{position:'absolute',left:'0px',top:'0px',margin:'0',width:r.width+'px',height:r.height+'px',boxSizing:'border-box',pointerEvents:'none',transition:'none'});
+  p.appendChild(c);const k=c.getBoundingClientRect();c.style.left=(r.left-k.left)+'px';c.style.top=(r.top-k.top)+'px';cl.push(c);
+  const h=n.height||r.height,ho=r.height,o={duration:400,delay:Math.min(q,4)*20,easing:'cubic-bezier(.3,.9,.3,1)',fill:'both'};
+  const up=dir>0;
+  anims.push(c.animate([{transform:'translateY(0)',clipPath:'inset(0 -12px 0 -12px)',opacity:1},{opacity:.15,offset:.6},
+   {transform:`translateY(${up?-ho:ho}px)`,clipPath:up?`inset(${ho}px -12px 0 -12px)`:`inset(0 -12px ${ho}px -12px)`,opacity:0}],o));
+  anims.push(e.animate([{transform:`translateY(${up?h:-h}px)`,clipPath:up?`inset(0 -12px ${h}px -12px)`:`inset(${h}px -12px 0 -12px)`,opacity:0},{opacity:.85,offset:.5},
+   {transform:'translateY(0)',clipPath:'inset(0 -12px 0 -12px)',opacity:1}],o))});
+ if(!anims.length)return;
+ let done=false;const fine=()=>{if(done)return;done=true;anims.forEach(x=>x.cancel());cl.forEach(x=>x.remove());rs.forEach(f=>f())};
+ rolls.add(fine);Promise.all(anims.map(x=>x.finished)).then(()=>{rolls.delete(fine);fine()},()=>{})}
+function render(){rPend++;if($('#ntp'))ntChiudi(true);calChiudi(null,true);const M=$('#app'),nuova=lastView!==view,mo=!nuova&&view==='riepilogo'&&pgK&&pgK.v==='riepilogo'&&pgK.m===mode&&pgK.a!==+anchor&&!PGNO(),oldSeg=!mo&&!nuova&&M.querySelector('.seg'),oldNav=!mo&&!nuova&&M.querySelector('.nav2'),pgDopo=mo?(rollDir=Math.sign(+anchor-pgK.a)||1,pgK={v:view,m:mode,a:+anchor,y:repY},null):pgPrima(M),h0=pgDopo&&!nuova?M.offsetHeight:0;if(nuova){clearTimeout(pgT);M.style.minHeight=''}cRest='';const HT={chiusura:vChiusura,riepilogo:vRiepilogo,report:vReport,impostazioni:vImp,spese:vSpese}[view]();if(mo){rollFine();const T=document.createElement('main');T.innerHTML=HT;rollKids(M,T)}else M.innerHTML=HT;
  if(oldNav){const n=M.querySelector('.nav2');if(n&&n.querySelector('b')&&oldNav.querySelector('b')){oldNav.querySelector('b').innerHTML=n.querySelector('b').innerHTML;n.replaceWith(oldNav)}}
  if(oldSeg){const n=M.querySelector('.seg');if(n){oldSeg.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.m===mode));n.replaceWith(oldSeg)}}
  if(cRest){const tk=++cTok;setTimeout(()=>{if(tk===cTok)flushRest()},PGNO()?450:620)}
