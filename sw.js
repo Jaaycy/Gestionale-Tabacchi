@@ -1,4 +1,5 @@
-const C='casse-v55',F=['./','index.html','manifest.json','icon-180.png','icon-192.png','icon-512.png'];
+const C='casse-v56',F=['./','index.html','manifest.json','icon-180.png','icon-192.png','icon-512.png'];
+// casse-v56: versione scritta in fondo a Impostazioni, anno giusto nella scritta «Nessuna chiusura» del Report
 // casse-v55: copia della pagina allineata (niente spostamento coi mesi), frecce del Riepilogo che restano gli stessi pulsanti, niente sfocatura sui pezzi in movimento
 // casse-v54: frecce dell'anno e mesi del Report senza ridisegnare la pagina (pulsanti fermi, anni vicini preparati prima)
 // casse-v53: cambio pagina morbido (la pagina vecchia sfuma via, la nuova entra dal lato giusto), altezze ferme durante il passaggio

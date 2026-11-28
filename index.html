@@ -315,6 +315,7 @@ nav button.on svg{transform:translateY(-5px) scale(1.06);filter:drop-shadow(0 1p
 .hq{margin-top:8px;font-size:14px;font-weight:700}.hq.ok{color:var(--ok)}.hq.ko{color:var(--ko)}
 /* (casse-v52) Report senza scorrimento: Tutto l'anno + mesi, sezioni a elenco; le tabelle complete (.rtab) restano nascoste e servono al PDF */
 .rtab{display:none}
+.ver{text-align:center;font-size:12.5px;margin:28px 0 0;opacity:.7}
 .pgh *,.pga,.pga *{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
 .pa{display:block;width:100%;margin:0 0 6px;font:inherit;font-size:15px;font-weight:600;color:var(--mute);background:rgba(225,212,187,.06);border:0;border-radius:12px;padding:9px 0;box-shadow:0 0 0 1px rgba(255,248,232,.10) inset;transition:transform .14s}
 .pm{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin:0 0 6px}
@@ -806,7 +807,7 @@ let rpT=0;
 function rpStati(S){$('#rpm').querySelectorAll('button').forEach(b=>{const i=+b.dataset.rm;b.classList.toggle('on',i===repM);if(i>=0)b.classList.toggle('z',!S.some(x=>x.r[i].some(v=>v!=null)))})}
 function rpCambia(dir,fn){const l=$('#rpl');if(!l)return;const an=!PGNO(),M=$('#app'),h0=M.offsetHeight;if(an)pgGhost([l],dir,20);fn();if(an){pgIn([l],dir,20);pgAltezza(M,h0)}}
 function rpAnno(k){if(!$('#rpl')){repY+=k;render();return}
- rpCambia(k,()=>{repY+=k;if(pgK)pgK.y=repY;$('#rpy').textContent=repY;const{S,t}=repSezC(repY);$('#rpn').hidden=!!t.n;rpStati(S);$('#rpl').innerHTML=rpList(S,repM)});
+ rpCambia(k,()=>{repY+=k;if(pgK)pgK.y=repY;$('#rpy').textContent=repY;const{S,t}=repSezC(repY);const pn=$('#rpn');pn.hidden=!!t.n;pn.textContent=`Nessuna chiusura registrata nel ${repY}.`;rpStati(S);$('#rpl').innerHTML=rpList(S,repM)});
  clearTimeout(rpT);const y=repY;rpT=setTimeout(()=>{const r=document.querySelector('#rpb .rtab');if(r&&view==='report'&&repY===y)r.outerHTML=rpTab(y,repSezC(y).S)},PGNO()?0:650);rpPrepara()}
 function rpMese(i){if(i===repM||!$('#rpl'))return;const dir=Math.sign(i-repM);rpCambia(dir,()=>{repM=i;const{S}=repSezC(repY);rpStati(S);$('#rpl').innerHTML=rpList(S,i)})}
 function rcsv(){const y=repY,{m,t,names}=annuale(y),xs=repX(t),sm=MESI.map((_,i)=>spese(new Date(y,i,1),new Date(y,i+1,0))),st=spese(new Date(y,0,1),new Date(y,11,31)),v=x=>c2(x).toFixed(2).replace('.',','),q=s=>/[;"\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;
@@ -939,6 +940,8 @@ function delItem(k){const i=k.indexOf(':'),w=k.slice(0,i),x=k.slice(i+1);
 // scorri verso sinistra per eliminare
 let swD=null;
 function swClose(x){document.querySelectorAll('.sw.open,.sw.full').forEach(w=>{if(w!==x){w.classList.remove('open','full');w.querySelector('.sw-c').style.transform=''}})}
+// (casse-v56) versione scritta in fondo a Impostazioni: così si vede subito se il telefono ha già quella nuova (uguale alla cache di sw.js)
+const VER='casse-v56';
 function vImp(){return `<h1>Impostazioni</h1><h2>Reparti${ib('t-rp')}</h2><p class="mute hint tip" id="t-rp">Tocca un nome per cambiarlo. Accanto a ogni reparto c'è il suo tipo di calcolo, scelto quando lo aggiungi. Per eliminare un reparto scorrilo verso sinistra fino in fondo.</p>
  <div class="card spc">${db.reparti.map(n=>{const y=tipoR(n);return sw('rep:'+encodeURIComponent(n),`<div class="row"><input class="l" data-n="${esc(n)}" value="${esc(n)}"><span class="badge${y.t==='inc'?' g':y.t==='aggio'?' a':''}">${esc(tipoL(n))}</span></div>`)}).join('')}
  <div class="newr"><label class="row" style="padding:0;border:0"><input class="l" id="nn" placeholder="Nome del nuovo reparto" value="${esc(nrN)}"></label>
@@ -948,7 +951,8 @@ function vImp(){return `<h1>Impostazioni</h1><h2>Reparti${ib('t-rp')}</h2><p cla
  <p class="dsc">${{iva22:'Come gli Accessori: guadagno = vendite senza IVA − acquisti senza IVA (÷ 1,22). Gli acquisti si scrivono in Spese › Ordini merce (scegli il reparto).',iva10:'Come gli Accessori ma con IVA 10%: guadagno = vendite senza IVA − acquisti senza IVA (÷ 1,10). Gli acquisti si scrivono in Spese › Ordini merce (scegli il reparto).',aggio:'Come il tabacco: guadagni una percentuale fissa. Guadagno = incassato del reparto × aggio %.',inc:'Conta solo nell\'incasso, senza calcolo del guadagno.'}[nrT]}</p>
  <button type="button" class="addr" id="add"><i>+</i>Aggiungi reparto</button></div></div>
  <h2>Backup</h2><div class="card pad"><p class="mute" style="margin-top:0">I dati sono solo su questo iPhone. A fine mese salva un backup in File (iCloud Drive).</p>
- <button class="btn" id="bk">Salva backup</button><label class="btn ghost">Ripristina backup<input type="file" id="imp" accept=".json,application/json" hidden></label></div>`}
+ <button class="btn" id="bk">Salva backup</button><label class="btn ghost">Ripristina backup<input type="file" id="imp" accept=".json,application/json" hidden></label></div>
+ <p class="mute ver">Tabby · versione ${VER.replace('casse-v','')}</p>`}
 
 // grafico: le barre crescono dal basso; il colore è legato all'altezza, quindi la cima schiarisce mentre sale
 function barSu(){const r=[...document.querySelectorAll('.ch rect.b0,.ch rect.b1')];if(!r.length)return;
