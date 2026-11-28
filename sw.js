@@ -1,4 +1,5 @@
-const C='casse-v57',F=['./','index.html','manifest.json','icon-180.png','icon-192.png','icon-512.png'];
+const C='casse-v58',F=['./','index.html','manifest.json','icon-180.png','icon-192.png','icon-512.png'];
+// casse-v58: riquadri del totale tutti come quello della Chiusura, Settimana che non salta più, uscita dall'avvio in due tempi, rosso di Elimina che segue il dito
 // casse-v57: frecce del Riepilogo e del Report «da bottega»: la pagina resta ferma e solo le righe cambiate girano come un timbro datario
 // casse-v56: versione scritta in fondo a Impostazioni, anno giusto nella scritta «Nessuna chiusura» del Report
 // casse-v55: copia della pagina allineata (niente spostamento coi mesi), frecce del Riepilogo che restano gli stessi pulsanti, niente sfocatura sui pezzi in movimento
