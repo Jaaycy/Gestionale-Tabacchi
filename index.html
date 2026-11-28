@@ -10,7 +10,14 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-180.png">
+<!-- (casse-v52) immagine d'apertura blu notte come lo sfondo dell'avvio: niente lampo bianco all'apertura (iPhone con 3x) -->
+<link rel="apple-touch-startup-image" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="avvio-1170x2532.png">
+<link rel="apple-touch-startup-image" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="avvio-1179x2556.png">
+<link rel="apple-touch-startup-image" media="(device-width: 402px) and (device-height: 874px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="avvio-1206x2622.png">
+<link rel="apple-touch-startup-image" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="avvio-1290x2796.png">
+<link rel="apple-touch-startup-image" media="(device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="avvio-1320x2868.png">
 <title>Tabby</title>
+<script>if(!navigator.webdriver)document.documentElement.classList.add('spl')</script>
 <style>
 :root{color-scheme:dark;--acc:#d9b673;--ink:#f1e9da;--mute:#b3ab99;--faint:#7d8197;--line:rgba(225,212,187,.10);--bg:#0c1a38;--card:rgba(225,212,187,.065);--cardS:#1b2843;--ok:#9fd3a9;--ko:#ef9a84;--hi:#fbf4e6;--hm:rgba(251,244,230,.74);--r:18px;--ease:cubic-bezier(.23,1,.32,1);--glass:0 0 0 1px rgba(225,212,187,.11) inset,0 1px 0 rgba(255,255,255,.14) inset,0 20px 40px -22px rgba(3,8,20,.75)}
 /* Tema Tabby (casse-v44): blu notte #0F2042, crema #E1D4BB, oro #C5A059, marrone #6F4E37. Vetro trasparente solo su totali, pulsanti e voce scelta; barra in basso marrone. */
@@ -25,12 +32,13 @@ body::before{content:"";position:fixed;top:-150px;right:0;bottom:-150px;left:0;z
 body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='390' height='844' viewBox='0 0 390 844'%3E%3Cdefs%3E%3CradialGradient id='lfG' gradientUnits='userSpaceOnUse' cx='299' cy='86' r='179'%3E%3Cstop offset='0' stop-color='%23E1D4BB' stop-opacity='.075'/%3E%3Cstop offset='1' stop-color='%23E1D4BB' stop-opacity='.025'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cpath d='M452.0 138.0 L450.3 136.6 L448.7 134.8 L447.3 132.9 L445.8 130.9 L444.5 128.8 L443.1 126.7 L441.8 124.5 L440.4 122.3 L439.0 120.1 L437.6 118.0 L436.2 115.9 L434.7 113.9 L433.3 111.9 L431.8 109.8 L430.3 107.8 L428.8 105.7 L427.4 103.5 L426.0 101.1 L424.7 98.6 L423.5 96.0 L422.3 93.2 L421.1 90.4 L419.9 87.6 L418.7 84.7 L417.5 81.9 L416.3 79.1 L415.0 76.5 L413.6 73.9 L412.1 71.5 L410.6 69.2 L409.0 67.1 L407.3 65.1 L405.5 63.2 L403.8 61.4 L401.9 59.7 L400.1 57.9 L398.3 56.2 L396.5 54.4 L394.7 52.5 L392.9 50.5 L391.2 48.5 L389.6 46.3 L387.9 44.0 L386.3 41.6 L384.7 39.2 L383.1 36.7 L381.4 34.3 L379.8 32.0 L378.1 29.7 L376.3 27.5 L374.4 25.6 L372.5 23.7 L370.5 22.1 L368.4 20.6 L366.3 19.3 L364.1 18.2 L361.9 17.1 L359.6 16.1 L357.3 15.2 L355.1 14.2 L352.8 13.2 L350.5 12.1 L348.3 11.0 L346.1 9.7 L343.9 8.4 L341.8 7.0 L339.7 5.5 L337.6 4.0 L335.4 2.5 L333.3 1.1 L331.1 -0.3 L328.9 -1.6 L326.6 -2.8 L324.3 -3.8 L321.9 -4.6 L319.5 -5.3 L317.0 -5.8 L314.5 -6.1 L311.9 -6.3 L309.3 -6.4 L306.7 -6.4 L304.0 -6.4 L301.4 -6.4 L298.7 -6.4 L296.1 -6.4 L293.5 -6.5 L290.9 -6.7 L288.4 -6.9 L285.8 -7.2 L283.3 -7.5 L280.8 -7.9 L278.2 -8.2 L275.7 -8.5 L273.1 -8.7 L270.5 -8.8 L267.9 -8.8 L265.2 -8.7 L262.5 -8.4 L259.8 -8.0 L257.1 -7.4 L254.3 -6.7 L251.5 -6.0 L248.6 -5.1 L245.8 -4.2 L243.0 -3.2 L240.1 -2.3 L237.3 -1.3 L234.5 -0.4 L231.7 0.5 L228.9 1.4 L226.1 2.2 L223.4 3.0 L220.6 3.8 L217.9 4.5 L215.1 5.3 L212.4 6.2 L209.6 7.0 L206.8 8.0 L204.0 9.0 L201.2 10.1 L198.4 11.3 L195.6 12.5 L192.8 13.8 L190.0 15.2 L187.1 16.6 L184.3 18.1 L181.5 19.5 L178.7 21.0 L175.9 22.4 L173.1 23.8 L170.3 25.1 L167.5 26.4 L164.8 27.7 L162.0 28.9 L159.3 30.0 L156.6 31.0 L153.9 32.0 L151.2 32.9 L148.6 33.6 L146.0 34.0 L146.0 34.0 L148.3 35.1 L150.6 36.6 L152.8 38.3 L155.0 40.1 L157.2 42.0 L159.3 44.1 L161.5 46.2 L163.6 48.3 L165.6 50.4 L167.7 52.6 L169.8 54.7 L171.9 56.8 L173.9 58.8 L176.0 60.9 L178.0 62.9 L180.1 64.8 L182.1 66.8 L184.1 68.7 L186.2 70.7 L188.2 72.7 L190.1 74.7 L192.1 76.7 L194.0 78.9 L196.0 81.0 L197.9 83.2 L199.8 85.4 L201.6 87.6 L203.5 89.8 L205.4 92.0 L207.3 94.1 L209.1 96.1 L211.0 98.0 L213.0 99.7 L214.9 101.4 L216.8 102.9 L218.8 104.4 L220.8 105.8 L222.8 107.1 L224.8 108.4 L226.7 109.8 L228.7 111.1 L230.6 112.5 L232.5 114.0 L234.4 115.5 L236.3 117.2 L238.1 118.8 L239.9 120.5 L241.7 122.2 L243.6 123.9 L245.4 125.5 L247.2 127.1 L249.1 128.5 L251.0 129.7 L252.9 130.8 L254.9 131.8 L256.9 132.6 L259.0 133.2 L261.0 133.8 L263.1 134.3 L265.3 134.7 L267.4 135.2 L269.5 135.7 L271.5 136.3 L273.6 137.0 L275.6 137.8 L277.5 138.7 L279.4 139.6 L281.4 140.7 L283.2 141.7 L285.1 142.8 L287.0 143.7 L289.0 144.6 L290.9 145.4 L293.0 146.0 L295.1 146.4 L297.2 146.7 L299.4 146.8 L301.7 146.7 L304.0 146.5 L306.4 146.2 L308.7 145.9 L311.1 145.6 L313.4 145.4 L315.8 145.2 L318.0 145.2 L320.3 145.2 L322.5 145.4 L324.6 145.7 L326.7 146.1 L328.8 146.6 L330.9 147.0 L333.0 147.4 L335.1 147.8 L337.3 148.0 L339.6 148.1 L341.9 148.0 L344.3 147.8 L346.7 147.4 L349.2 146.8 L351.8 146.2 L354.5 145.4 L357.1 144.6 L359.8 143.8 L362.4 143.1 L365.0 142.5 L367.6 141.9 L370.1 141.6 L372.6 141.3 L375.0 141.2 L377.3 141.2 L379.7 141.2 L382.0 141.3 L384.3 141.4 L386.6 141.5 L389.0 141.5 L391.4 141.4 L393.9 141.1 L396.5 140.8 L399.1 140.3 L401.8 139.7 L404.6 139.0 L407.4 138.2 L410.2 137.5 L413.0 136.8 L415.7 136.2 L418.4 135.8 L421.0 135.4 L423.6 135.2 L426.1 135.2 L428.5 135.2 L431.0 135.3 L433.4 135.4 L435.8 135.6 L438.1 135.8 L440.5 136.0 L442.9 136.2 L445.3 136.5 L447.6 136.9 L449.9 137.3 L452.0 138.0Z' fill='url%28%23lfG%29' stroke='%23E1D4BB' stroke-opacity='.22' stroke-width='1.1' stroke-linejoin='round'/%3E%3Cg fill='none' stroke='%23E1D4BB' stroke-linecap='round'%3E%3Cpath d='M425.0 118.2 L419.5 111.6 M419.1 110.6 L417.9 103.8 M435.2 123.6 L433.1 118.6 M405.0 83.0 L402.4 77.3 M399.6 74.2 L394.5 66.5 M377.5 88.0 L370.6 80.2 M378.6 86.3 L376.0 77.5 M382.5 73.2 L377.0 65.5 M363.4 78.8 L361.0 73.5 M331.1 48.1 L327.3 40.4 M338.4 56.7 L331.9 47.5 M350.5 49.9 L346.1 40.4 M297.8 41.2 L288.7 34.6 M317.2 25.8 L314.0 19.0 M331.0 37.2 L324.1 28.6 M265.8 33.7 L258.8 25.6 M280.1 31.1 L272.8 21.0 M287.1 23.9 L284.6 16.4 M256.7 7.8 L248.2 1.0 M265.6 20.0 L262.9 13.8 M269.4 42.3 L267.0 34.5 M243.2 33.1 L238.4 24.3 M247.1 26.5 L241.3 17.3 M215.1 18.0 L210.2 11.7 M198.9 20.5 L189.0 14.6 M204.8 32.2 L200.3 25.7 M185.9 32.2 L182.8 26.4 M403.9 128.5 L392.6 130.1 M397.5 128.4 L389.0 128.0 M380.7 128.4 L369.6 131.0 M373.5 119.4 L367.1 123.3 M389.7 115.8 L383.5 117.1 M379.0 112.1 L374.1 114.1 M359.7 117.0 L353.3 122.3 M342.3 104.9 L335.7 107.4 M352.2 107.4 L340.9 111.4 M321.4 112.1 L316.2 113.9 M329.2 105.4 L319.5 105.8 M333.2 130.3 L325.5 131.3 M299.4 87.2 L290.2 92.5 M279.0 107.7 L272.4 110.7 M304.1 120.6 L295.3 124.9 M275.3 87.5 L264.4 92.5 M249.1 100.3 L238.7 104.4 M276.0 99.7 L269.3 100.9 M253.5 81.4 L246.5 86.2 M215.9 70.2 L204.3 75.6 M216.5 68.0 L210.3 70.8 M215.9 63.1 L206.3 68.6 M189.0 55.4 L179.3 60.6 M217.4 77.5 L206.2 82.0 M165.4 42.8 L158.9 48.7 M181.7 56.2 L170.3 59.1 M178.6 56.1 L169.1 58.2' stroke-opacity='.06' stroke-width='.5'/%3E%3Cpath d='M407.3 73.7 Q398.1 57.9 385.6 49.0 M431.9 105.8 Q429.9 106.3 424.1 100.1 M422.1 94.6 Q420.9 93.5 416.5 84.0 M413.2 84.9 Q413.2 81.1 408.8 71.2 M383.0 48.8 Q374.7 28.6 360.0 24.1 M407.9 86.6 Q409.3 79.7 405.8 67.7 M397.9 73.7 Q399.2 66.8 394.4 57.0 M388.7 62.5 Q389.6 56.2 385.0 45.7 M351.5 23.6 Q340.4 8.6 325.0 5.1 M377.8 66.6 Q381.2 54.4 379.1 37.4 M367.2 52.2 Q370.5 39.6 366.9 25.4 M357.5 39.6 Q359.9 28.6 354.3 19.3 M315.9 5.1 Q302.3 -4.3 284.6 -0.3 M345.0 50.3 Q349.9 32.3 346.8 15.9 M333.4 35.3 Q336.6 21.0 332.4 6.7 M322.7 22.2 Q325.0 10.2 319.0 0.3 M280.2 1.9 Q266.2 -6.8 247.9 0.4 M313.4 43.1 Q319.2 20.1 316.8 -0.3 M300.4 29.4 Q304.3 11.0 299.0 -1.4 M288.5 17.4 Q290.4 5.0 283.5 -2.6 M250.0 2.1 Q233.9 1.2 215.9 8.9 M286.5 38.9 Q291.7 15.7 287.9 -2.1 M272.3 26.6 Q275.5 8.9 270.1 -4.2 M259.5 15.8 Q261.1 3.1 253.5 -2.6 M219.6 9.7 Q203.4 10.2 185.4 19.6 M259.8 38.9 Q264.6 14.6 260.5 -3.8 M244.3 28.9 Q247.1 10.8 240.6 1.0 M230.4 20.3 Q231.2 9.4 223.0 6.0 M184.3 20.9 Q167.9 26.6 151.5 33.0 M228.4 40.4 Q231.8 18.9 226.1 5.2 M211.5 33.4 Q213.1 18.6 205.9 10.6 M196.5 27.5 Q196.5 18.7 187.8 17.9 M157.0 31.5 Q154.3 32.0 151.5 33.0 M196.0 41.1 Q197.6 25.0 190.4 16.7 M181.1 37.4 Q181.3 27.3 172.9 24.8 M167.9 34.3 Q167.0 29.6 157.9 30.9 M363.9 137.6 Q345.6 146.1 333.1 141.4 M403.1 134.7 Q400.5 136.7 390.7 139.4 M388.6 134.2 Q385.5 137.2 376.5 138.8 M375.9 134.0 Q372.9 137.0 363.2 140.3 M329.5 138.0 Q313.0 143.6 300.2 139.9 M372.3 127.9 Q367.7 134.5 356.1 142.1 M356.5 129.7 Q351.5 137.7 340.6 144.3 M342.7 131.5 Q338.0 139.1 328.7 142.2 M302.0 137.3 Q286.5 141.0 275.8 130.3 M346.9 122.1 Q340.3 134.4 329.1 142.3 M330.4 125.4 Q325.1 134.9 314.7 141.1 M315.9 128.6 Q311.3 136.7 301.4 142.1 M279.9 128.9 Q264.5 132.4 253.0 123.0 M325.5 113.2 Q318.0 128.8 305.2 141.9 M308.6 116.8 Q301.8 131.2 290.9 139.9 M293.9 120.1 Q288.5 131.2 279.6 134.2 M254.6 120.7 Q240.7 118.9 229.8 105.2 M301.1 104.2 Q292.8 123.6 281.0 134.9 M283.8 108.1 Q277.6 122.2 267.1 130.1 M268.6 111.7 Q263.7 122.4 254.6 126.2 M226.0 100.3 Q212.1 97.1 200.8 81.6 M272.5 88.5 Q264.2 110.4 251.9 124.7 M255.1 91.0 Q248.6 107.8 238.8 114.1 M239.7 93.4 Q235.3 103.9 226.8 105.2 M193.8 72.8 Q180.3 64.2 167.5 50.7 M240.3 69.1 Q233.2 89.9 221.9 102.1 M222.7 69.2 Q217.2 84.9 207.6 90.5 M207.2 69.5 Q203.4 78.9 195.3 77.3 M161.6 44.8 Q156.2 41.0 150.9 36.5 M208.8 50.3 Q203.1 68.0 193.1 75.0 M190.8 47.6 Q186.8 58.8 177.8 60.8 M174.9 45.6 Q172.1 51.2 164.0 47.8 M155.6 39.8 Q153.2 38.4 150.9 36.5 M188.2 43.9 Q184.1 55.6 175.0 58.2 M175.7 42.0 Q172.6 49.5 164.2 48.0 M164.7 40.5 Q162.4 44.0 154.4 39.3' stroke-opacity='.10' stroke-width='.65'/%3E%3Cpath d='M440.6 129.9 C442.6 109.7 424.7 82.7 407.3 73.7' stroke-opacity='.17' stroke-width='1.21'/%3E%3Cpath d='M415.2 116.7 C419.6 90.0 401.0 57.6 383.0 48.8' stroke-opacity='.17' stroke-width='1.12'/%3E%3Cpath d='M384.9 102.4 C390.7 69.4 370.2 32.1 351.5 23.6' stroke-opacity='.17' stroke-width='1.02'/%3E%3Cpath d='M353.4 89.0 C358.9 52.8 335.2 13.0 315.9 5.1' stroke-opacity='.17' stroke-width='0.92'/%3E%3Cpath d='M325.1 78.2 C328.0 45.6 300.0 9.0 280.2 1.9' stroke-opacity='.17' stroke-width='0.83'/%3E%3Cpath d='M301.2 70.0 C301.8 41.4 270.0 8.5 250.0 2.1' stroke-opacity='.17' stroke-width='0.76'/%3E%3Cpath d='M277.9 62.6 C275.4 41.7 239.8 15.2 219.6 9.7' stroke-opacity='.17' stroke-width='0.69'/%3E%3Cpath d='M250.3 54.8 C244.6 43.6 204.7 25.5 184.3 20.9' stroke-opacity='.17' stroke-width='0.61'/%3E%3Cpath d='M216.6 46.3 C208.5 43.6 177.4 35.3 157.0 31.5' stroke-opacity='.17' stroke-width='0.51'/%3E%3Cpath d='M428.2 126.8 C412.2 141.0 380.5 144.3 363.9 137.6' stroke-opacity='.17' stroke-width='1.17'/%3E%3Cpath d='M400.6 113.0 C382.0 134.7 346.5 143.8 329.5 138.0' stroke-opacity='.17' stroke-width='1.08'/%3E%3Cpath d='M377.2 102.3 C357.2 129.1 319.2 142.3 302.0 137.3' stroke-opacity='.17' stroke-width='1.00'/%3E%3Cpath d='M355.7 93.2 C336.6 120.1 297.5 133.5 279.9 128.9' stroke-opacity='.17' stroke-width='0.93'/%3E%3Cpath d='M331.3 83.7 C313.0 111.0 272.5 124.9 254.6 120.7' stroke-opacity='.17' stroke-width='0.85'/%3E%3Cpath d='M301.1 73.1 C285.7 94.7 244.6 104.2 226.0 100.3' stroke-opacity='.17' stroke-width='0.76'/%3E%3Cpath d='M266.9 62.5 C255.1 74.4 213.2 76.6 193.8 72.8' stroke-opacity='.17' stroke-width='0.66'/%3E%3Cpath d='M233.8 53.6 C225.0 54.4 181.8 48.4 161.6 44.8' stroke-opacity='.17' stroke-width='0.56'/%3E%3Cpath d='M205.4 46.9 C197.0 45.9 175.9 43.4 155.6 39.8' stroke-opacity='.17' stroke-width='0.48'/%3E%3C/g%3E%3Cpath d='M453.4 135.5 L448.9 133.0 L444.4 130.5 L439.8 128.1 L435.2 125.7 L430.6 123.3 L426.0 121.0 L421.4 118.7 L416.7 116.4 L412.0 114.1 L407.3 111.9 L402.6 109.7 L397.8 107.5 L393.1 105.3 L388.3 103.2 L383.5 101.1 L378.6 99.0 L373.8 97.0 L368.9 94.9 L364.0 92.9 L359.1 91.0 L354.2 89.0 L349.3 87.1 L344.3 85.2 L339.3 83.3 L334.3 81.5 L329.3 79.7 L324.2 77.9 L319.1 76.2 L314.0 74.4 L308.9 72.7 L303.8 71.0 L298.7 69.4 L293.5 67.8 L288.3 66.2 L283.1 64.6 L277.8 63.0 L272.6 61.5 L267.3 60.0 L262.0 58.6 L256.7 57.1 L251.4 55.7 L246.0 54.3 L240.6 52.9 L235.2 51.6 L229.8 50.3 L224.4 49.0 L218.9 47.7 L213.4 46.5 L207.9 45.3 L202.4 44.1 L196.9 43.0 L191.3 41.8 L185.7 40.7 L180.1 39.7 L174.5 38.6 L168.8 37.6 L163.2 36.6 L157.5 35.6 L151.8 34.6 L146.0 33.7 L146.0 34.3 L151.7 35.3 L157.4 36.2 L163.0 37.3 L168.7 38.3 L174.3 39.4 L179.9 40.5 L185.5 41.6 L191.1 42.8 L196.6 44.0 L202.2 45.2 L207.7 46.5 L213.1 47.7 L218.6 49.0 L224.0 50.4 L229.5 51.7 L234.8 53.1 L240.2 54.5 L245.6 55.9 L250.9 57.4 L256.2 58.9 L261.5 60.4 L266.7 62.0 L272.0 63.5 L277.2 65.1 L282.4 66.7 L287.6 68.4 L292.7 70.1 L297.9 71.8 L303.0 73.5 L308.1 75.3 L313.1 77.1 L318.2 78.9 L323.2 80.7 L328.2 82.6 L333.2 84.5 L338.1 86.4 L343.1 88.4 L348.0 90.3 L352.9 92.3 L357.7 94.4 L362.6 96.4 L367.4 98.5 L372.2 100.6 L377.0 102.7 L381.8 104.9 L386.5 107.1 L391.2 109.3 L395.9 111.6 L400.6 113.8 L405.3 116.1 L409.9 118.4 L414.5 120.8 L419.1 123.2 L423.6 125.6 L428.2 128.0 L432.7 130.4 L437.2 132.9 L441.7 135.4 L446.1 138.0 L450.6 140.5Z' fill='%23E1D4BB' fill-opacity='.24'/%3E%3C/svg%3E") no-repeat top right/390px 844px;-webkit-mask:linear-gradient(180deg,#000 0%,#000 20%,transparent 30%);mask:linear-gradient(180deg,#000 0%,#000 20%,transparent 30%)}
 main{max-width:560px;margin:0 auto;padding:0 16px 24px;min-height:calc(100vh + 1px);min-height:calc(100lvh + 1px)}
 /* ogni pagina scorre (anche Impostazioni, corta): su iPhone la barra in basso resta ferma e mantiene l'effetto vetro */
-main.enter{animation:in .38s var(--ease)}
-@keyframes in{from{opacity:0;transform:translateY(12px)}}
+/* (casse-v52) entrata della pagina più corta e leggera (riquadri senza sfocatura: l'iPhone sposta un solo strato) */
+main.enter{animation:in .3s var(--ease)}
+@keyframes in{from{opacity:0;transform:translateY(6px)}}
 h1{font-size:34px;font-weight:700;letter-spacing:-.025em;line-height:1.1;margin:22px 2px 14px;color:var(--ink)}
 .hd{display:flex;align-items:center;justify-content:space-between;gap:10px}
 h2{font-size:12.5px;margin:24px 6px 8px;color:var(--mute);font-weight:700;text-transform:uppercase;letter-spacing:.07em}
-.card{background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,0) 46px),var(--card);-webkit-backdrop-filter:blur(20px) saturate(160%);backdrop-filter:blur(20px) saturate(160%);border:0;border-radius:var(--r);padding:2px 16px;box-shadow:var(--glass)}
+.card{background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,0) 46px),var(--card);border:0;border-radius:var(--r);padding:2px 16px;box-shadow:var(--glass)}
 .pad{padding:14px 16px}
 .row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);margin:0;width:100%}
 .card>.row:last-child,.card>div:last-child .row:last-child{border-bottom:0}
@@ -91,7 +99,7 @@ h3.mm{font-size:13px;margin:12px 0 0;padding:0 0 6px;color:var(--mute);font-weig
 .sw-c>.sp,.sw-c>.row{border-bottom:0}
 .sw-c>.row{padding-left:16px;padding-right:16px}
 .sw-c{position:relative;z-index:1;background:transparent;touch-action:pan-y;transition:transform .42s cubic-bezier(.3,1.3,.5,1)}
-.sw.drag .sw-c{transition:none}
+.sw.drag .sw-c{transition:none;will-change:transform}
 /* mentre scorre la riga diventa piena, così il pulsante Elimina sotto non si vede attraverso il vetro */
 .sw.drag .sw-c,.sw.open .sw-c,.sw.full .sw-c,.sw.gone .sw-c{background:var(--cardS)}
 .sw-del{position:absolute;top:0;right:0;bottom:0;width:92px;border:0;font:inherit;font-weight:700;color:#fff;background:linear-gradient(180deg,#e98a74,#c95e4a);display:flex;align-items:center;justify-content:center}
@@ -305,6 +313,15 @@ nav button.on svg{transform:translateY(-5px) scale(1.06);filter:drop-shadow(0 1p
 .hb .b1{background:linear-gradient(90deg,rgba(225,212,187,.25),rgba(225,212,187,.55) 70%,rgba(246,238,223,.9));box-shadow:inset 0 0 0 1px rgba(255,248,232,.35),inset 0 1px 0 rgba(255,255,255,.4)}.hb .b0{background:rgba(225,212,187,.08);box-shadow:inset 0 0 0 1px rgba(225,212,187,.18)}
 @keyframes growx{from{transform:scaleX(0)}}
 .hq{margin-top:8px;font-size:14px;font-weight:700}.hq.ok{color:var(--ok)}.hq.ko{color:var(--ko)}
+/* (casse-v52) Report senza scorrimento: Tutto l'anno + mesi, sezioni a elenco; le tabelle complete (.rtab) restano nascoste e servono al PDF */
+.rtab{display:none}
+.pa{display:block;width:100%;margin:0 0 6px;font:inherit;font-size:15px;font-weight:600;color:var(--mute);background:rgba(225,212,187,.06);border:0;border-radius:12px;padding:9px 0;box-shadow:0 0 0 1px rgba(255,248,232,.10) inset;transition:transform .14s}
+.pm{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin:0 0 6px}
+.pm button{font:inherit;font-size:14px;font-weight:600;color:var(--mute);background:rgba(225,212,187,.06);border:0;border-radius:12px;padding:9px 0;box-shadow:0 0 0 1px rgba(255,248,232,.10) inset;transition:transform .14s}
+.pm button.z{opacity:.4}.pm button:active,.pa:active{transform:scale(.94)}
+.pm button.on,.pa.on{opacity:1;color:var(--hi);background:linear-gradient(180deg,rgba(176,128,88,.42),rgba(111,78,55,.34));box-shadow:0 0 0 1px rgba(255,236,200,.28) inset,0 1.5px 0 rgba(255,255,255,.38) inset}
+.rr{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}.rr:last-child{border-bottom:0}
+.rr span{color:var(--ink)}.rr b{font-weight:650;white-space:nowrap}.rr.t span,.rr.t b{color:var(--acc);font-weight:750}
 .tw{overflow-x:auto;-webkit-overflow-scrolling:touch;padding:2px 16px}
 .tw table{font-size:14px;min-width:100%}
 .tw th,.tw td{white-space:nowrap;padding-left:10px}.tw th:first-child,.tw td:first-child{padding-left:0}
@@ -316,11 +333,13 @@ nav button.on svg{transform:translateY(-5px) scale(1.06);filter:drop-shadow(0 1p
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 @media print{.ts{background:#fff!important;border:0!important;padding:0!important;text-align:left}.ts .big,.ts .tv{background:none!important;-webkit-text-fill-color:#000!important;color:#000}.ts.hero .hl,.ts.hero .hs{color:#444}.tip{display:block!important}.ib{display:none!important}:root{color-scheme:light;--ink:#000;--mute:#444;--line:#bbb;--bg:#fff;--card:#fff;--acc:#000}*{animation:none!important;box-shadow:none!important}body::before,body::after,.ts::before,.ts::after{display:none}.ts,.ts .tl,.ts.hero .hl,.ts .tb span,.ts .tb b,.ts .hs,.ts .tv small,.ts.hero .big small{color:#000!important}.ts .tg2{background:none}.ts{overflow:visible!important}.ts .tl,.ts.hero .hl{letter-spacing:.06em}.ts .tv,.ts.hero .big{font-size:26pt}.lg .s1{background:#000}.ts .chip{background:none}.card,.ts{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}nav,.noprint,#t{display:none!important}.ph{display:block;font-weight:700;font-size:20px;margin:0 0 10px}body{background:#fff;padding:0;font-size:12pt}.card{border:0;padding:0;background:#fff}h1{display:none}.hero{margin:0 0 10px}.big{font-size:22pt}.chip{background:none!important;padding:0}.ch .b1{fill:#000;stroke:none;filter:none}.ch .b0{stroke:none}.ch .b0,.lg .s0{fill:#bbb;background:#bbb}.ch .hit.sel{fill:transparent}.lg i,.hb i{-webkit-print-color-adjust:exact;print-color-adjust:exact}.hb .b1{background:#000}.hb .b0{background:#bbb}.tw{overflow:visible;padding:0}.card.tw,.tw td:first-child{background:#fff}.tw table{font-size:8.5pt}.tw th{font-size:8pt;min-width:0}.tw th,.tw td{padding:3px 0 3px 6px}.tw td:first-child{position:static}h2{color:#000;margin:14pt 0 4pt;break-after:avoid;text-transform:none;letter-spacing:0;font-size:12pt}table{break-inside:avoid}}
 /* schermata d'avvio (casse-v44, annullo casse-v45): Tabby in Garamond, filetto oro, Sali e Tabacchi, gestionale di bottega; sotto, annullo oro timbrato a mano con la data di oggi a puntini. Scritta e timbro centrati insieme sullo schermo. Scritte già convertite in tracciati: niente font da scaricare */
-#spl{position:fixed;top:-150px;right:0;left:0;height:calc(100vh + 300px);height:calc(100lvh + 300px);z-index:200;display:flex;align-items:center;justify-content:center;background:radial-gradient(70% 30% at 50% 47%,rgba(197,160,89,.16),transparent 70%),linear-gradient(180deg,#13264d 0%,#0c1a38 45%,#060d1e 100%);transition:opacity .45s ease}
+#spl{position:fixed;top:-150px;right:0;bottom:-150px;left:0;z-index:200;display:flex;align-items:center;justify-content:center;background:radial-gradient(70% 30% at 50% 47%,rgba(197,160,89,.16),transparent 70%),linear-gradient(180deg,#13264d 0%,#0c1a38 45%,#060d1e 100%);transition:opacity .45s ease}
 /* (casse-v50) foglia disegnata nella pagina: compare insieme al logo */
 #spl svg.spf{position:absolute;top:150px;right:0;width:390px;height:844px;max-width:none;margin:0;animation:none;-webkit-mask:linear-gradient(180deg,#000 0%,#000 20%,transparent 30%);mask:linear-gradient(180deg,#000 0%,#000 20%,transparent 30%)}
 #spl svg{position:relative;display:block;width:min(100vw,470px);max-width:100%;flex:none;height:auto;margin-top:-20px}
 #spl.out{opacity:0;pointer-events:none}
+/* (casse-v52) durante l'avvio la barra in basso resta nascosta e compare sfumando quando l'avvio sparisce */
+html.spl nav{opacity:0;pointer-events:none}nav{transition:opacity .45s ease}
 @keyframes spIn{from{opacity:0;transform:translateY(8px)}}
 @media (prefers-reduced-motion:reduce){#spl svg{animation:none}}
 </style>
@@ -724,7 +743,7 @@ function vRiepilogo(){
  <div class="card"><table class="rt"><tr><th>Voce</th>${th}<th>Differenza<small>in %</small></th></tr>${rows}</table></div>
  ${note?`<p class="mute">${note}</p>`:''}
  <p class="mute">${spiega}</p>
- <div class="noprint"><button class="btn" id="print">Stampa / PDF</button><button class="btn ghost" id="csv">Esporta CSV</button><button class="btn ghost" id="rep">Report annuale per il commercialista</button>
+ <div class="noprint"><button class="btn" id="print">Crea PDF</button><button class="btn ghost" id="csv">Esporta CSV</button><button class="btn ghost" id="rep">Report annuale per il commercialista</button>
  ${list}</div>`}
 
 // ---- Report annuale per il commercialista: totali mensili per reparto e per metodo di incasso ----
@@ -734,58 +753,49 @@ function annuale(y){
  // reparti attuali + eventuali reparti eliminati che hanno importi nell'anno (restano nei totali)
  const names=[...new Set([...db.reparti,...Object.keys(t.rep)])];
  return{m,t,names}}
-function vReport(){
- const y=repY,{m,t,names}=annuale(y),z=x=>grp(x);
- const cell=(x,n)=>n?`<td>${z(x)}</td>`:'<td class="z">—</td>';
- const inc=r=>(r.c||0)+(r.pos||0)+(r.sat||0);
- const r1=m.map((r,i)=>`<tr><td>${MESI[i]}</td>${names.map(k=>cell(r.rep[k],r.n)).join('')}${cell(sumRep(r),r.n)}</tr>`).join('')
-  +`<tr class="s"><td>Totale ${y}</td>${names.map(k=>`<td>${z(t.rep[k])}</td>`).join('')}<td>${z(sumRep(t))}</td></tr>`;
- const r2=m.map((r,i)=>`<tr><td>${MESI[i]}</td>${cell(r.c,r.n)}${cell(r.pos,r.n)}${cell(r.sat,r.n)}${cell(inc(r),r.n)}<td>${r.n}</td></tr>`).join('')
-  +`<tr class="s"><td>Totale ${y}</td><td>${z(t.c)}</td><td>${z(t.pos)}</td><td>${z(t.sat)}</td><td>${z(inc(t))}</td><td>${t.n}</td></tr>`;
- const c3=(x,r)=>r.n||r.ot?`<td>${z(x)}</td>`:'<td class="z">—</td>';
- const r3=m.map((r,i)=>`<tr><td>${MESI[i]}</td>${c3(r.ot,r)}${c3(r.ov,r)}${c3(r.ag,r)}</tr>`).join('')
-  +`<tr class="s"><td>Totale ${y}</td><td>${z(t.ot)}</td><td>${z(t.ov)}</td><td>${z(t.ag)}</td></tr>`;
- const c4=(x,r)=>r.n||r.ot||r.aa||r.al||r.og||r.lp||r.lh?`<td>${z(x)}</td>`:'<td class="z">—</td>';
- const r4=m.map((r,i)=>`<tr><td>${MESI[i]}</td>${c4(r.avn,r)}${c4(r.aan,r)}${c4(r.ga,r)}${c4(r.gt,r)}</tr>`).join('')
-  +`<tr class="s"><td>Totale ${y}</td><td>${z(t.avn)}</td><td>${z(t.aan)}</td><td>${z(t.ga)}</td><td>${z(t.gt)}</td></tr>`;
- const c5=(x,r)=>r.n||r.al||r.og?`<td>${z(x)}</td>`:'<td class="z">—</td>';
- const r5=m.map((r,i)=>`<tr><td>${MESI[i]}</td>${c5(r.al,r)}${c5(r.og,r)}${c5(r.gg,r)}${c5(r.gl,r)}${c5(r.gb,r)}</tr>`).join('')
-  +`<tr class="s"><td>Totale ${y}</td><td>${z(t.al)}</td><td>${z(t.og)}</td><td>${z(t.gg)}</td><td>${z(t.gl)}</td><td>${z(t.gb)}</td></tr>`;
- const c6=(x,r)=>r.n||r.lp||r.lh?`<td>${z(x)}</td>`:'<td class="z">—</td>';
- const r6=m.map((r,i)=>`<tr><td>${MESI[i]}</td>${c6(r.lp,r)}${c6(r.lh,r)}${c6(r.gp,r)}</tr>`).join('')
-  +`<tr class="s"><td>Totale ${y}</td><td>${z(t.lp)}</td><td>${z(t.lh)}</td><td>${z(t.gp)}</td></tr>`;
+// (casse-v52) Report annuale senza scorrimento: sotto l'anno «Tutto l'anno» e i 12 mesi; ogni sezione è un elenco voce → importo.
+// Le tabelle complete (mese per mese) restano nella pagina ma nascoste (.rtab): servono al PDF per il commercialista e ai test.
+// repSez(y) → [{t titolo, h intestazioni (h[0]='Mese'), r 12 righe di celle, T celle del totale, k colonna in oro (-1 nessuna), n colonne con numeri interi}] ; cella null = «—»
+function repSez(y){
+ const{m,t,names}=annuale(y),inc=r=>(r.c||0)+(r.pos||0)+(r.sat||0);
+ const S=[],z0=v=>v==null?0:v,add=(t,h,f,ok,T,k)=>S.push({t,h,r:m.map((r,i)=>ok(r,i)?f(r,i).map(z0):f(r,i).map(()=>null)),T:T.map(z0),k});
+ add('Incassi per reparto',['Mese',...names,'Totale reparti'],r=>[...names.map(k=>r.rep[k]),sumRep(r)],r=>r.n,[...names.map(k=>t.rep[k]),sumRep(t)],names.length+1);
+ add('Incassi per metodo di pagamento',['Mese','Contanti','POS','Satispay','Totale incassato','Chiusure'],r=>[r.c,r.pos,r.sat,inc(r),r.n],r=>r.n,[t.c,t.pos,t.sat,inc(t),t.n],4);
+ S[1].r.forEach((x,i)=>{x[4]=m[i].n});S[1].n=5;
+ add('Tabacco e Monopolio',['Mese','Ordini pagati','Valore di vendita','Guadagno'],r=>[r.ot,r.ov,r.ag],r=>r.n||r.ot,[t.ot,t.ov,t.ag],3);
+ add(accK()+' e guadagno totale',['Mese','Venduti senza IVA','Acquisti senza IVA','Guadagno '+accK(),'Guadagno totale'],r=>[r.avn,r.aan,r.ga,r.gt],r=>r.n||r.ot||r.aa||r.al||r.og||r.lp||r.lh,[t.avn,t.aan,t.ga,t.gt],4);
+ const xs=repX(t);if(xs.length)add('Guadagno degli altri reparti',['Mese',...xs.map(n=>'Guadagno '+n+' ('+tipoL(n)+')')],r=>xs.map(n=>(r.xr[n]||{}).g||0),()=>1,xs.map(n=>(t.xr[n]||{}).g||0),-1);
+ add('Brightstar',['Mese','Guadagno Lotto (Aggio Gioco)','Ordini Gratta e Vinci','Guadagno Gratta e Vinci','Guadagno Lotteria Italia','Guadagno Brightstar'],r=>[r.al,r.og,r.gg,r.gl,r.gb],r=>r.n||r.al||r.og,[t.al,t.og,t.gg,t.gl,t.gb],5);
+ add('LisPoint',['Mese','Compensi LIS Pay','Compensi LIS Holding','Guadagno LisPoint'],r=>[r.lp,r.lh,r.gp],r=>r.n||r.lp||r.lh,[t.lp,t.lh,t.gp],3);
  const sm=MESI.map((_,i)=>spese(new Date(y,i,1),new Date(y,i+1,0))),st=spese(new Date(y,0,1),new Date(y,11,31));
- const c7=(x,r,q)=>r.n||r.gt||q.tot?`<td>${z(x)}</td>`:'<td class="z">—</td>';
- const r7=m.map((r,i)=>{const q=sm[i];return `<tr><td>${MESI[i]}</td>${c7(r.gt,r,q)}${c7(q.sf,r,q)}${c7(q.so,r,q)}${c7(q.iv,r,q)}${c7(c2(r.gt-q.tot),r,q)}</tr>`}).join('')
-  +`<tr class="s"><td>Totale ${y}</td><td>${z(t.gt)}</td><td>${z(st.sf)}</td><td>${z(st.so)}</td><td>${z(st.iv)}</td><td>${z(c2(t.gt-st.tot))}</td></tr>`;
- const xs=repX(t),r8=xs.length?m.map((r,i)=>`<tr><td>${MESI[i]}</td>${xs.map(n=>`<td>${z((r.xr[n]||{}).g||0)}</td>`).join('')}</tr>`).join('')
-  +`<tr class="s"><td>Totale ${y}</td>${xs.map(n=>`<td>${z((t.xr[n]||{}).g||0)}</td>`).join('')}</tr>`:'';
- const oggi=new Date().toLocaleDateString('it-IT',{day:'numeric',month:'long',year:'numeric'});
+ add('Spese e guadagno netto',['Mese','Guadagno totale','Spese fisse senza IVA','Spese occasionali senza IVA','IVA delle spese','Guadagno netto'],(r,i)=>{const q=sm[i];return[r.gt,q.sf,q.so,q.iv,c2(r.gt-q.tot)]},(r,i)=>r.n||r.gt||sm[i].tot,[t.gt,st.sf,st.so,st.iv,c2(t.gt-st.tot)],5);
+ return{S,t,m}}
+let repM=-1;
+function rpList(S,P){const nome=P<0?'':' · '+MESI[P].toLowerCase();
+ return S.map(x=>`<h2>${esc(x.t)}${nome}</h2><div class="card">${x.h.slice(1).map((h,j)=>{const v=P<0?x.T[j]:x.r[P][j],ct=x.n===j+1;
+  return `<div class="rr${x.k===j+1?' t':''}"><span>${esc(h)}</span><b>${v==null?'—':ct?v:eur(v)}</b></div>`}).join('')}</div>`).join('')}
+function rpMesi(S){return `<button class="pa${repM<0?' on':''}" data-rm="-1">Tutto l'anno</button><div class="pm">${MESI.map((n,i)=>`<button class="${repM===i?'on':''}${S.some(x=>x.r[i].some(v=>v!=null))?'':' z'}" data-rm="${i}">${n.slice(0,3)}</button>`).join('')}</div>`}
+function rpBody(){
+ const y=repY,{S,t}=repSez(y),z=x=>grp(x),oggi=new Date().toLocaleDateString('it-IT',{day:'numeric',month:'long',year:'numeric'});
+ const tab=x=>`<h2>${esc(x.t)} (€)</h2>
+ <div class="card tw"><table><tr>${x.h.map(h=>`<th>${esc(h)}</th>`).join('')}</tr>${x.r.map((r,i)=>`<tr><td>${MESI[i]}</td>${r.map((v,j)=>v==null?'<td class="z">—</td>':`<td>${x.n===j+1?v:z(v)}</td>`).join('')}</tr>`).join('')}<tr class="s"><td>Totale ${y}</td>${x.T.map((v,j)=>`<td>${x.n===j+1?v:z(v)}</td>`).join('')}</tr></table></div>`;
+ return `${t.n?'':`<p class="mute">Nessuna chiusura registrata nel ${y}.</p>`}
+ <div class="noprint" id="rpm">${rpMesi(S)}</div><div class="noprint" id="rpl">${rpList(S,repM)}</div>
+ <div class="rtab"><div class="ph">Tabaccheria – report annuale ${y}<small>Totali mensili degli incassi. Importi in euro. Generato il ${oggi}.</small></div>
+ ${S.map(tab).join('\n ')}
+ <p class="mute">Contanti al netto del fondo cassa. «—» = nessuna chiusura registrata nel mese. Tabacco e Monopolio: valore di vendita = ordini ÷ 0,9, guadagno = valore − ordini. ${esc(accK())}: senza IVA = importo ÷ 1,22; Brightstar: guadagno Lotto = Aggio Gioco degli estratti conto del Lotto; Gratta e Vinci: valore = ordini ÷ 0,92, guadagno = valore − ordini; Lotteria Italia (parte dell'ordine): ÷ 0,9, guadagno 10%. LisPoint: compensi dagli estratti conto. Guadagno totale = tabacco + ${esc(accK())} + Brightstar + LisPoint.</p></div>
+ <p class="mute noprint">«—» = nessuna chiusura registrata. Tocca un mese per vedere solo quel mese. Il PDF contiene le tabelle complete, mese per mese, per la commercialista.</p>`}
+function vReport(){
  return `<h1>Report annuale</h1>
  <div class="noprint"><button class="btn ghost" id="back" style="margin:0 0 10px">‹ Torna al riepilogo</button></div>
- <div class="nav2 noprint"><button data-y="-1" aria-label="Anno precedente">‹</button><b>${y}</b><button data-y="1" aria-label="Anno successivo">›</button></div>
- <div class="ph">Tabaccheria – report annuale ${y}<small>Totali mensili degli incassi. Importi in euro. Generato il ${oggi}.</small></div>
- ${t.n?'':`<p class="mute">Nessuna chiusura registrata nel ${y}.</p>`}
- <h2>Incassi per reparto (€)</h2>
- <div class="card tw"><table><tr><th>Mese</th>${names.map(k=>`<th>${esc(k)}</th>`).join('')}<th>Totale reparti</th></tr>${r1}</table></div>
- <h2>Incassi per metodo di pagamento (€)</h2>
- <div class="card tw"><table><tr><th>Mese</th><th>Contanti</th><th>POS</th><th>Satispay</th><th>Totale incassato</th><th>Chiusure</th></tr>${r2}</table></div>
- <h2>Tabacco e Monopolio (€)</h2>
- <div class="card tw"><table><tr><th>Mese</th><th>Ordini pagati</th><th>Valore di vendita</th><th>Guadagno</th></tr>${r3}</table></div>
- <h2>${esc(accK())} e guadagno totale (€)</h2>
- <div class="card tw"><table><tr><th>Mese</th><th>Venduti senza IVA</th><th>Acquisti senza IVA</th><th>Guadagno ${esc(accK())}</th><th>Guadagno totale</th></tr>${r4}</table></div>
- ${xs.length?`<h2>Guadagno degli altri reparti (€)</h2>
- <div class="card tw"><table><tr><th>Mese</th>${xs.map(n=>`<th>Guadagno ${esc(n)} (${esc(tipoL(n))})</th>`).join('')}</tr>${r8}</table></div>`:''}
- <h2>Brightstar (€)</h2>
- <div class="card tw"><table><tr><th>Mese</th><th>Guadagno Lotto (Aggio Gioco)</th><th>Ordini Gratta e Vinci</th><th>Guadagno Gratta e Vinci</th><th>Guadagno Lotteria Italia</th><th>Guadagno Brightstar</th></tr>${r5}</table></div>
- <h2>LisPoint (€)</h2>
- <div class="card tw"><table><tr><th>Mese</th><th>Compensi LIS Pay</th><th>Compensi LIS Holding</th><th>Guadagno LisPoint</th></tr>${r6}</table></div>
- <h2>Spese e guadagno netto (€)</h2>
- <div class="card tw"><table><tr><th>Mese</th><th>Guadagno totale</th><th>Spese fisse senza IVA</th><th>Spese occasionali senza IVA</th><th>IVA delle spese</th><th>Guadagno netto</th></tr>${r7}</table></div>
- <p class="mute">Contanti al netto del fondo cassa. «—» = nessuna chiusura registrata nel mese. Tabacco e Monopolio: valore di vendita = ordini ÷ 0,9, guadagno = valore − ordini. ${esc(accK())}: senza IVA = importo ÷ 1,22; Brightstar: guadagno Lotto = Aggio Gioco degli estratti conto del Lotto; Gratta e Vinci: valore = ordini ÷ 0,92, guadagno = valore − ordini; Lotteria Italia (parte dell'ordine): ÷ 0,9, guadagno 10%. LisPoint: compensi dagli estratti conto. Guadagno totale = tabacco + ${esc(accK())} + Brightstar + LisPoint.</p>
- <div class="noprint"><button class="btn" id="print">Stampa / PDF</button><button class="btn ghost" id="rcsv">Esporta CSV</button>
- <p class="mute">Per il PDF: <i>Stampa / PDF</i> → nella stampa tocca Condividi (o allarga l'anteprima) → <i>Salva in File</i>.</p></div>`}
-
+ <div class="nav2 noprint"><button data-y="-1" aria-label="Anno precedente">‹</button><b id="rpy">${repY}</b><button data-y="1" aria-label="Anno successivo">›</button></div>
+ <div id="rpb">${rpBody()}</div>
+ <div class="noprint"><button class="btn" id="print">Crea PDF</button><button class="btn ghost" id="rcsv">Esporta CSV</button>
+ <p class="mute">Crea PDF → si apre la condivisione: <i>Salva in File</i>, Mail o WhatsApp.</p></div>`}
+// frecce dell'anno e mesi: cambia solo il contenuto, la pagina resta ferma dov'è e un unico blocco sfuma
+function rpAnim(el,k){if(!el||matchMedia('(prefers-reduced-motion: reduce)').matches)return;el.animate(k?[{opacity:0,transform:`translateX(${k*18}px)`},{opacity:1,transform:'none'}]:[{opacity:.25},{opacity:1}],{duration:k?300:200,easing:'cubic-bezier(.23,1,.32,1)'})}
+function rpAnno(k){const b=$('#rpb');if(!b){render();return}const y0=scrollY;repY+=k;$('#rpy').textContent=repY;b.innerHTML=rpBody();if(scrollY!==y0)scrollTo(0,y0);rpAnim($('#rpl'),k)}
+function rpMese(i){const l=$('#rpl'),mm=$('#rpm');if(!l)return;repM=i;const{S}=repSez(repY);mm.innerHTML=rpMesi(S);l.innerHTML=rpList(S,i);rpAnim(l,0)}
 function rcsv(){const y=repY,{m,t,names}=annuale(y),xs=repX(t),sm=MESI.map((_,i)=>spese(new Date(y,i,1),new Date(y,i+1,0))),st=spese(new Date(y,0,1),new Date(y,11,31)),v=x=>c2(x).toFixed(2).replace('.',','),q=s=>/[;"\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;
  const inc=r=>(r.c||0)+(r.pos||0)+(r.sat||0);
  const row=(l,r,q)=>[l,...names.map(k=>v(r.rep[k])),v(sumRep(r)),v(r.c),v(r.pos),v(r.sat),v(inc(r)),r.n,v(r.ot),v(r.ov),v(r.ag),v(r.avn),v(r.aan),v(r.ga),...xs.map(n=>v((r.xr[n]||{}).g||0)),v(r.al),v(r.og),v(r.gg),v(r.gl),v(r.gb),v(r.lp),v(r.lh),v(r.gp),v(r.gt),v(q.sf),v(q.so),v(q.iv),v(c2(r.gt-q.tot))].join(';');
@@ -952,6 +962,70 @@ function render(){rPend++;if($('#ntp'))ntChiudi(true);calChiudi(null,true);const
  if(lastView!==null&&lastView!==view){M.classList.remove('enter');void M.offsetWidth;M.classList.add('enter')}lastView=view;lastQ=null;
  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===(view==='report'?'riepilogo':view)));navInd(navIdx(view));segInd();calc();if(nuova)scrollTo(0,0);barSu()}
 
+// (casse-v52) «Crea PDF»: Tabby scrive da sé il file PDF (Helvetica, niente librerie) e apre la condivisione (Salva in File, Mail, WhatsApp).
+// Sull'iPhone, con Tabby installata sulla Home, il comando Stampa non funziona. Report annuale: tabelle complete su A4 orizzontale; Riepilogo: voci e importi su A4 verticale.
+const PFW=[[278,278,355,556,556,889,667,191,333,333,389,584,278,333,278,278,556,556,556,556,556,556,556,556,556,556,278,278,584,584,584,556,1015,667,667,722,722,667,611,778,722,278,500,667,556,833,722,778,667,778,722,667,611,722,667,944,667,667,611,278,278,278,469,556,333,556,556,500,556,556,278,556,556,222,222,500,222,833,556,556,556,556,333,500,278,556,500,722,500,500,500,334,260,334,584,761,556,556,222,556,333,1000,556,556,333,1000,667,333,1000,556,611,556,556,222,222,333,333,350,556,1000,333,1000,500,333,944,556,500,667,278,333,556,556,556,556,260,556,333,737,370,556,584,333,737,333,400,584,333,333,333,556,537,278,333,333,365,556,834,834,834,611,667,667,667,667,667,667,1000,722,667,667,667,667,278,278,278,278,722,722,778,778,778,778,778,584,778,722,722,722,722,667,667,611,556,556,556,556,556,556,889,500,556,556,556,556,278,278,278,278,556,556,556,556,556,556,556,584,611,556,556,556,556,500,556,500],[278,333,474,556,556,889,722,238,333,333,389,584,278,333,278,278,556,556,556,556,556,556,556,556,556,556,333,333,584,584,584,611,975,722,722,722,722,667,611,778,722,278,556,722,611,833,722,778,667,778,722,667,611,722,667,944,667,667,611,333,278,333,584,556,333,556,611,556,611,556,333,611,611,278,278,556,278,889,611,611,611,611,389,556,333,611,556,778,556,556,500,389,280,389,584,761,556,556,278,556,500,1000,556,556,333,1000,667,333,1000,556,611,556,556,278,278,500,500,350,556,1000,333,1000,556,333,944,556,500,667,278,333,556,556,556,556,280,556,333,737,370,556,584,333,737,333,400,584,333,333,333,611,556,278,333,333,365,556,834,834,834,611,722,722,722,722,722,722,1000,722,667,667,667,667,278,278,278,278,722,722,778,778,778,778,778,584,778,722,722,722,722,667,667,611,556,556,556,556,556,556,889,556,556,556,556,556,278,278,278,278,611,611,611,611,611,611,611,584,611,611,611,611,611,556,611,556]];
+const P1252={8364:128,8218:130,402:131,8222:132,8230:133,8224:134,8225:135,710:136,8240:137,352:138,8249:139,338:140,381:142,8216:145,8217:146,8220:147,8221:148,8226:149,8211:150,8212:151,732:152,8482:153,353:154,8250:155,339:156,382:158,376:159};
+function pdfB(t){const o=[];for(const ch of String(t).replace(/−/g,'-').replace(/[   ]/g,' ')){const c=ch.codePointAt(0);o.push(c>=32&&c<127||c>=160&&c<256?c:P1252[c]||63)}return o}
+function pdfW(t,b,sz){let w=0;for(const c of pdfB(t))w+=PFW[b?1:0][c-32]||556;return w*sz/1000}
+function pdfS(t){return pdfB(t).map(c=>c===40||c===41||c===92?'\\'+String.fromCharCode(c):c>126?'\\'+c.toString(8).padStart(3,'0'):String.fromCharCode(c)).join('')}
+function pdfDoc(land){
+ const PX=land?842:595,PY=land?595:842,M=34,W=PX-2*M,pages=[];let c,y;
+ const np=()=>{c=[];pages.push(c);y=PY-M};np();
+ const tx=(x,yy,t,sz,b,g)=>c.push(`BT /F${b?2:1} ${sz} Tf ${g||0} g ${x.toFixed(2)} ${yy.toFixed(2)} Td (${pdfS(t)}) Tj ET`);
+ const ln=(x1,yy,x2,g,w)=>c.push(`${g} G ${w||.5} w ${x1.toFixed(2)} ${yy.toFixed(2)} m ${x2.toFixed(2)} ${yy.toFixed(2)} l S`);
+ const need=h=>{if(y-h<M+16){np();return 1}return 0};
+ const wrap=(t,w,sz,b)=>{const o=[];let cur='';for(const p of String(t).split(/\s+/).filter(Boolean)){const q=cur?cur+' '+p:p;if(!cur||pdfW(q,b,sz)<=w)cur=q;else{o.push(cur);cur=p}}if(cur)o.push(cur);return o.length?o:['']};
+ return{
+  title(t,sub){need(44);tx(M,y-17,t,17,1);y-=25;if(sub)for(const l of wrap(sub,W,9)){need(12);tx(M,y-9,l,9,0,.35);y-=12}y-=8},
+  h(t,rows){const th=rows?rows*13.8+34:0;need(36+(th&&th<PY-2*M-60?th:0));y-=8;tx(M,y-12,t,12,1,.1);y-=19},
+  kv(a,v,b,sz=10){const vw=pdfW(v,1,sz),ls=wrap(a,W-vw-18,sz,b),h=ls.length*(sz+3)+5;need(h);ls.forEach((l,i)=>tx(M,y-sz-i*(sz+3),l,sz,b));tx(M+W-vw,y-sz,v,sz,1);y-=h;ln(M,y,M+W,.82);y-=5},
+  p(t,sz=8.5){for(const l of wrap(t,W,sz)){need(sz+3);tx(M,y-sz,l,sz,0,.35);y-=sz+3}y-=5},
+  table(H,R){
+   let sz=8.2,cw,pad=9;
+   const fit=()=>{cw=H.map((h,j)=>{let m=Math.max(...h.split(/\s+/).map(p=>pdfW(p,1,sz)),...R.map((r,i)=>pdfW(r[j]||'',i===R.length-1,sz)));return m+pad});
+    let free=W-cw.reduce((a,b)=>a+b,0);
+    if(free>0)H.forEach((h,j)=>{const full=pdfW(h,1,sz)+pad;if(full>cw[j]){const g=Math.min(full-cw[j],free);cw[j]+=g;free-=g}});return W-cw.reduce((a,b)=>a+b,0)};
+   while(fit()<0&&sz>6.6)sz=+(sz-.3).toFixed(2);
+   // ancora troppo larga: colonne divise in più tabelle, sempre con la colonna Mese
+   if(fit()<0){const ch=[[]];let w=cw[0];for(let j=1;j<H.length;j++){if(w+cw[j]>W&&ch[ch.length-1].length){ch.push([]);w=cw[0]}ch[ch.length-1].push(j);w+=cw[j]}
+    ch.forEach((cols,k)=>{if(k)y-=8;this.table([H[0],...cols.map(j=>H[j])],R.map(r=>[r[0],...cols.map(j=>r[j])]))});return}
+   const extra=(W-cw.reduce((a,b)=>a+b,0))/H.length;cw=cw.map(w=>w+extra);
+   const hl=H.map((h,j)=>wrap(h,cw[j]-pad+.5,sz,1)),hh=Math.max(...hl.map(l=>l.length))*(sz+2.4)+6,rh=sz+5.4;
+   const head=()=>{let x=M;hl.forEach((ls,j)=>{ls.forEach((l,i)=>{const yy=y-hh+6+(ls.length-1-i)*(sz+2.4);tx(j?x+cw[j]-pdfW(l,1,sz)-2:x,yy,l,sz,1,.25)});x+=cw[j]});y-=hh;ln(M,y,M+W,.3,.8)};
+   need(hh+rh*3);head();
+   R.forEach((r,i)=>{const last=i===R.length-1;if(need(rh)){head()}let x=M;
+    if(last)ln(M,y,M+W,.3,.8);
+    r.forEach((v,j)=>{v=v||'';tx(j?x+cw[j]-pdfW(v,last,sz)-2:x,y-rh+3.9,v,sz,last,v==='—'?.55:0);x+=cw[j]});y-=rh;if(!last)ln(M,y,M+W,.88,.4)});y-=10},
+  out(){const n=pages.length,o=[],off=[];let s='%PDF-1.4\n';
+   const add=b=>{off.push(s.length);s+=`${off.length} 0 obj\n${b}\nendobj\n`};
+   add('<< /Type /Catalog /Pages 2 0 R >>');
+   add(`<< /Type /Pages /Kids [${pages.map((_,i)=>`${5+i*2} 0 R`).join(' ')}] /Count ${n} >>`);
+   add('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>');
+   add('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>');
+   pages.forEach((p,i)=>{const f=`Tabby · pagina ${i+1} di ${n}`,st=p.join('\n')+`\nBT /F1 7.5 Tf .5 g ${(PX-M-pdfW(f,0,7.5)).toFixed(2)} ${(M-14).toFixed(2)} Td (${pdfS(f)}) Tj ET`;
+    add(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${PX} ${PY}] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ${6+i*2} 0 R >>`);
+    add(`<< /Length ${st.length} >>\nstream\n${st}\nendstream`)});
+   const x=s.length;s+=`xref\n0 ${off.length+1}\n0000000000 65535 f \n`+off.map(v=>String(v).padStart(10,'0')+' 00000 n \n').join('')+`trailer\n<< /Size ${off.length+1} /Root 1 0 R >>\nstartxref\n${x}\n%%EOF\n`;return s}}}
+// legge la pagina così com'è: titolo (.ph), sezioni (h2), righe voce/importo, tabelle e note grigie
+function pdfDa(root,d){
+ const TX=(n,raw)=>{const k=n.cloneNode(true);k.querySelectorAll('.ib,.tip,svg,.noprint').forEach(x=>x.remove());if(!raw)k.querySelectorAll('small').forEach(x=>{x.textContent=' · '+x.textContent});return k.textContent.replace(/\s+/g,' ').replace(/^ · /,'').trim()};
+ const walk=e=>{for(const n of e.children){const cl=n.classList;
+  if(cl.contains('noprint')||cl.contains('ib')||cl.contains('tip')||n.matches('h1,svg,input,select,script,style,.vh,.lg,.dlg,.seg,.nav2'))continue;
+  if(cl.contains('ph')){const sm=n.querySelector('small');d.title((n.firstChild&&n.firstChild.nodeType===3?n.firstChild.textContent:TX(n)).trim(),sm?sm.textContent.trim():'');continue}
+  if(n.tagName==='H2'){const nt=n.nextElementSibling,tb=nt&&nt.querySelector&&nt.querySelector('table');d.h(TX(n),tb?tb.rows.length:0);continue}
+  if(n.tagName==='TABLE'){const R=[...n.rows].map(r=>[...r.cells].map(TX));if(R.length>1)d.table(R[0],R.slice(1));continue}
+  if(cl.contains('ts')&&cl.contains('hero')){const l=n.querySelector('.hl'),b=n.querySelector('.big');if(l&&b)d.kv(TX(l),TX(b,1),1,12);n.querySelectorAll('.hs,.hq').forEach(x=>d.p(TX(x),9));n.querySelectorAll('.tb').forEach(x=>{const a=x.children;if(a.length>1)d.kv(TX(a[0]),TX(a[a.length-1]),1)});continue}
+  if((cl.contains('row')||cl.contains('rr')||cl.contains('tb'))&&n.children.length>1){const a=[...n.children].filter(x=>!x.matches('.ib,.tip,svg'));if(a.length>1){const v=TX(a[a.length-1]);if(v)d.kv(TX(a[0]),v,cl.contains('s')||cl.contains('gu')||cl.contains('t'))}continue}
+  if(n.tagName==='P'&&cl.contains('mute')){const t=TX(n);if(t)d.p(t);continue}
+  walk(n)}};
+ walk(root)}
+function pdfCrea(){
+ const A=$('#app'),rp=view==='report',root=rp?A.querySelector('.rtab'):A;if(!root)return;
+ const d=pdfDoc(rp);pdfDa(root,d);
+ const ph=root.querySelector('.ph'),nm=ph&&ph.firstChild?ph.firstChild.textContent:'tabby';
+ const slug=nm.toLowerCase().replace(/^tabaccheria\s*–\s*/,'').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+ saveFile('tabby-'+(slug||'riepilogo')+'.pdf','application/pdf',d.out())}
 async function saveFile(name,type,text){
  const f=new File([type.includes('csv')?'\ufeff'+text:text],name,{type});
  if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],title:name});return}catch(e){if(e.name==='AbortError')return}}
@@ -1030,10 +1104,10 @@ $('#app').addEventListener('pointerdown',e=>{const c=e.target.closest('.sw-c');i
  const w=c.parentNode;swClose(w);swD={w,c,x:e.clientX,y:e.clientY,o:w.classList.contains('open')?-92:0,on:false,id:e.pointerId,lx:e.clientX,lt:e.timeStamp,vx:0}});
 $('#app').addEventListener('pointermove',e=>{if(!swD||e.pointerId!==swD.id)return;const dx=e.clientX-swD.x,dy=e.clientY-swD.y;
  if(!swD.on){if(Math.abs(dx)<10||Math.abs(dx)<Math.abs(dy)*1.2){if(Math.abs(dy)>10)swD=null;return}swD.on=true;swD.w.classList.add('drag');try{swD.c.setPointerCapture(e.pointerId)}catch(_){}if(document.activeElement)document.activeElement.blur()}
- const W=swD.w.offsetWidth,raw=swD.o+dx,o=raw>0?Math.min(24,raw*.25):Math.max(-W,raw),full=o<-W*.55;
- const dt=e.timeStamp-swD.lt;if(dt>0){swD.vx=swD.vx*.4+(e.clientX-swD.lx)/dt*.6;swD.lx=e.clientX;swD.lt=e.timeStamp}swD.c.style.transform=`translateX(${o}px)`;swD.cur=o;
+ const W=swD.W||(swD.W=swD.w.offsetWidth),raw=swD.o+dx,o=raw>0?Math.min(24,raw*.25):Math.max(-W,raw),full=o<-W*.55;
+ const dt=e.timeStamp-swD.lt;if(dt>0){swD.vx=swD.vx*.4+(e.clientX-swD.lx)/dt*.6;swD.lx=e.clientX;swD.lt=e.timeStamp}swD.cur=o;if(!swD.raf){const q=swD;q.raf=requestAnimationFrame(()=>{q.raf=0;if(q.w.classList.contains('drag'))q.c.style.transform=`translateX(${q.cur}px)`})}
  if(full!==swD.w.classList.contains('full')){swD.w.classList.toggle('full',full);hap()}});
-const swEnd=e=>{if(!swD||e.pointerId!==swD.id)return;const d=swD;swD=null;if(!d.on)return;d.w.classList.remove('drag');
+const swEnd=e=>{if(!swD||e.pointerId!==swD.id)return;const d=swD;swD=null;if(!d.on)return;if(d.raf){cancelAnimationFrame(d.raf);d.raf=0}d.w.classList.remove('drag');
  if(d.w.classList.contains('full')){const k=d.w.querySelector('.sw-del').dataset.del;d.c.style.transform=`translateX(-${d.w.offsetWidth}px)`;
   // iPhone: Safari vibra solo dentro il «touchend» (dito alzato), quindi l'eliminazione parte da lì; mouse subito; riserva dopo 350 ms
   swAct={k,w:d.w,t:setTimeout(swRun,350)};if(e.pointerType!=='touch')swRun();return}
@@ -1132,10 +1206,11 @@ A.addEventListener('click',async e=>{const h=e.target.closest('[data-b]');
   if(mode==='giorno')a.setDate(a.getDate()+k);else if(mode==='settimana')a.setDate(a.getDate()+7*k);else if(mode==='mese'){a.setDate(1);a.setMonth(a.getMonth()+k)}else{const g=a.getDate();a.setDate(1);a.setFullYear(a.getFullYear()+k);a.setDate(Math.min(g,new Date(a.getFullYear(),a.getMonth()+1,0).getDate()))}
   anchor=a;render();slide(k)}
  else if(d.edit){cur=d.edit;view='chiusura';render()}
- else if(id==='print'){flushRest();print()}
- else if(id==='rep'){repY=anchor.getFullYear();view='report';render()}
+ else if(id==='print'){flushRest();pdfCrea()}
+ else if(id==='rep'){repY=anchor.getFullYear();repM=-1;view='report';render()}
  else if(id==='back'){view='riepilogo';render()}
- else if(d.y){repY+=+d.y;render();slide(+d.y)}
+ else if(d.y){rpAnno(+d.y)}
+ else if(d.rm!==undefined){rpMese(+d.rm)}
  else if(id==='rcsv')rcsv();
  else if(id==='csv')csv();
  else if(id==='add'){const n=$('#nn').value.trim();if(!n){campoErr($('#nn'),'Scrivi il nome del reparto');return}if(db.reparti.includes(n)){campoErr($('#nn'),'Reparto già presente');return}
@@ -1247,11 +1322,11 @@ function salvaFx(){const b=$('#save');if(!b)return;if(RM()){toast('Chiusura salv
 render();
 
 // schermata d'avvio (Tabby in Garamond + annullo con la data di oggi): circa 1,5 secondi, si chiude toccando; nei test automatici (navigator.webdriver) non compare
-(function(){const s=document.getElementById('spl');if(!s)return;if(navigator.webdriver){s.remove();return}
+(function(){const s=document.getElementById('spl');if(!s||navigator.webdriver){document.documentElement.classList.remove('spl');if(s)s.remove();return}
  // annullo: data di oggi a puntini (cifre 3×5), giorno.mese grande e anno piccolo
  // (casse-v48) puntini leggermente irregolari, come i caratteri di un datario consumato
  try{const d=new Date(),z=n=>String(n).padStart(2,'0'),g=document.getElementById('spD');if(g)g.innerHTML=dotT(z(d.getDate())+'.'+z(d.getMonth()+1),-9,2.7,1.05,1)+dotT(String(d.getFullYear()),8,1.9,.75,1)}catch(e){}
- let f=false;const end=()=>{if(f)return;f=true;s.classList.add('out');setTimeout(()=>s.remove(),500)};s.addEventListener('pointerdown',end);setTimeout(end,1500)})();
+ let f=false;const end=()=>{if(f)return;f=true;s.classList.add('out');document.documentElement.classList.remove('spl');setTimeout(()=>s.remove(),500)};s.addEventListener('pointerdown',end);setTimeout(end,1500)})();
 </script>
 </body>
 </html>

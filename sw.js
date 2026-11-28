@@ -1,4 +1,5 @@
-const C='casse-v51',F=['./','index.html','manifest.json','icon-180.png','icon-192.png','icon-512.png'];
+const C='casse-v52',F=['./','index.html','manifest.json','icon-180.png','icon-192.png','icon-512.png'];
+// casse-v52: avvio senza barra sotto + immagine d'apertura, pagine più fluide, Report senza scorrimento, PDF creato da Tabby, swipe fluido
 // casse-v51: IVA da mettere da parte nel Riepilogo (stima, IVA trimestrale)
 // casse-v50: foglia di tabacco dettagliata (anche nell'avvio, disegnata nella pagina: niente ritardo) + avvio senza scatto
 // casse-v49: effetto d'errore sui campi (ondeggia, bordo terracotta, messaggio sotto il campo)
