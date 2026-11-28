@@ -950,7 +950,7 @@ function delItem(k){const i=k.indexOf(':'),w=k.slice(0,i),x=k.slice(i+1);
 let swD=null;
 function swClose(x){document.querySelectorAll('.sw.open,.sw.full').forEach(w=>{if(w!==x){w.classList.remove('open','full');w.querySelector('.sw-c').style.transform=''}})}
 // (casse-v56) versione scritta in fondo a Impostazioni: così si vede subito se il telefono ha già quella nuova (uguale alla cache di sw.js)
-const VER='casse-v58';
+const VER='casse-v59';
 function vImp(){return `<h1>Impostazioni</h1><h2>Reparti${ib('t-rp')}</h2><p class="mute hint tip" id="t-rp">Tocca un nome per cambiarlo. Accanto a ogni reparto c'è il suo tipo di calcolo, scelto quando lo aggiungi. Per eliminare un reparto scorrilo verso sinistra fino in fondo.</p>
  <div class="card spc">${db.reparti.map(n=>{const y=tipoR(n);return sw('rep:'+encodeURIComponent(n),`<div class="row"><input class="l" data-n="${esc(n)}" value="${esc(n)}"><span class="badge${y.t==='inc'?' g':y.t==='aggio'?' a':''}">${esc(tipoL(n))}</span></div>`)}).join('')}
  <div class="newr"><label class="row" style="padding:0;border:0"><input class="l" id="nn" placeholder="Nome del nuovo reparto" value="${esc(nrN)}"></label>
@@ -1024,12 +1024,16 @@ const rBlk=(e,M)=>{while(e&&e!==M){if(e.nodeType===1){const d=getComputedStyle(e
 const rFix=(a,b)=>a.nodeType===1&&b.nodeType===1&&a.nodeName===b.nodeName&&a.classList.contains('seg');
 function rDiff(a,b,out){if(rFix(a,b))return;
  if(a.nodeType!==b.nodeType||a.nodeName!==b.nodeName){out.push(a.nodeType===1?a:a.parentNode);return}
- if(a.nodeType===3){if(a.nodeValue!==b.nodeValue)out.push(a.parentNode);return}
+ if(a.nodeType===3){if(a.nodeValue!==b.nodeValue&&/\S/.test(a.nodeValue+b.nodeValue))out.push(a.parentNode);return}
  if(a.nodeType!==1)return;
  if(a.namespaceURI==='http://www.w3.org/2000/svg'&&a.nodeName.toLowerCase()==='svg'){if(a.outerHTML!==b.outerHTML)out.push(a);return}
  if(a.attributes.length!==b.attributes.length||[...b.attributes].some(t=>a.getAttribute(t.name)!==t.value)){out.push(a);return}
  rDiffKids(a,b,out)}
-function rDiffKids(a,b,out){const ac=a.childNodes,bc=b.childNodes;if(ac.length!==bc.length){out.push(a);return}for(let i=0;i<ac.length;i++)rDiff(ac[i],bc[i],out)}
+// (casse-v59) se un pezzo compare o sparisce (es. una nota in più in un mese), si confrontano i pezzi uguali dall'inizio e dalla fine:
+// girano solo le righe cambiate, il pezzo nuovo compare sfumando, e la pagina intera non gira più
+const rSame=(x,y)=>x.nodeType===y.nodeType&&x.nodeName===y.nodeName&&(x.nodeType!==1||x.className===y.className);
+function rAlign(ac,bc){if(ac.length===bc.length)return [ac.length,0];const m=Math.min(ac.length,bc.length);let i=0,j=0;while(i<m&&rSame(ac[i],bc[i]))i++;while(j<m-i&&rSame(ac[ac.length-1-j],bc[bc.length-1-j]))j++;return [i,j]}
+function rDiffKids(a,b,out){const ac=[...a.childNodes],bc=[...b.childNodes],[i,j]=rAlign(ac,bc);for(let k=0;k<i;k++)rDiff(ac[k],bc[k],out);for(let k=1;k<=j;k++)rDiff(ac[ac.length-k],bc[bc.length-k],out)}
 function morph(a,b){if(rFix(a,b))return;
  if(a.nodeType!==b.nodeType||a.nodeName!==b.nodeName){a.replaceWith(b);return}
  if(a.nodeType===3){if(a.nodeValue!==b.nodeValue)a.nodeValue=b.nodeValue;return}
@@ -1038,14 +1042,19 @@ function morph(a,b){if(rFix(a,b))return;
  for(const at of [...a.attributes])if(!b.hasAttribute(at.name))a.removeAttribute(at.name);
  for(const at of [...b.attributes])if(a.getAttribute(at.name)!==at.value)a.setAttribute(at.name,at.value);
  morphKids(a,b)}
-function morphKids(a,b){const ac=[...a.childNodes],bc=[...b.childNodes];
- if(ac.length!==bc.length){a.replaceChildren(...bc);return}
- ac.forEach((n,i)=>morph(n,bc[i]))}
+let rIns=[];
+function morphKids(a,b){const ac=[...a.childNodes],bc=[...b.childNodes],[i,j]=rAlign(ac,bc);
+ for(let k=0;k<i;k++)morph(ac[k],bc[k]);for(let k=1;k<=j;k++)morph(ac[ac.length-k],bc[bc.length-k]);
+ if(ac.length===bc.length)return;
+ const ref=j?ac[ac.length-j]:null;for(let k=i;k<ac.length-j;k++)ac[k].remove();
+ for(let k=i;k<bc.length-j;k++){a.insertBefore(bc[k],ref);if(bc[k].nodeType===1)rIns.push(bc[k])}}
 // a = contenitore vivo, b = nuovo contenuto (stesso tag, non ancora in pagina)
 function rollKids(a,b){if(RM()||!a.animate){morphKids(a,b);return}
  const ch=[];rDiffKids(a,b,ch);const set=new Set(ch.map(e=>rBlk(e,a)));
+ if(a.id==='app'){set.delete(a);set.forEach(e=>{if(e.parentNode===a&&e.offsetHeight>400)set.delete(e)})}
  const T=[...set].filter(e=>e.isConnected&&![...set].some(o=>o!==e&&o.contains(e))).map(e=>({e,r:e.getBoundingClientRect(),c:e.cloneNode(true)}));
- morphKids(a,b);const dir=rollDir||1,anims=[],cl=[],rs=[];
+ rIns=[];morphKids(a,b);const dir=rollDir||1,anims=[],cl=[],rs=[];
+ rIns.forEach(e=>{if(e.isConnected)anims.push(e.animate([{opacity:0},{opacity:1}],{duration:320,easing:'ease-out'}))});rIns=[];
  T.sort((x,y)=>x.r.top-y.r.top||x.r.left-y.r.left).forEach(({e,r,c},q)=>{if(!e.isConnected||!r.height)return;
   const p=e.parentNode;if(!p)return;if(getComputedStyle(e).display==='inline'){const d0=e.style.display;e.style.display='inline-block';c.style.display='inline-block';rs.push(()=>e.style.display=d0)}const n=e.getBoundingClientRect();
   c.removeAttribute('id');c.querySelectorAll('[id]').forEach(x=>x.removeAttribute('id'));c.setAttribute('aria-hidden','true');
