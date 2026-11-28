@@ -315,6 +315,7 @@ nav button.on svg{transform:translateY(-5px) scale(1.06);filter:drop-shadow(0 1p
 .hq{margin-top:8px;font-size:14px;font-weight:700}.hq.ok{color:var(--ok)}.hq.ko{color:var(--ko)}
 /* (casse-v52) Report senza scorrimento: Tutto l'anno + mesi, sezioni a elenco; le tabelle complete (.rtab) restano nascoste e servono al PDF */
 .rtab{display:none}
+.pgh *,.pga,.pga *{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
 .pa{display:block;width:100%;margin:0 0 6px;font:inherit;font-size:15px;font-weight:600;color:var(--mute);background:rgba(225,212,187,.06);border:0;border-radius:12px;padding:9px 0;box-shadow:0 0 0 1px rgba(255,248,232,.10) inset;transition:transform .14s}
 .pm{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin:0 0 6px}
 .pm button{font:inherit;font-size:14px;font-weight:600;color:var(--mute);background:rgba(225,212,187,.06);border:0;border-radius:12px;padding:9px 0;box-shadow:0 0 0 1px rgba(255,248,232,.10) inset;transition:transform .14s}
@@ -972,12 +973,19 @@ function flushRest(){const c=document.getElementById('crest');if(c&&cRest){c.out
 let pgK=null;
 const PGE='cubic-bezier(.22,1,.36,1)',PGNO=()=>RM()||navigator.webdriver; // nei test automatici niente copie fantasma nella pagina
 function pgSotto(M,anc){if(!anc)return[...M.children];const a=M.querySelector(anc);if(!a)return[];const o=[];for(let e=a.nextElementSibling;e;e=e.nextElementSibling)o.push(e);return o}
-function pgGhost(els,dir,dx){els=els.filter(e=>e.offsetParent!==null);if(!els.length)return;const r=els[0].getBoundingClientRect(),p=els[0].parentNode.getBoundingClientRect(),cs=getComputedStyle(els[0].parentNode);
+// (casse-v55) si copiano e si muovono solo i pezzi che si vedono sullo schermo (meno lavoro per l'iPhone)
+const pgVis=els=>els.filter(e=>{if(e.offsetParent===null)return false;const r=e.getBoundingClientRect();return r.bottom>0&&r.top<innerHeight});
+function pgGhost(els,dir,dx){els=pgVis(els);if(!els.length)return;const r=els[0].getBoundingClientRect(),p=els[0].parentNode.getBoundingClientRect(),cs=getComputedStyle(els[0].parentNode);
  const g=document.createElement('div');g.className='pgh';g.setAttribute('aria-hidden','true');
  g.style.cssText=`position:fixed;z-index:4;pointer-events:none;margin:0;top:${r.top}px;left:${p.left}px;width:${p.width}px;padding:0 ${cs.paddingRight} 0 ${cs.paddingLeft}`;
  els.forEach((e,i)=>{const c=e.cloneNode(true);if(!i)c.style.marginTop='0';const a=[e,...e.querySelectorAll('[id]')],b=[c,...c.querySelectorAll('[id]')];a.forEach((x,k)=>{if(!x.id)return;if(getComputedStyle(x).display==='none')b[k].style.display='none';b[k].removeAttribute('id')});g.appendChild(c)});
- document.body.appendChild(g);g.animate([{opacity:1,transform:'none'},{opacity:0,transform:`translateX(${-dir*dx*.7}px)`}],{duration:180,easing:'cubic-bezier(.4,0,1,1)',fill:'forwards'}).onfinish=()=>g.remove()}
-function pgIn(els,dir,dx){els.forEach(e=>e.animate([{opacity:0,transform:`translateX(${dir*dx}px)`},{opacity:1,transform:'none'}],{duration:420,delay:80,easing:PGE,fill:'backwards'}))}
+ document.body.appendChild(g);
+ // (casse-v55) la copia si allinea al primo elemento visibile (i margini dei titoli dentro la copia non si sommano come nella pagina): niente spostamento
+ const oa=els.flatMap(e=>[e,...e.querySelectorAll('*')]),ca=[...g.children].flatMap(e=>[e,...e.querySelectorAll('*')]);const k=oa.findIndex(e=>e.getBoundingClientRect().height>0);
+ if(k>=0&&ca[k]){const d=oa[k].getBoundingClientRect().top-ca[k].getBoundingClientRect().top;if(Math.abs(d)>.5)g.style.top=(r.top+d)+'px'}
+ g.animate([{opacity:1,transform:'none'},{opacity:0,transform:`translateX(${-dir*dx*.7}px)`}],{duration:180,easing:'cubic-bezier(.4,0,1,1)',fill:'forwards'}).onfinish=()=>g.remove()}
+// (casse-v55) durante l'entrata niente sfocatura sotto i riquadri che si muovono (l'iPhone la ricalcolerebbe a ogni fotogramma)
+function pgIn(els,dir,dx){els=els.length>1?pgVis(els):els;els.forEach(e=>{e.classList.add('pga');setTimeout(()=>e.classList.remove('pga'),520)});els.forEach(e=>e.animate([{opacity:0,transform:`translateX(${dir*dx}px)`},{opacity:1,transform:'none'}],{duration:420,delay:80,easing:PGE,fill:'backwards'}))}
 // chiamata da render() prima di ridisegnare: decide se c'è un cambio da accompagnare e restituisce la funzione che fa entrare il nuovo
 function pgPrima(M){const n={v:view,m:mode,a:+anchor,y:repY},o=pgK;pgK=n;if(!o||PGNO())return null;
  let anc=null,dir,dx=20;
@@ -992,7 +1000,8 @@ let pgT=0;
 function pgAltezza(M,h0){if(M.offsetHeight>=h0)return;clearTimeout(pgT);M.style.minHeight=h0+'px';
  pgT=setTimeout(()=>{M.style.minHeight='';const max=document.documentElement.scrollHeight-innerHeight;if(scrollY>max+1){M.style.minHeight=h0+'px';scrollTo({top:max,behavior:'smooth'});pgT=setTimeout(()=>{M.style.minHeight=''},500)}},560)}
 function renderPoi(){const t=++rPend;requestAnimationFrame(()=>requestAnimationFrame(()=>{if(t===rPend)render()}))}
-function render(){rPend++;if($('#ntp'))ntChiudi(true);calChiudi(null,true);const M=$('#app'),nuova=lastView!==view,oldSeg=!nuova&&M.querySelector('.seg'),pgDopo=pgPrima(M),h0=pgDopo&&!nuova?M.offsetHeight:0;if(nuova){clearTimeout(pgT);M.style.minHeight=''}cRest='';M.innerHTML={chiusura:vChiusura,riepilogo:vRiepilogo,report:vReport,impostazioni:vImp,spese:vSpese}[view]();
+function render(){rPend++;if($('#ntp'))ntChiudi(true);calChiudi(null,true);const M=$('#app'),nuova=lastView!==view,oldSeg=!nuova&&M.querySelector('.seg'),oldNav=!nuova&&M.querySelector('.nav2'),pgDopo=pgPrima(M),h0=pgDopo&&!nuova?M.offsetHeight:0;if(nuova){clearTimeout(pgT);M.style.minHeight=''}cRest='';M.innerHTML={chiusura:vChiusura,riepilogo:vRiepilogo,report:vReport,impostazioni:vImp,spese:vSpese}[view]();
+ if(oldNav){const n=M.querySelector('.nav2');if(n&&n.querySelector('b')&&oldNav.querySelector('b')){oldNav.querySelector('b').innerHTML=n.querySelector('b').innerHTML;n.replaceWith(oldNav)}}
  if(oldSeg){const n=M.querySelector('.seg');if(n){oldSeg.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.m===mode));n.replaceWith(oldSeg)}}
  if(cRest){const tk=++cTok;setTimeout(()=>{if(tk===cTok)flushRest()},PGNO()?450:620)}
  lastView=view;lastQ=null;
